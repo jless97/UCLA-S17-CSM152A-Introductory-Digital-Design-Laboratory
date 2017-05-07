@@ -1,0 +1,27 @@
+ISim log file
+Running: C:\Users\JasonLess\Documents\Lab\lab1_final\tb_isim_beh.exe -intstyle ise -gui -tclbatch isim.cmd -wdb C:/Users/JasonLess/Documents/Lab/lab1_final/tb_isim_beh.wdb 
+ISim P.20131013 (signature 0x7708f090)
+WARNING: A WEBPACK license was found.
+WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
+WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
+This is a Lite version of ISim.
+Time resolution is 1 ps
+# onerror resume
+# wave add /
+# run 1000 ns
+Simulator is doing circuit initialization process.
+Finished circuit initialization process.
+         5 ... led output changed to        00000000
+# run all
+   1501000 ... Running instruction        00000100
+   5243925 ... instruction        00000100 executed
+   5243925 ... led output changed to        00000001
+   6001000 ... Running instruction        00000000
+   9176085 ... instruction        00000000 executed
+   9176085 ... led output changed to        00000010
+  10501000 ... Running instruction        00010011
+  14418965 ... instruction        00010011 executed
+  14418965 ... led output changed to        00000011
+  15001000 ... Running instruction        10000110
+Stopped at time : 15199125 ns : File "C:/Users/JasonLess/Documents/Lab/lab1_final/src_final/rtl/uart_top.v" Line 114
+The simulator has terminated in an unexpected manner.  Please review the ISim log (isim.log) for details.
