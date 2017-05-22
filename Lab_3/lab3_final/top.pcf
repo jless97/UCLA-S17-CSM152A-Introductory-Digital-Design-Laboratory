@@ -1,0 +1,23 @@
+//! **************************************************************************
+// Written by: Map P.20131013 on Mon May 22 00:53:05 2017
+//! **************************************************************************
+
+SCHEMATIC START;
+COMP "adj" LOCATE = SITE "T10" LEVEL 1;
+COMP "clk" LOCATE = SITE "V10" LEVEL 1;
+COMP "sel" LOCATE = SITE "T9" LEVEL 1;
+COMP "rst" LOCATE = SITE "D9" LEVEL 1;
+COMP "pause" LOCATE = SITE "C4" LEVEL 1;
+COMP "anode_vec<0>" LOCATE = SITE "N16" LEVEL 1;
+COMP "anode_vec<1>" LOCATE = SITE "N15" LEVEL 1;
+COMP "anode_vec<2>" LOCATE = SITE "P18" LEVEL 1;
+COMP "anode_vec<3>" LOCATE = SITE "P17" LEVEL 1;
+COMP "cathode_vec<0>" LOCATE = SITE "T17" LEVEL 1;
+COMP "cathode_vec<1>" LOCATE = SITE "T18" LEVEL 1;
+COMP "cathode_vec<2>" LOCATE = SITE "U17" LEVEL 1;
+COMP "cathode_vec<3>" LOCATE = SITE "U18" LEVEL 1;
+COMP "cathode_vec<4>" LOCATE = SITE "M14" LEVEL 1;
+COMP "cathode_vec<5>" LOCATE = SITE "N14" LEVEL 1;
+COMP "cathode_vec<6>" LOCATE = SITE "L14" LEVEL 1;
+SCHEMATIC END;
+

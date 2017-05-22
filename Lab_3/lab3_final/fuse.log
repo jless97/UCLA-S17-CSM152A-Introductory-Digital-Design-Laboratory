@@ -1,0 +1,21 @@
+Running: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\fuse.exe -intstyle ise -incremental -lib unisims_ver -lib unimacro_ver -lib xilinxcorelib_ver -lib secureip -o C:/Users/JasonLess/Documents/Lab/lab3_notworking/counter_TB_isim_beh.exe -prj C:/Users/JasonLess/Documents/Lab/lab3_notworking/counter_TB_beh.prj work.counter_TB work.glbl 
+ISim P.20131013 (signature 0x7708f090)
+Number of CPUs detected in this system: 4
+Turning on mult-threading, number of parallel sub-compilation jobs: 8 
+Determining compilation order of HDL files
+Analyzing Verilog file "C:/Users/JasonLess/Documents/Lab/lab3_notworking/sel_adj.v" into library work
+Analyzing Verilog file "C:/Users/JasonLess/Documents/Lab/lab3_notworking/counter.v" into library work
+Analyzing Verilog file "C:/Users/JasonLess/Documents/Lab/lab3_notworking/counter_TB.v" into library work
+Analyzing Verilog file "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+Starting static elaboration
+Completed static elaboration
+Compiling module sel_adj
+Compiling module counter
+Compiling module counter_TB
+Compiling module glbl
+Time Resolution for simulation is 1ps.
+Waiting for 1 sub-compilation(s) to finish...
+Compiled 4 Verilog Units
+Built simulation executable C:/Users/JasonLess/Documents/Lab/lab3_notworking/counter_TB_isim_beh.exe
+Fuse Memory Usage: 27700 KB
+Fuse CPU Usage: 421 ms

@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=C:\Users\JasonLess\Documents\Lab\lab3_final\top.ncd
+OUTFILE=C:\Users\JasonLess\Documents\Lab\lab3_final\top.bit
+FAMILY=Spartan6
+PART=xc6slx16-3csg324
+WORKINGDIR=C:\Users\JasonLess\Documents\Lab\lab3_final
+LICENSE=WebPack
+USER_INFO=211339428_0_0_530

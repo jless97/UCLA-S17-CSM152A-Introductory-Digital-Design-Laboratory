@@ -1,0 +1,4 @@
+verilog work "sel_adj.v"
+verilog work "counter.v"
+verilog work "counter_TB.v"
+verilog work "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v"

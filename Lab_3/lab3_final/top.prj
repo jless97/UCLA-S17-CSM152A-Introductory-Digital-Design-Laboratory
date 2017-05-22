@@ -1,0 +1,8 @@
+verilog work "sel_adj.v"
+verilog work "separate_digits.v"
+verilog work "final_display.v"
+verilog work "display.v"
+verilog work "debouncer.v"
+verilog work "counter.v"
+verilog work "clk_div.v"
+verilog work "top.v"
