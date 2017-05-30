@@ -107,15 +107,15 @@ module vga_display(
 			end
 			// Spaceship Controls
 			// Left button pressed, update spaceship position to the left (is possible)
-         if (button_left && spaceship_coord > 0 + SPACESHIP_LENGTH / 2) begin
+        		 if (button_left && spaceship_coord > 0 + SPACESHIP_LENGTH / 2) begin
 				spaceship_coord = spaceship_coord - MOVE_LEFT;
 			end
 			// Right button pressed, update spaceship position to the right (if possible)
-         if (button_right && spaceship_coord < 640 - SPACESHIP_LENGTH / 2) begin
+         		if (button_right && spaceship_coord < 640 - SPACESHIP_LENGTH / 2) begin
 				spaceship_coord = spaceship_coord + MOVE_RIGHT;
 			end
 			// Center button pressed, shoot spaceship laser
-         //if (button_center) begin
+         		//if (button_center) begin
 					
 			//end
 		end
@@ -123,7 +123,7 @@ module vga_display(
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 		// Display visual
-      if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
+      		if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -384,8 +384,8 @@ module vga_display(
 		end
 		// Outside the 640x480 display
 		else begin
-         set_color <= COLOR_BLACK;
-      end
+         		set_color <= COLOR_BLACK;
+      		end
 	end
 
    assign rgb = set_color;
