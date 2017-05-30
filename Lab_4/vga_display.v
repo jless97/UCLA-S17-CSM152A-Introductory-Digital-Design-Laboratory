@@ -21,26 +21,26 @@
 // TODO: When not game screen, freeze objects (or kill them)
 module vga_display(
 	// Inputs
-   input wire clk, 
+   	input wire clk, 
 	input wire rst,
-   input wire button_left, 
+   	input wire button_left, 
 	input wire button_right, 
 	input wire button_center,
 	input wire start_screen,
 	input wire switch_screen,
-   input wire [10:0] xCoord, 
+   	input wire [10:0] xCoord, 
 	input wire [10:0] yCoord,
 	// Outputs
-   output wire [7:0] rgb
+   	output wire [7:0] rgb
 	);
 	
 	// Display boundaries
-   parameter LEFT_EDGE = 11'd0;
-   parameter RIGHT_EDGE = 11'd640;
-   parameter TOP_EDGE = 11'd0;
-   parameter BOTTOM_EDGE = 11'd480;
+   	parameter LEFT_EDGE = 11'd0;
+   	parameter RIGHT_EDGE = 11'd640;
+   	parameter TOP_EDGE = 11'd0;
+   	parameter BOTTOM_EDGE = 11'd480;
 
-   // RGB Parameters [ BLUE | GREEN | RED ]
+   	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
 	parameter COLOR_SPACESHIP = 8'b00111111;
 	parameter COLOR_SPACE = 8'b11010001;
@@ -64,18 +64,18 @@ module vga_display(
 	// Flying Saucer Parameters
 	
 	
-   // Position Updates
-   parameter MOVE_LEFT  = 10'd1;
+   	// Position Updates
+   	parameter MOVE_LEFT  = 10'd1;
 	parameter MOVE_RIGHT = 10'd1;
 
-   // Initialize game objects
+  	// Initialize game objects
 	reg [10:0] spaceship_coord;
 	reg is_blank_screen;
 	reg is_start_screen;
 	reg is_switch_screen;
 	// TODO: when player dies, or game is quit, then display gameover screen
 	reg is_gameover_screen;
-   initial begin
+   	initial begin
 		// Initial display is all black
 		set_color = COLOR_BLACK;
 		// Spaceship begins in the middle of the scren
@@ -84,10 +84,10 @@ module vga_display(
 		is_blank_screen = 1;
 		is_start_screen = 0;
 		is_switch_screen = 0;
-   end
+   	end
 
-   wire clk_frame = (xCoord == 0 && yCoord == 0);
-   always @(posedge clk) begin
+	wire clk_frame = (xCoord == 0 && yCoord == 0);
+   	always @(posedge clk) begin
 		// Update objects
 		if (clk_frame) begin
 			// Switch Controls
