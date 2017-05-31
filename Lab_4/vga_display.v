@@ -92,7 +92,7 @@ module vga_display(
 	///////////////////////////////////////////////////////
 	
 	// Alien Parameters
-	parameter ALIEN_HEIGHT = 11'd15;
+	parameter ALIEN_HEIGHT = 11'd16;
 	parameter ALIEN_LENGTH = 11'd35;
 		// TEMPORARY
 		parameter ALIEN_TOP = 11'd80;
@@ -101,8 +101,10 @@ module vga_display(
 		parameter ALIEN_INITIAL_Y = 11'd88;
 		reg [10:0] alien_xCoord;
 		reg [10:0] alien_yCoord;
+		reg [10:0] alien_counter;
 		reg alien_move_left;
 		reg alien_move_right;
+		reg alien_move_down;
 		
 	// Initialize alien ships
 	initial begin
@@ -110,8 +112,10 @@ module vga_display(
 		alien_yCoord = ALIEN_INITIAL_Y;
 		alien_move_left = 1;
 		alien_move_right = 0;
+		alien_move_down = 0;
+		alien_counter = 0;
 	end
-		
+
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Flying Saucer Parameters
@@ -119,20 +123,29 @@ module vga_display(
 	parameter FLYING_SAUCER_LENGTH = 11'd40;
 	parameter FLYING_SAUCER_TOP = 11'd50;
 	parameter FLYING_SAUCER_BOTTOM = 11'd65;
-	parameter FLYING_SAUCER_INITIAL = 11'd620;
+	parameter FLYING_SAUCER_INITIAL = -11'd20;
 	reg [10:0] flying_saucer_coord;
+	reg [10:0] flying_saucer_wait_timer;
+	reg [10:0] flying_saucer_counter;
+	reg flying_saucer_move_left;
 	
-	// Initialize flying saucer
-	initial begin
-		flying_saucer_coord = FLYING_SAUCER_INITIAL;
-	end
+//	// Initialize flying saucer
+//	initial begin
+//		flying_saucer_coord = FLYING_SAUCER_INITIAL;
+//		flying_saucer_wait_timer = 11'd0;
+//		flying_saucer_move_left = 1;
+//		flying_saucer_counter = 0;
+//	end
 	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
    // Position Updates
    parameter MOVE_LEFT  = 11'd1;
 	parameter MOVE_RIGHT = 11'd1;
-
+	parameter ALIEN_MOVE_LEFT = 11'd10;
+	parameter ALIEN_MOVE_RIGHT = 11'd10;
+	parameter ALIEN_MOVE_DOWN = 11'd10;
+	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Initialize screens
@@ -162,9 +175,41 @@ module vga_display(
 		.rgb(set_color_start_screen)
 		);
 
+		// Instantiate flying saucer 
+//	flying_saucer update_flying_saucer(
+//		.clk(clk),
+//		.xCoord(xCoord),
+//		.yCoord(yCoord),
+//		.flying_saucer_coord(flying_saucer_coord),
+//		.set_color(set_color)
+//		);
+
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
+	///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	/*
+	// Flying Saucer moves
+	always @ (posedge flying_saucer_clk) begin
+		if (rst) begin
+			// Reset flying saucer
+			flying_saucer_coord = FLYING_SAUCER_INITIAL;
+			flying_saucer_move_left = 1;
+		end
+		if (clk_frame) begin
+			// Flying Saucer Controls
+			if (switch_screen && flying_saucer_move_left) begin
+				// If valid operation, move left
+				flying_saucer_coord = flying_saucer_coord - MOVE_LEFT;
+				// Past left edge of display
+				//if (flying_sauncer_coord == -100) begin
+				//	flying_saucer_move_left = 0;
+				//end
+			end
+		end
+	end
+	*/
    always @(posedge clk) begin
 		// Reset controls
 		// Reset button pressed, display start screen, reset all game variables
@@ -177,14 +222,23 @@ module vga_display(
 			// Reset alien spaceship
 			alien_xCoord = ALIEN_INITIAL_X;
 			alien_yCoord = ALIEN_INITIAL_Y;
+			alien_move_left = 1;
+			alien_move_right = 0;
+			alien_move_down = 0;
 			// Reset flying saucer
 			flying_saucer_coord = FLYING_SAUCER_INITIAL;
+			flying_saucer_move_left = 1;
 		end
 		// Update objects
 		if (clk_frame) begin
 			// Switch Controls
 			// Start screen switch flipped
-			if (start_screen && !switch_screen) begin
+			if (is_gameover_screen) begin
+				is_blank_screen = 0;
+				is_start_screen = 0;
+				is_switch_screen = 0;
+			end
+			if (start_screen && !switch_screen && !is_gameover_screen) begin
 				is_start_screen = 1;
 			end
 			// Switch screen switch flipped
@@ -192,7 +246,7 @@ module vga_display(
 				is_switch_screen = 1;
 				is_start_screen = 0;
 			end
-			else if (!start_screen && !switch_screen) begin
+			else if (!start_screen && !switch_screen && !is_gameover_screen) begin
 				is_blank_screen = 1;
 				is_start_screen = 0;
 				is_switch_screen = 0;
@@ -208,31 +262,76 @@ module vga_display(
 			end
 			// Alien Controls
 			// Moving left, update alien position to the left (if possible)
-			if (switch_screen && alien_move_left) begin
-				// If at left edge of the display, bounce back
-				if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2) begin
-					alien_move_right = 1;
-					alien_move_left = 0;
+			if (alien_counter == 100) begin
+				alien_counter = 0;
+				if (is_switch_screen && alien_move_left) begin
+					// If at left edge of the display, bounce back
+					if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2) begin
+						alien_move_right = 1;
+						alien_move_left = 0;
+						alien_move_down = 1;
+					end
+					// Normal left move
+					else begin
+						alien_xCoord = alien_xCoord - ALIEN_MOVE_LEFT;
+					end
 				end
-				// Normal left move
-				else begin
-					alien_xCoord = alien_xCoord - MOVE_LEFT;
+				// Moving right, update alien position to the right (if possible)
+				if (switch_screen && alien_move_right) begin
+					// If at right edge of the display, bounce back
+					if (alien_xCoord >= RIGHT_EDGE - (ALIEN_LENGTH - 1) / 2) begin
+						alien_move_right = 0;
+						alien_move_left = 1;
+						alien_move_down = 1;
+					end
+					// Normal right move
+					else begin
+						alien_xCoord = alien_xCoord + ALIEN_MOVE_RIGHT;
+					end
+				end
+				// Moving down, update alien position downwards (if possible)
+				if (is_switch_screen && alien_move_down) begin
+					// If at the bottom edge of the barriers, then game over
+					if (alien_yCoord >= BARRIER_BOTTOM - ALIEN_HEIGHT / 2) begin
+						// gameover
+						//is_start_screen = 1;
+						//is_switch_screen = 0;
+						//is_gameover_screen = 1;
+					end
+					// Normal move down
+					else begin
+						alien_move_down = 0;
+						alien_yCoord = alien_yCoord + ALIEN_MOVE_DOWN;
+					end
 				end
 			end
-			// Moving right, update alien position to the right (if possible)
-			if (switch_screen && alien_move_right) begin
-				// If at right edge of the display, bounce back
-				if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2) begin
-					alien_move_right = 0;
-					alien_move_left = 1;
-				end
-				// Normal right move
-				else begin
-					alien_xCoord = alien_xCoord + MOVE_RIGHT;
-				end
+			else begin
+				alien_counter = alien_counter + 1;
 			end
 			// Flying Saucer Controls
-			
+			if (switch_screen && flying_saucer_move_left) begin
+				// If valid operation, move left
+				if (flying_saucer_coord == -20) begin
+					flying_saucer_move_left = 0;
+				end
+				if (flying_saucer_counter == 2) begin
+					flying_saucer_coord = flying_saucer_coord - MOVE_LEFT;
+					flying_saucer_counter = 0;
+				end
+				else begin
+					flying_saucer_counter = flying_saucer_counter + 1;
+				end
+			end
+			// Begin wait timer, until next appearance
+			else if (switch_screen && !flying_saucer_move_left) begin
+				flying_saucer_wait_timer = flying_saucer_wait_timer + 11'b1;
+				if (flying_saucer_wait_timer == 11'd25) begin
+					flying_saucer_move_left = 1;
+					flying_saucer_coord = FLYING_SAUCER_INITIAL;
+					flying_saucer_wait_timer = 11'd0;
+				end
+			end
+
 			// Center button pressed, shoot spaceship laser
          //if (switch_screen && button_center) begin
 			//end
@@ -299,16 +398,23 @@ module vga_display(
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // Blank screen
-			else begin
+			else if (is_blank_screen) begin
 				set_color <= COLOR_BLACK;
+			end
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+// Gameover screen
+// TODO
+			else if (is_gameover_screen) begin
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Outside the 640x480 display
 		else begin
          		set_color <= COLOR_BLACK;
       		end
-	end
-
+		end	
    assign rgb = set_color;
 
 endmodule
