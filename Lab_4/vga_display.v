@@ -27,6 +27,7 @@ module vga_display(
    input wire button_left, 
 	input wire button_right, 
 	input wire button_center,
+	input wire button_display,
 	input wire start_screen,
 	input wire switch_screen,
    input wire [10:0] xCoord, 
@@ -47,7 +48,7 @@ module vga_display(
 	///////////////////////////////////////////////////////
    // RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
-	parameter COLOR_SPACESHIP = 8'b00111111;
+	parameter COLOR_SPACESHIP = 8'b01111000;
 	parameter COLOR_ALIEN = 8'b10101010;
 	parameter COLOR_FLYING_SAUCER = 8'b10100111;
 	parameter COLOR_SPACE = 8'b00000000;
@@ -93,6 +94,8 @@ module vga_display(
 		.button_left(button_left),
 		.button_right(button_right),
 		.button_center(button_center),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship)
 		);
@@ -121,7 +124,28 @@ module vga_display(
 		.is_alien(is_alien)
 		);
 
-   always @(posedge clk) begin
+	// Screen display mode
+	/*
+	wire [1:0] mode;	
+	initial begin
+		mode = 0;
+	end
+	always @ (posedge clk) begin
+		if (rst) begin
+			mode = 0;
+		end
+		if (button_display) begin
+			if (mode == 3) begin
+				mode = 0;
+			end
+			else begin
+				mode = mode + 1;
+			end
+		end
+	end
+	*/
+	
+   always @ (posedge clk) begin
 		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
 			// Start screen
@@ -146,17 +170,17 @@ module vga_display(
 					set_color <= COLOR_GREEN;
 				end
 				// Color in flying saucer
-				if (is_flying_saucer) begin
+				else if (is_flying_saucer) begin
 					set_color <= rgb_flying_saucer;
 				end
 				// Color in scoreboard
 				
-				// Color in space
-				if (is_spaceship) begin
+				// Color in spaceship
+				else if (is_spaceship) begin
 					set_color <= rgb_spaceship;
 				end
 				// Color in alien
-				if (is_alien) begin
+				else if (is_alien) begin
 					set_color <= rgb_aliens;
 				end
 				else begin

@@ -44,7 +44,7 @@ module spaceship(
 	///////////////////////////////////////////////////////
    // RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
-	parameter COLOR_SPACESHIP = 8'b00111111;
+	parameter COLOR_SPACESHIP = 8'b01111000;
 	parameter COLOR_ALIEN = 8'b10101010;
 	parameter COLOR_FLYING_SAUCER = 8'b10100111;
 	parameter COLOR_SPACE = 8'b00000000;
@@ -73,12 +73,13 @@ module spaceship(
 		spaceship_coord = SPACESHIP_INITIAL;
 	end
 
+	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
 		if (rst) begin
 			// Reset position of the spaceship
 			spaceship_coord = SPACESHIP_INITIAL;
 		end
-		else begin
+		if (clk_frame) begin
 			// Spaceship Controls
 			// Left button pressed, update spaceship position to the left (if possible)
         	if (button_left && spaceship_coord > LEFT_EDGE + SPACESHIP_LENGTH / 2) begin
@@ -99,7 +100,7 @@ module spaceship(
 
 	assign rgb = set_color;
 	assign is_spaceship = (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
-									xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
+								  xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
 									);
 	
 endmodule
