@@ -71,291 +71,67 @@ module vga_display(
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Scoreboard Parameters
-	
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	// Spaceship Parameters
-	parameter SPACESHIP_HEIGHT = 11'd10;
-	parameter SPACESHIP_LENGTH = 11'd40;
-	parameter SPACESHIP_TOP = 11'd420;
-	parameter SPACESHIP_BOTTOM = 11'd430;
-	parameter SPACESHIP_INITIAL = 11'd320;
-	reg [10:0] spaceship_coord;
-	
-	// Initialize spaceship
-	initial begin
-		// Spaceship begins in the middle of the scren
-		spaceship_coord = SPACESHIP_INITIAL;
-	end
-	
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	
-	// Alien Parameters
-	parameter ALIEN_HEIGHT = 11'd16;
-	parameter ALIEN_LENGTH = 11'd35;
-		// TEMPORARY
-		parameter ALIEN_TOP = 11'd80;
-		parameter ALIEN_BOTTOM = 11'd96;
-		parameter ALIEN_INITIAL_X = 11'd320;
-		parameter ALIEN_INITIAL_Y = 11'd88;
-		reg [10:0] alien_xCoord;
-		reg [10:0] alien_yCoord;
-		reg [10:0] alien_counter;
-		reg alien_move_left;
-		reg alien_move_right;
-		reg alien_move_down;
-		
-	// Initialize alien ships
-	initial begin
-		alien_xCoord = ALIEN_INITIAL_X;
-		alien_yCoord = ALIEN_INITIAL_Y;
-		alien_move_left = 1;
-		alien_move_right = 0;
-		alien_move_down = 0;
-		alien_counter = 0;
-	end
-
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	// Flying Saucer Parameters
-	parameter FLYING_SAUCER_HEIGHT = 11'd15;
-	parameter FLYING_SAUCER_LENGTH = 11'd40;
-	parameter FLYING_SAUCER_TOP = 11'd50;
-	parameter FLYING_SAUCER_BOTTOM = 11'd65;
-	parameter FLYING_SAUCER_INITIAL = -11'd20;
-	reg [10:0] flying_saucer_coord;
-	reg [10:0] flying_saucer_wait_timer;
-	reg [10:0] flying_saucer_counter;
-	reg flying_saucer_move_left;
-	
-//	// Initialize flying saucer
-//	initial begin
-//		flying_saucer_coord = FLYING_SAUCER_INITIAL;
-//		flying_saucer_wait_timer = 11'd0;
-//		flying_saucer_move_left = 1;
-//		flying_saucer_counter = 0;
-//	end
-	
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-   // Position Updates
-   parameter MOVE_LEFT  = 11'd1;
-	parameter MOVE_RIGHT = 11'd1;
-	parameter ALIEN_MOVE_LEFT = 11'd10;
-	parameter ALIEN_MOVE_RIGHT = 11'd10;
-	parameter ALIEN_MOVE_DOWN = 11'd10;
-	
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	// Initialize screens
-	reg is_blank_screen;
-	reg is_start_screen;
-	reg is_switch_screen;
-	// TODO: when player dies, or game is quit, then display gameover screen
-	reg is_gameover_screen;
-   initial begin
-		// Initial display is all black
-		set_color = COLOR_BLACK;
-		// Initialize switches
-		is_blank_screen = 1;
-		is_start_screen = 0;
-		is_switch_screen = 0;
-   end
 
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Instantiate modules
 		// Instantiate start screen display
-	wire [10:0] set_color_start_screen;
+	wire [10:0] rgb_start_screen;
 	start_screen start_screen_display(
 		.clk(clk),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
-		.rgb(set_color_start_screen)
+		.rgb(rgb_start_screen)
 		);
 
+		// Instantiate space ship
+	wire [10:0] rgb_spaceship;
+	wire is_spaceship;
+	spaceship update_spaceship(
+		.clk(clk),
+		.rst(rst),
+		.button_left(button_left),
+		.button_right(button_right),
+		.button_center(button_center),
+		.rgb(rgb_spaceship),
+		.is_spaceship(is_spaceship)
+		);
+	
 		// Instantiate flying saucer 
-//	flying_saucer update_flying_saucer(
-//		.clk(clk),
-//		.xCoord(xCoord),
-//		.yCoord(yCoord),
-//		.flying_saucer_coord(flying_saucer_coord),
-//		.set_color(set_color)
-//		);
+	wire [10:0] rgb_flying_saucer;
+	wire is_flying_saucer;
+	flying_saucer update_flying_saucer(
+		.clk(clk),
+		.rst(rst),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.rgb(rgb_flying_saucer),
+		.is_flying_saucer(is_flying_saucer)
+		);
+		
+		// Instantiate aliens
+	wire [10:0] rgb_aliens;
+	wire is_alien;
+	aliens update_aliens(
+		.clk(clk),
+		.rst(rst),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.rgb(rgb_aliens),
+		.is_alien(is_alien)
+		);
 
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	wire clk_frame = (xCoord == 0 && yCoord == 0);
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	/*
-	// Flying Saucer moves
-	always @ (posedge flying_saucer_clk) begin
-		if (rst) begin
-			// Reset flying saucer
-			flying_saucer_coord = FLYING_SAUCER_INITIAL;
-			flying_saucer_move_left = 1;
-		end
-		if (clk_frame) begin
-			// Flying Saucer Controls
-			if (switch_screen && flying_saucer_move_left) begin
-				// If valid operation, move left
-				flying_saucer_coord = flying_saucer_coord - MOVE_LEFT;
-				// Past left edge of display
-				//if (flying_sauncer_coord == -100) begin
-				//	flying_saucer_move_left = 0;
-				//end
-			end
-		end
-	end
-	*/
    always @(posedge clk) begin
-		// Reset controls
-		// Reset button pressed, display start screen, reset all game variables
-		if (rst) begin
-			// TODO: When new objects added, reset their properties
-			// TODO: Reset screens (right now, just resets game level)
-			
-			// Reset spaceship
-			spaceship_coord = SPACESHIP_INITIAL;
-			// Reset alien spaceship
-			alien_xCoord = ALIEN_INITIAL_X;
-			alien_yCoord = ALIEN_INITIAL_Y;
-			alien_move_left = 1;
-			alien_move_right = 0;
-			alien_move_down = 0;
-			// Reset flying saucer
-			flying_saucer_coord = FLYING_SAUCER_INITIAL;
-			flying_saucer_move_left = 1;
-		end
-		// Update objects
-		if (clk_frame) begin
-			// Switch Controls
-			// Start screen switch flipped
-			if (is_gameover_screen) begin
-				is_blank_screen = 0;
-				is_start_screen = 0;
-				is_switch_screen = 0;
-			end
-			if (start_screen && !switch_screen && !is_gameover_screen) begin
-				is_start_screen = 1;
-			end
-			// Switch screen switch flipped
-			else if (switch_screen) begin
-				is_switch_screen = 1;
-				is_start_screen = 0;
-			end
-			else if (!start_screen && !switch_screen && !is_gameover_screen) begin
-				is_blank_screen = 1;
-				is_start_screen = 0;
-				is_switch_screen = 0;
-			end
-			// Spaceship Controls
-			// Left button pressed, update spaceship position to the left (if possible)
-        	if (switch_screen && button_left && spaceship_coord > LEFT_EDGE + SPACESHIP_LENGTH / 2) begin
-				spaceship_coord = spaceship_coord - MOVE_LEFT;
-			end
-			// Right button pressed, update spaceship position to the right (if possible)
-         if (switch_screen && button_right && spaceship_coord < RIGHT_EDGE - SPACESHIP_LENGTH / 2) begin
-				spaceship_coord = spaceship_coord + MOVE_RIGHT;
-			end
-			// Alien Controls
-			// Moving left, update alien position to the left (if possible)
-			if (alien_counter == 100) begin
-				alien_counter = 0;
-				if (is_switch_screen && alien_move_left) begin
-					// If at left edge of the display, bounce back
-					if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2) begin
-						alien_move_right = 1;
-						alien_move_left = 0;
-						alien_move_down = 1;
-					end
-					// Normal left move
-					else begin
-						alien_xCoord = alien_xCoord - ALIEN_MOVE_LEFT;
-					end
-				end
-				// Moving right, update alien position to the right (if possible)
-				if (switch_screen && alien_move_right) begin
-					// If at right edge of the display, bounce back
-					if (alien_xCoord >= RIGHT_EDGE - (ALIEN_LENGTH - 1) / 2) begin
-						alien_move_right = 0;
-						alien_move_left = 1;
-						alien_move_down = 1;
-					end
-					// Normal right move
-					else begin
-						alien_xCoord = alien_xCoord + ALIEN_MOVE_RIGHT;
-					end
-				end
-				// Moving down, update alien position downwards (if possible)
-				if (is_switch_screen && alien_move_down) begin
-					// If at the bottom edge of the barriers, then game over
-					if (alien_yCoord >= BARRIER_BOTTOM - ALIEN_HEIGHT / 2) begin
-						// gameover
-						//is_start_screen = 1;
-						//is_switch_screen = 0;
-						//is_gameover_screen = 1;
-					end
-					// Normal move down
-					else begin
-						alien_move_down = 0;
-						alien_yCoord = alien_yCoord + ALIEN_MOVE_DOWN;
-					end
-				end
-			end
-			else begin
-				alien_counter = alien_counter + 1;
-			end
-			// Flying Saucer Controls
-			if (switch_screen && flying_saucer_move_left) begin
-				// If valid operation, move left
-				if (flying_saucer_coord == -20) begin
-					flying_saucer_move_left = 0;
-				end
-				if (flying_saucer_counter == 2) begin
-					flying_saucer_coord = flying_saucer_coord - MOVE_LEFT;
-					flying_saucer_counter = 0;
-				end
-				else begin
-					flying_saucer_counter = flying_saucer_counter + 1;
-				end
-			end
-			// Begin wait timer, until next appearance
-			else if (switch_screen && !flying_saucer_move_left) begin
-				flying_saucer_wait_timer = flying_saucer_wait_timer + 11'b1;
-				if (flying_saucer_wait_timer == 11'd25) begin
-					flying_saucer_move_left = 1;
-					flying_saucer_coord = FLYING_SAUCER_INITIAL;
-					flying_saucer_wait_timer = 11'd0;
-				end
-			end
-
-			// Center button pressed, shoot spaceship laser
-         //if (switch_screen && button_center) begin
-			//end
-		end
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-		// Display visual
+		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-// Start screen
-			if (is_start_screen) begin
-				// Color start screen
+			// Start screen
+			if (start_screen && !switch_screen) begin
 				// Read in pixels from the start_screen module
-				set_color <= set_color_start_screen;
+				set_color <= rgb_start_screen;
 			end
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-// Switch screen
-// Game mode
-			else if (is_switch_screen) begin
+			// Switch screen
+			// Game mode
+			else if (switch_screen) begin
 				// Color in borders (temporary to show how much space is available)
 					// Scoreboard border
 				if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
@@ -369,52 +145,27 @@ module vga_display(
 				else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 					set_color <= COLOR_GREEN;
 				end
-				// Color in spaceship
-				else if (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
-							xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
-							) begin
-					set_color <= COLOR_SPACESHIP;
-				end
-				// Color in alien ships
-				else if (yCoord >= alien_yCoord - ALIEN_HEIGHT / 2 && yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 &&
-							xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && xCoord <= alien_xCoord + ALIEN_LENGTH / 2
-							) begin
-					set_color <= COLOR_ALIEN;
-				end
 				// Color in flying saucer
-				else if (yCoord >= FLYING_SAUCER_TOP && yCoord <= FLYING_SAUCER_BOTTOM &&
-							xCoord >= flying_saucer_coord - FLYING_SAUCER_LENGTH / 2 && xCoord <= flying_saucer_coord + FLYING_SAUCER_LENGTH / 2
-							) begin
-					set_color <= COLOR_FLYING_SAUCER;
+				if (is_flying_saucer) begin
+					set_color <= rgb_flying_saucer;
 				end
 				// Color in scoreboard
 				
 				// Color in space
+				if (is_spaceship) begin
+					set_color <= rgb_spaceship;
+				end
+				// Color in alien
+				if (is_alien) begin
+					set_color <= rgb_aliens;
+				end
 				else begin
 					set_color <= COLOR_SPACE;
 				end
 			end 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-// Blank screen
-			else if (is_blank_screen) begin
-				set_color <= COLOR_BLACK;
-			end
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-// Gameover screen
-// TODO
-			else if (is_gameover_screen) begin
-				set_color <= COLOR_YELLOW;
-			end
 		end
-		// Outside the 640x480 display
-		else begin
-         		set_color <= COLOR_BLACK;
-      		end
-		end	
+	end
+	
    assign rgb = set_color;
 
-endmodule
+endmodule 
