@@ -57,6 +57,7 @@ module vga_display(
 	reg [10:0] SPACESHIP_LENGTH = 11'd40;
 	reg [10:0] SPACESHIP_TOP = 11'd450;
 	reg [10:0] SPACESHIP_BOTTOM = 11'd460;
+	reg [10:0] SPACESHIP_INITIAL = 11'd320;
 	
 	// Alien Parameters
 	
@@ -79,7 +80,7 @@ module vga_display(
 		// Initial display is all black
 		set_color = COLOR_BLACK;
 		// Spaceship begins in the middle of the scren
-		spaceship_coord = 11'd320;
+		spaceship_coord = SPACESHIP_INITIAL;
 		// Initialize switches
 		is_blank_screen = 1;
 		is_start_screen = 0;
@@ -98,6 +99,15 @@ module vga_display(
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
    always @(posedge clk) begin
+		// Reset controls
+		// Reset button pressed, display start screen, reset all game variables
+		if (rst) begin
+			// TODO: When new objects added, reset their properties
+			// TODO: Reset screens (right now, just resets game level)
+			
+			// Reset spaceship
+			spaceship_coord = SPACESHIP_INITIAL;
+		end
 		// Update objects
 		if (clk_frame) begin
 			// Switch Controls
@@ -117,15 +127,15 @@ module vga_display(
 			end
 			// Spaceship Controls
 			// Left button pressed, update spaceship position to the left (is possible)
-        		 if (button_left && spaceship_coord > 0 + SPACESHIP_LENGTH / 2) begin
+        	if (switch_screen && button_left && spaceship_coord > 0 + SPACESHIP_LENGTH / 2) begin
 				spaceship_coord = spaceship_coord - MOVE_LEFT;
 			end
 			// Right button pressed, update spaceship position to the right (if possible)
-         		if (button_right && spaceship_coord < 640 - SPACESHIP_LENGTH / 2) begin
+         if (switch_screen && button_right && spaceship_coord < 640 - SPACESHIP_LENGTH / 2) begin
 				spaceship_coord = spaceship_coord + MOVE_RIGHT;
 			end
 			// Center button pressed, shoot spaceship laser
-         		//if (button_center) begin
+         //if (switch_screen && button_center) begin
 					
 			//end
 		end
@@ -138,11 +148,11 @@ module vga_display(
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // Start screen
-		if (is_start_screen) begin
-			// Color start screen
-			// Read in pixels from the start_screen module
-			set_color <= set_color_start_screen;
-		end
+			if (is_start_screen) begin
+				// Color start screen
+				// Read in pixels from the start_screen module
+				set_color <= set_color_start_screen;
+			end
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
