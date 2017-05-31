@@ -37,7 +37,7 @@ module aliens(
 
 	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
-	parameter COLOR_SPACESHIP = 8'b00111111;
+	parameter COLOR_SPACESHIP = 8'b01111000;
 	parameter COLOR_ALIEN = 8'b10101010;
 	parameter COLOR_FLYING_SAUCER = 8'b10100111;
 	parameter COLOR_SPACE = 8'b00000000;
@@ -86,6 +86,7 @@ module aliens(
 		alien_counter = 0;
 	end
 
+	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
 		if (rst) begin
 			// TODO: When new objects added, reset their properties
@@ -97,59 +98,61 @@ module aliens(
 			alien_move_right = 0;
 			alien_move_down = 0;
 		end
-		// Alien Controls
-		// Moving left, update alien position to the left (if possible)
-		if (alien_counter == 100) begin
-			alien_counter = 0;
-			if (alien_move_left) begin
-				// If at left edge of the display, bounce back
-				if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2) begin
-					alien_move_right = 1;
-					alien_move_left = 0;
-					alien_move_down = 1;
+		if (clk_frame) begin
+			// Alien Controls
+			// Moving left, update alien position to the left (if possible)
+			if (alien_counter == 100) begin
+				alien_counter = 0;
+				if (alien_move_left) begin
+					// If at left edge of the display, bounce back
+					if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2) begin
+						alien_move_right = 1;
+						alien_move_left = 0;
+						alien_move_down = 1;
+					end
+					// Normal left move
+					else begin
+						alien_xCoord = alien_xCoord - ALIEN_MOVE_LEFT;
+					end
 				end
-				// Normal left move
-				else begin
-					alien_xCoord = alien_xCoord - ALIEN_MOVE_LEFT;
+				// Moving right, update alien position to the right (if possible)
+				if (alien_move_right) begin
+					// If at right edge of the display, bounce back
+					if (alien_xCoord >= RIGHT_EDGE - (ALIEN_LENGTH - 1) / 2) begin
+						alien_move_right = 0;
+						alien_move_left = 1;
+						alien_move_down = 1;
+					end
+					// Normal right move
+					else begin
+						alien_xCoord = alien_xCoord + ALIEN_MOVE_RIGHT;
+					end
+				end
+				// Moving down, update alien position downwards (if possible)
+				if (alien_move_down) begin
+					// If at the bottom edge of the barriers, then game over
+					if (alien_yCoord >= BARRIER_BOTTOM - ALIEN_HEIGHT / 2) begin
+						// gameover
+						//is_start_screen = 1;
+						//is_switch_screen = 0;
+						//is_gameover_screen = 1;
+					end
+					// Normal move down
+					else begin
+						alien_move_down = 0;
+						alien_yCoord = alien_yCoord + ALIEN_MOVE_DOWN;
+					end
 				end
 			end
-			// Moving right, update alien position to the right (if possible)
-			if (alien_move_right) begin
-				// If at right edge of the display, bounce back
-				if (alien_xCoord >= RIGHT_EDGE - (ALIEN_LENGTH - 1) / 2) begin
-					alien_move_right = 0;
-					alien_move_left = 1;
-					alien_move_down = 1;
-				end
-				// Normal right move
-				else begin
-					alien_xCoord = alien_xCoord + ALIEN_MOVE_RIGHT;
-				end
+			else begin
+				alien_counter = alien_counter + 1;
 			end
-			// Moving down, update alien position downwards (if possible)
-			if (alien_move_down) begin
-				// If at the bottom edge of the barriers, then game over
-				if (alien_yCoord >= BARRIER_BOTTOM - ALIEN_HEIGHT / 2) begin
-					// gameover
-					//is_start_screen = 1;
-					//is_switch_screen = 0;
-					//is_gameover_screen = 1;
-				end
-				// Normal move down
-				else begin
-					alien_move_down = 0;
-					alien_yCoord = alien_yCoord + ALIEN_MOVE_DOWN;
-				end
+			// Update display of aliens
+			if (yCoord >= alien_yCoord - ALIEN_HEIGHT / 2 && yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 &&
+				 xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && xCoord <= alien_xCoord + ALIEN_LENGTH / 2
+				) begin
+				set_color <= COLOR_ALIEN;
 			end
-		end
-		else begin
-			alien_counter = alien_counter + 1;
-		end
-		// Update display of aliens
-		if (yCoord >= alien_yCoord - ALIEN_HEIGHT / 2 && yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 &&
-			 xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && xCoord <= alien_xCoord + ALIEN_LENGTH / 2
-			) begin
-			set_color <= COLOR_ALIEN;
 		end
 	end
 	
