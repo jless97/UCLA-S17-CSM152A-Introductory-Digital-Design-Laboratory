@@ -65,12 +65,12 @@ module vga_display(
 	parameter SCOREBOARD_TOP = 11'd0;
 	parameter SCOREBOARD_BOTTOM = 11'd40;
 	parameter BARRIER_TOP = 11'd340;
-	parameter BARRIER_BOTTOM = 11'd400;
+	parameter BARRIER_BOTTOM = 11'd397;
 	parameter EXTRA_LIVES_TOP = 11'd460;
 	parameter EXTRA_LIVES_BOTTOM = 11'd480;
 	
 	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////`
 	// Scoreboard Parameters
 
 	///////////////////////////////////////////////////////
@@ -123,7 +123,25 @@ module vga_display(
 		.rgb(rgb_aliens),
 		.is_alien(is_alien)
 		);
-
+    wire [10:0] rgb_barrier;
+    wire is_barrier;
+    wire [10:0] damage_x;
+    wire [10:0] damage_y;
+    wire is_damage;
+    assign damage_x = 0;
+    assign damage_y = 0;
+    assign is_damage = 0;
+    set_barriers update_barriers(
+        .clk(clk),
+        .rst(rst),
+        .xCoord(xCoord),
+        .yCoord(yCoord),
+        .damage_x(damage_x),
+        .damage_y(damage_y),
+        .new_damage(new_damage),
+        .rgb(rgb_barrier),
+        .is_alien(is_barrier)
+        );
 	// Screen display mode
 	/*
 	wire [1:0] mode;	
@@ -162,8 +180,9 @@ module vga_display(
 					set_color <= COLOR_RED;
 				end
 					// Barrier border
-				else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
-					set_color <= COLOR_BLUE;
+				//else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
+				else if(is_barrier)	
+                    set_color <= rgb_barrier;
 				end
 					// Extra lives border 
 				else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
