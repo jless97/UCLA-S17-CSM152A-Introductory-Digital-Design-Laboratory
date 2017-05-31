@@ -165,6 +165,7 @@ module vga_display(
     wire isAlien;
     set_alien set_alien_display(
         .clk(clk),
+        .rst(rst),
         .xCoord(xCoord),
         .yCoord(yCoord),
         .isAlien(isAlien));

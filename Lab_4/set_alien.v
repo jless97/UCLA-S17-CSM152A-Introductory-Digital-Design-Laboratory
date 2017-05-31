@@ -3,8 +3,8 @@ module alien{
     input wire clk,
     input wire rst,
     //Location of current X and Y coordinate
-    input reg [10:0] xCoord, 
-    input reg [10:0] yCoord,
+    input wire [10:0] xCoord, 
+    input wire [10:0] yCoord,
     // Outputs
     output wire isAlien
     };
