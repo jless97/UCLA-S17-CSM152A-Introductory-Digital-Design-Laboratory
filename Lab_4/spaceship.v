@@ -25,6 +25,7 @@ module spaceship(
 	input wire button_left,
 	input wire button_right,
 	input wire button_center,
+	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
 	// Outputs
@@ -75,11 +76,11 @@ module spaceship(
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst) begin
+		if (rst || mode == 0 || mode == 1) begin
 			// Reset position of the spaceship
 			spaceship_coord = SPACESHIP_INITIAL;
 		end
-		if (clk_frame) begin
+		if (clk_frame && mode == 2) begin
 			// Spaceship Controls
 			// Left button pressed, update spaceship position to the left (if possible)
         	if (button_left && spaceship_coord > LEFT_EDGE + SPACESHIP_LENGTH / 2) begin
