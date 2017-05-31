@@ -34,7 +34,7 @@ module vga_display(
    output wire [7:0] rgb
 	);
 	
-	// Display boundaries
+	// Display screen boundaries
    parameter LEFT_EDGE = 11'd0;
    parameter RIGHT_EDGE = 11'd640;
    parameter TOP_EDGE = 11'd0;
@@ -43,11 +43,21 @@ module vga_display(
    // RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
 	parameter COLOR_SPACESHIP = 8'b00111111;
-	parameter COLOR_SPACE = 8'b11010001;
+	parameter COLOR_SPACE = 8'b00000000;
 	parameter COLOR_BLACK = 8'b00000000;
 	parameter COLOR_WHITE = 8'b11111111;
 	parameter COLOR_GREEN = 8'b00111000;
+	parameter COLOR_RED = 8'b00000111;
+	parameter COLOR_BLUE = 8'b11000000;
 	parameter COLOR_YELLOW = 8'b00111111;
+	
+	// Border (separation of objects) Parameters
+	parameter SCOREBOARD_TOP = 11'd0;
+	parameter SCOREBOARD_BOTTOM = 11'd40;
+	parameter BARRIER_TOP = 11'd340;
+	parameter BARRIER_BOTTOM = 11'd400;
+	parameter EXTRA_LIVES_TOP = 11'd460;
+	parameter EXTRA_LIVES_BOTTOM = 11'd480;
 	
 	// Scoreboard Parameters
 	
@@ -55,8 +65,8 @@ module vga_display(
 	// Spaceship Parameters
 	reg [10:0] SPACESHIP_HEIGHT = 11'd10;
 	reg [10:0] SPACESHIP_LENGTH = 11'd40;
-	reg [10:0] SPACESHIP_TOP = 11'd450;
-	reg [10:0] SPACESHIP_BOTTOM = 11'd460;
+	reg [10:0] SPACESHIP_TOP = 11'd420;
+	reg [10:0] SPACESHIP_BOTTOM = 11'd430;
 	reg [10:0] SPACESHIP_INITIAL = 11'd320;
 	
 	// Alien Parameters
@@ -159,13 +169,32 @@ module vga_display(
 // Switch screen
 // Game mode
 			else if (is_switch_screen) begin
+				// Color in borders (temporary to show how much space is available)
+					// Scoreboard border
+				if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
+					set_color <= COLOR_RED;
+				end
+					// Barrier border
+				else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
+					set_color <= COLOR_BLUE;
+				end
+					// Extra lives border 
+				else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
+					set_color <= COLOR_GREEN;
+				end
 				// Color in spaceship
-				if (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
-					 xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && 
-					 xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
-					) begin
+				else if (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
+							xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && 
+							xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
+						) begin
 					set_color <= COLOR_SPACESHIP;
 				end
+				// Color in alien ships
+				
+				// Color in flying saucer
+				
+				// Color in scoreboard
+				
 				// Color in space
 				else begin
 					set_color <= COLOR_SPACE;
