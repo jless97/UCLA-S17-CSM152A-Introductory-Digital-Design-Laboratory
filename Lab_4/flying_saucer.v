@@ -39,7 +39,7 @@ module flying_saucer(
 	
 	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
-	parameter COLOR_SPACESHIP = 8'b00111111;
+	parameter COLOR_SPACESHIP = 8'b01111000;
 	parameter COLOR_ALIEN = 8'b10101010;
 	parameter COLOR_FLYING_SAUCER = 8'b10100111;
 	parameter COLOR_SPACE = 8'b00000000;
@@ -76,35 +76,41 @@ module flying_saucer(
 	end
 	
 	// Only moves left, update flying saucer position (if possible)
+	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
 	// Flying Saucer Controls
-		if (flying_saucer_move_left) begin
-			// If valid operation, move left
-			if (flying_saucer_coord == -20) begin
-				flying_saucer_move_left = 0;
-			end
-			if (flying_saucer_counter == 2) begin
-				flying_saucer_coord = flying_saucer_coord - MOVE_LEFT;
-				flying_saucer_counter = 0;
-			end
-			else begin
-				flying_saucer_counter = flying_saucer_counter + 1;
-			end
+		if (rst) begin
+			// TODO
 		end
-		// Begin wait timer, until next appearance
-		else if (!flying_saucer_move_left) begin
-			flying_saucer_wait_timer = flying_saucer_wait_timer + 11'b1;
-			if (flying_saucer_wait_timer == 11'd25) begin
-				flying_saucer_move_left = 1;
-				flying_saucer_coord = FLYING_SAUCER_INITIAL;
-				flying_saucer_wait_timer = 11'd0;
+		if (clk_frame) begin
+			if (flying_saucer_move_left) begin
+				// If valid operation, move left
+				if (flying_saucer_coord == -20) begin
+					flying_saucer_move_left = 0;
+				end
+				if (flying_saucer_counter == 2) begin
+					flying_saucer_coord = flying_saucer_coord - MOVE_LEFT;
+					flying_saucer_counter = 0;
+				end
+				else begin
+					flying_saucer_counter = flying_saucer_counter + 1;
+				end
 			end
-		end
-      if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
-			if (yCoord >= FLYING_SAUCER_TOP && yCoord <= FLYING_SAUCER_BOTTOM &&
-				 xCoord >= flying_saucer_coord - FLYING_SAUCER_LENGTH / 2 && xCoord <= flying_saucer_coord + FLYING_SAUCER_LENGTH / 2
-				) begin
-				set_color <= COLOR_FLYING_SAUCER;
+			// Begin wait timer, until next appearance
+			else if (!flying_saucer_move_left) begin
+				flying_saucer_wait_timer = flying_saucer_wait_timer + 11'b1;
+				if (flying_saucer_wait_timer == 11'd25) begin
+					flying_saucer_move_left = 1;
+					flying_saucer_coord = FLYING_SAUCER_INITIAL;
+					flying_saucer_wait_timer = 11'd0;
+				end
+			end
+			if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
+				if (yCoord >= FLYING_SAUCER_TOP && yCoord <= FLYING_SAUCER_BOTTOM &&
+					 xCoord >= flying_saucer_coord - FLYING_SAUCER_LENGTH / 2 && xCoord <= flying_saucer_coord + FLYING_SAUCER_LENGTH / 2
+					) begin
+					set_color <= COLOR_FLYING_SAUCER;
+				end
 			end
 		end
 	 end 
