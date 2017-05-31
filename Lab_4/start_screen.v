@@ -27,14 +27,21 @@ module start_screen(
 	output wire [7:0] rgb
     );
 	
+	// RGB Parameters [ BLUE | GREEN | RED ]
+	reg [7:0] set_color;
+	parameter COLOR_SPACESHIP = 8'b00111111;
+	parameter COLOR_SPACE = 8'b11010001;
+	parameter COLOR_BLACK = 8'b00000000;
+	parameter COLOR_WHITE = 8'b11111111;
+	parameter COLOR_GREEN = 8'b00111000;
+	parameter COLOR_YELLOW = 8'b00111111;
+	
 	always @ (posedge clk) begin
 		if (yCoord >= 0 && yCoord < 480) begin
 			// SPACE (40 by 50)
 			// Letter S (revised)
 			if ((xCoord > 0 && xCoord < 10) || (xCoord > 640-10 && xCoord < 640)) begin
-				red = 3'b111;
-				green = 3'b111;
-				blue = 2'b11;
+				set_color <= COLOR_WHITE;
 			end
 			else if (xCoord > 200 && xCoord < 240 && yCoord > 100 && yCoord < 150) begin
 				if (
@@ -47,14 +54,10 @@ module start_screen(
 					(xCoord > 200 && xCoord < 210 && yCoord > 145 && yCoord < 150) ||
 					(xCoord > 230 && xCoord < 240 && yCoord > 145 && yCoord < 150)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b111;
-					green = 3'b111;
-					blue = 2'b11;
+					set_color <= COLOR_WHITE;
 				end
 			end
 			// Letter P (revised)
@@ -65,14 +68,10 @@ module start_screen(
 					(xCoord > 285 && xCoord < 290 && yCoord > 120 && yCoord < 125) ||
 					(xCoord > 260 && xCoord < 290 && yCoord >= 125 && yCoord < 150)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b111;
-					green = 3'b111;
-					blue = 2'b11;
+					set_color <= COLOR_WHITE;
 				end
 			end
 			// Letter A (revised)
@@ -83,14 +82,10 @@ module start_screen(
 					(xCoord > 310 && xCoord < 330 && yCoord > 105 && yCoord < 120) ||
 					(xCoord > 310 && xCoord < 330 && yCoord > 125 && yCoord < 150)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b111;
-					green = 3'b111;
-					blue = 2'b11;
+					set_color <= COLOR_WHITE;
 				end
 			end
 			// Letter C (revised)
@@ -103,14 +98,10 @@ module start_screen(
 					(xCoord > 350 && xCoord < 360 && yCoord > 145 && yCoord < 150) ||
 					(xCoord > 380 && xCoord < 390 && yCoord > 145 && yCoord < 150)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b111;
-					green = 3'b111;
-					blue = 2'b11;
+					set_color <= COLOR_WHITE;
 				end
 			end
 			// Letter E (revised)
@@ -120,35 +111,23 @@ module start_screen(
 					(xCoord > 430 && xCoord < 440 && yCoord >= 120 && yCoord < 130) ||
 					(xCoord > 410 && xCoord < 440 && yCoord >= 130 && yCoord < 140)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b111;
-					green = 3'b111;
-					blue = 2'b11;
+					set_color <= COLOR_WHITE;
 				end
-			end
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-// INVADERS	(30 by 40)	
-		
+			end	
+			// INVADERS	(30 by 40)	
 			// Letter I
 			else if (xCoord > 185 && xCoord < 215 && yCoord > 190 && yCoord < 230) begin
 				if (
 					(xCoord > 185 && xCoord < 195 && yCoord > 195 && yCoord < 225) ||
 					(xCoord > 205 && xCoord < 215 && yCoord > 195 && yCoord < 225)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end
 			// Letter N
@@ -161,14 +140,10 @@ module start_screen(
 					(xCoord > 230 && xCoord < 236 && yCoord >= 220 && yCoord < 225) ||
 					(xCoord > 230 && xCoord < 240 && yCoord >= 225 && yCoord < 230)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end 
 			// Letter V
@@ -180,14 +155,10 @@ module start_screen(
 					(xCoord > 255 && xCoord < 265 && yCoord >= 225 && yCoord < 230) ||
 					(xCoord > 275 && xCoord < 285 && yCoord >= 225 && yCoord < 230)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end
 			// Letter A
@@ -198,14 +169,10 @@ module start_screen(
 					(xCoord > 300 && xCoord < 310 && yCoord > 195 && yCoord < 205) ||
 					(xCoord > 300 && xCoord < 310 && yCoord > 210 && yCoord < 230)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end 
 			// Letter D
@@ -218,14 +185,10 @@ module start_screen(
 					(xCoord > 335 && xCoord < 340 && yCoord > 195 && yCoord < 225) ||
 					(xCoord >= 340 && xCoord < 345 && yCoord > 200 && yCoord < 220)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end
 			// Letter E
@@ -235,14 +198,10 @@ module start_screen(
 					(xCoord > 380 && xCoord < 390 && yCoord >= 205 && yCoord < 215) ||
 					(xCoord > 370 && xCoord < 390 && yCoord >= 215 && yCoord < 225)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end
 			// Letter R
@@ -254,14 +213,10 @@ module start_screen(
 					(xCoord > 405 && xCoord < 410 && yCoord > 210 && yCoord < 215) ||
 					(xCoord > 405 && xCoord < 415 && yCoord >= 215 && yCoord < 230)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end 
 			// Letter S
@@ -276,20 +231,13 @@ module start_screen(
 					(xCoord > 430 && xCoord < 435 && yCoord > 225 && yCoord < 230) ||
 					(xCoord > 455 && xCoord < 460 && yCoord > 225 && yCoord < 230) 
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b000;
-					green = 3'b111;
-					blue = 2'b00;
+					set_color <= COLOR_GREEN;
 				end
 			end		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Space Invader (Enemy) (60 by 80)
+			// Space Invader (Enemy) (60 by 80)
 			else if (xCoord > 290 && xCoord < 350 && yCoord > 270 && yCoord < 350) begin
 				if (
 					(xCoord > 290 && xCoord < 310 && yCoord > 270 && yCoord < 280) ||
@@ -307,23 +255,20 @@ module start_screen(
 					(xCoord > 340 && xCoord < 350 && yCoord >= 320 && yCoord < 330) ||
 					(xCoord > 300 && xCoord < 340 && yCoord > 340 && yCoord < 350)
 					) begin
-					red = 3'b000;
-					green = 3'b000;
-					blue = 2'b00;
+					set_color <= COLOR_BLACK;
 				end
 				else begin
-					red = 3'b111;
-					green = 3'b111;
-					blue = 2'b11;
+					set_color <= COLOR_WHITE;
 				end
 			end
 			else begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 		end
 	end
+	
+	assign rgb = set_color;
+	
 endmodule
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
