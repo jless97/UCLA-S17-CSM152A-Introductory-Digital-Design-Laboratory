@@ -161,7 +161,13 @@ module vga_display(
 		.yCoord(yCoord),
 		.rgb(set_color_start_screen)
 		);
-
+    //Instantiate module that controls alien
+    wire isAlien;
+    set_alien set_alien_display(
+        .clk(clk),
+        .xCoord(xCoord),
+        .yCoord(yCoord),
+        .isAlien(isAlien));
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
@@ -277,9 +283,7 @@ module vga_display(
 					set_color <= COLOR_SPACESHIP;
 				end
 				// Color in alien ships
-				else if (yCoord >= alien_yCoord - ALIEN_HEIGHT / 2 && yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 &&
-							xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && xCoord <= alien_xCoord + ALIEN_LENGTH / 2
-							) begin
+				else if (isAlien) begin
 					set_color <= COLOR_ALIEN;
 				end
 				// Color in flying saucer
