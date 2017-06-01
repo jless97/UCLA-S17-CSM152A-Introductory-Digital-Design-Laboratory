@@ -154,7 +154,27 @@ module vga_display(
 		.rgb(rgb_aliens),
 		.is_alien(is_alien)
 		);
-	
+        
+    wire [7:0] rgb_barrier;
+    wire is_barrier;
+    wire [10:0] damage_x;
+    wire [10:0] damage_y;
+    wire is_damage;
+    assign damage_x = 0;
+    assign damage_y = 0;
+    assign is_damage = 0;
+    set_barriers update_barriers(
+        .clk(clk),
+        .rst(rst),
+        .xCoord(xCoord),
+        .yCoord(yCoord),
+        .damage_x(damage_x),
+        .damage_y(damage_y),
+        .new_damage(new_damage),
+        .rgb(rgb_barrier),
+        .is_barrier(is_barrier)
+        );
+
    always @ (posedge clk) begin
 		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
@@ -176,8 +196,8 @@ module vga_display(
 					set_color <= COLOR_RED;
 				end
 					// Barrier border
-				else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
-					set_color <= COLOR_BLUE;
+                else if(is_barrier)	begin
+                    set_color <= rgb_barrier;
 				end
 					// Extra lives border 
 				else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin

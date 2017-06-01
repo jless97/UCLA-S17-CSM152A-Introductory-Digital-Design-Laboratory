@@ -73,7 +73,7 @@ module aliens(
 	parameter SCOREBOARD_TOP = 11'd0;
 	parameter SCOREBOARD_BOTTOM = 11'd40;
 	parameter BARRIER_TOP = 11'd340;
-	parameter BARRIER_BOTTOM = 11'd400;
+	parameter BARRIER_BOTTOM = 11'd397;
 	parameter EXTRA_LIVES_TOP = 11'd460;
 	parameter EXTRA_LIVES_BOTTOM = 11'd480;
 	

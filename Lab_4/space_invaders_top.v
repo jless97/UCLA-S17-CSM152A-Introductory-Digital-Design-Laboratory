@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
@@ -42,8 +43,9 @@ module space_invaders_top(
 	
 	// Wires for clocks
 	wire dclk;
-	wire flying_saucer_clk;
-	wire alien_clk;
+//    
+//	wire flying_saucer_clk;
+//	wire alien_clk;
 	
 	// Wires for signals
 	wire rst_db;
@@ -97,14 +99,15 @@ module space_invaders_top(
 		.button(switch_screen),
 		.bounce_state(switch_screen_db)
 	);
-	
+	wire gameclk;
 	// Generate display clock and in-game clock
 	clk_div clk_div(
 		.clk(clk),
 		.rst(rst_db),
 		.dclk(dclk),
-		.flying_saucer_clk(flying_saucer_clk),
-		.alien_clk(alien_clk)
+        .gameclk(gameclk)
+//		.flying_saucer_clk(flying_saucer_clk),
+//		.alien_clk(alien_clk)
 	);
 	
 	// VGA controller
