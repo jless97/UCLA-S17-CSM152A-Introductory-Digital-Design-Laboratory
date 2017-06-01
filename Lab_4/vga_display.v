@@ -246,7 +246,13 @@ module vga_display(
 			restart_temp <= 0;
 		end
 		else begin
-			if (is_bottom) begin
+			if (is_bottom && is_edge) begin
+				restart_temp <= 1;
+				move_left_temp <= 0;
+				move_right_temp <= 1;
+				move_down_temp <= 0;
+			end
+			else if (is_bottom && !is_edge) begin
 				restart_temp <= 1;
 //				lives_temp <= lives - 1;
 //				if (lives == 0) begin
@@ -522,9 +528,9 @@ module vga_display(
 		.is_bottom(is_bottom[10])
 //		.is_hit(is_hit[10])
 		);
-
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
+/*
 // Second row	
 	// Alien 11
 	aliens update_alien_11(
@@ -757,7 +763,7 @@ module vga_display(
 		.is_bottom(is_bottom[21])
 //		.is_hit(is_hit[21])
 		);
-
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
 // Third row
@@ -991,9 +997,9 @@ module vga_display(
 		.is_bottom(is_bottom[32])
 //		.is_hit(is_hit[32])
 		);
-*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+/*
 // Fourth row
 
 	// Alien 33
@@ -1226,7 +1232,7 @@ module vga_display(
 		.is_bottom(is_bottom[43])
 //		.is_hit(is_hit[43])
 		);
-
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
 // Fifth row
