@@ -142,44 +142,16 @@ module vga_display(
 		.is_flying_saucer(is_flying_saucer)
 		);
 		
-		// Instantiate aliens
-		wire [4:0] aliens;
-		wire [40:0] rgb_aliens;
-		wire [4:0] is_alien;
-		aliens_top create_aliens(
-			.clk(clk),
-			.rst(rst),
-			.mode(mode),
-			.xCoord(xCoord),
-			.yCoord(yCoord),
-			.aliens(aliens),
-			.rgb_aliens(rgb_aliens),
-			.is_alien(is_alien)
-			);
-		
-		// Instantiate a single alien
-//		wire [10:0] rgb_aliens;
-//		wire is_alien;
-//		aliens update_aliens(
-//			.clk(clk),
-//			.rst(rst),
-//			.mode(mode),
-//			.xCoord(xCoord),
-//			.yCoord(yCoord),
-//			.rgb(rgb_aliens),
-//			.is_alien(is_alien)
-//			);
-	
-	// Instantiate barriers
+			// Instantiate barriers
 	wire [7:0] rgb_barrier;
-   wire is_barrier;
-   wire [10:0] damage_x;
-   wire [10:0] damage_y;
-   wire is_damage;
-   assign damage_x = 0;
-   assign damage_y = 0;
-   assign is_damage = 0;
-   set_barriers update_barriers(
+	wire is_barrier;
+	wire [10:0] damage_x;
+	wire [10:0] damage_y;
+	wire is_damage;
+	assign damage_x = 0;
+	assign damage_y = 0;
+	assign is_damage = 0;
+	set_barriers update_barriers(
 		.clk(clk),
 	   .rst(rst),
 	   .xCoord(xCoord),
@@ -190,7 +162,176 @@ module vga_display(
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier)
 		);
+		
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+// ALIEN IMPLEMENTATION
+		// Instantiate aliens
+	wire [4:0] aliens;
+	wire [40:0] rgb_aliens;
+	wire [4:0] is_alien;
+	wire [4:0] is_edge;
+	wire move_left;
+	wire move_right;
+	wire move_down;
+//	aliens_top create_aliens(
+//		.clk(clk),
+//		.rst(rst),
+//		.mode(mode),
+//		.xCoord(xCoord),
+//		.yCoord(yCoord),
+//		.aliens(aliens),
+//		.rgb_aliens(rgb_aliens),
+//		.is_alien(is_alien)
+//		);
+
+	reg move_left_temp;
+	reg move_right_temp;
+	reg move_down_temp;
+		reg halt_temp;
+	initial begin
+		move_left_temp = 0;
+		move_right_temp = 1;
+		move_down_temp = 0;
+		halt_temp = 0;
+	end
+
+	always @ (posedge clk) begin
+		if (rst || button_display) begin
+			move_left_temp <= 1;
+			move_right_temp <= 0;
+			move_down_temp <= 0;
+		end
+		else begin
+			if (is_edge) begin
+				move_down_temp <= 1;
+				if (move_left) begin
+					move_right_temp <= 1;
+					move_left_temp <= 0;
+				end
+				if (move_right) begin
+					move_left_temp <= 1;
+					move_right_temp <= 0;
+				end
+			end
+			else begin
+				move_left_temp <= move_left;
+				move_right_temp <= move_right;
+				move_down_temp <= 0;
+			end
+		end
+	end
 	
+	assign move_left = move_left_temp;
+	assign move_right = move_right_temp;
+	assign move_down = move_down_temp;
+ 
+	// Alien 0
+	aliens update_alien_0(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[0]),
+		.initial_xCoord(11'd220),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[7:0]),
+		.is_alien(is_alien[0]),
+		.is_edge(is_edge[0])
+//		.is_bottom(is_bottom[0]),
+//		.is_hit(is_hit[0])
+		);
+		
+	// Alien 1
+	aliens update_alien_1(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[1]),
+		.initial_xCoord(11'd270),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[15:8]),
+		.is_alien(is_alien[1]),
+		.is_edge(is_edge[1])
+//		.is_bottom(is_bottom[1]),
+//		.is_hit(is_hit[1])
+		);
+
+
+		// Alien 2
+	aliens update_alien_2(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[2]),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[23:16]),
+		.is_alien(is_alien[2]),
+		.is_edge(is_edge[2])
+//		.is_bottom(is_bottom[2]),
+//		.is_hit(is_hit[2])
+		);
+		
+	// Alien 3
+	aliens update_alien_3(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[3]),
+		.initial_xCoord(11'd370),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[31:24]),
+		.is_alien(is_alien[3]),
+		.is_edge(is_edge[3])
+//		.is_bottom(is_bottom[3]),
+//		.is_hit(is_hit[3])
+		);
+		
+	// Alien 4
+	aliens update_alien_4(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[4]),
+		.initial_xCoord(11'd420),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[39:32]),
+		.is_alien(is_alien[4]),
+		.is_edge(is_edge[4])
+//		.is_bottom(is_bottom[4]),
+//		.is_hit(is_hit[4])
+		);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
    always @ (posedge clk) begin
 		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
@@ -234,6 +375,9 @@ module vga_display(
 					set_color <= rgb_spaceship;
 				end
 				// Color in aliens
+//				else if (is_alien) begin
+//					set_color <= rgb_aliens;
+//				end
 				else if (is_alien[0]) begin
 					set_color <= rgb_aliens[7:0];
 				end
