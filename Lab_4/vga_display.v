@@ -143,38 +143,54 @@ module vga_display(
 		);
 		
 		// Instantiate aliens
-	wire [10:0] rgb_aliens;
-	wire is_alien;
-	aliens update_aliens(
+		wire [4:0] aliens;
+		wire [40:0] rgb_aliens;
+		wire [4:0] is_alien;
+		aliens_top create_aliens(
+			.clk(clk),
+			.rst(rst),
+			.mode(mode),
+			.xCoord(xCoord),
+			.yCoord(yCoord),
+			.aliens(aliens),
+			.rgb_aliens(rgb_aliens),
+			.is_alien(is_alien)
+			);
+		
+		// Instantiate a single alien
+//		wire [10:0] rgb_aliens;
+//		wire is_alien;
+//		aliens update_aliens(
+//			.clk(clk),
+//			.rst(rst),
+//			.mode(mode),
+//			.xCoord(xCoord),
+//			.yCoord(yCoord),
+//			.rgb(rgb_aliens),
+//			.is_alien(is_alien)
+//			);
+	
+	// Instantiate barriers
+	wire [7:0] rgb_barrier;
+   wire is_barrier;
+   wire [10:0] damage_x;
+   wire [10:0] damage_y;
+   wire is_damage;
+   assign damage_x = 0;
+   assign damage_y = 0;
+   assign is_damage = 0;
+   set_barriers update_barriers(
 		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.rgb(rgb_aliens),
-		.is_alien(is_alien)
+	   .rst(rst),
+	   .xCoord(xCoord),
+	   .yCoord(yCoord),
+	   .damage_x(damage_x),
+	   .damage_y(damage_y),
+	   .new_damage(new_damage),
+	   .rgb(rgb_barrier),
+	   .is_barrier(is_barrier)
 		);
-        
-    wire [7:0] rgb_barrier;
-    wire is_barrier;
-    wire [10:0] damage_x;
-    wire [10:0] damage_y;
-    wire is_damage;
-    assign damage_x = 0;
-    assign damage_y = 0;
-    assign is_damage = 0;
-    set_barriers update_barriers(
-        .clk(clk),
-        .rst(rst),
-        .xCoord(xCoord),
-        .yCoord(yCoord),
-        .damage_x(damage_x),
-        .damage_y(damage_y),
-        .new_damage(new_damage),
-        .rgb(rgb_barrier),
-        .is_barrier(is_barrier)
-        );
-
+	
    always @ (posedge clk) begin
 		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
@@ -196,8 +212,8 @@ module vga_display(
 					set_color <= COLOR_RED;
 				end
 					// Barrier border
-                else if(is_barrier)	begin
-                    set_color <= rgb_barrier;
+				else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
+					set_color <= COLOR_BLUE;
 				end
 					// Extra lives border 
 				else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
@@ -209,18 +225,37 @@ module vga_display(
 				end
 				// Color in scoreboard
 				
+				// Color in barriers
+				else if(is_barrier) begin
+					set_color <= rgb_barrier;
+				end
 				// Color in spaceship
 				else if (is_spaceship) begin
 					set_color <= rgb_spaceship;
 				end
-				// Color in alien
-				else if (is_alien) begin
-					set_color <= rgb_aliens;
+				// Color in aliens
+				else if (is_alien[0]) begin
+					set_color <= rgb_aliens[7:0];
+				end
+				else if (is_alien[1]) begin
+					set_color <= rgb_aliens[15:8];
+				end
+				else if (is_alien[2]) begin
+					set_color <= rgb_aliens[23:16];
+				end
+				else if (is_alien[3]) begin
+					set_color <= rgb_aliens[31:24];
+				end
+				else if (is_alien[4]) begin
+					set_color <= rgb_aliens[39:32];
 				end
 				else begin
 					set_color <= COLOR_SPACE;
 				end
 			end 
+			else if (mode == 3) begin
+				set_color <= COLOR_YELLOW;
+			end
 		end
 	end
 	
