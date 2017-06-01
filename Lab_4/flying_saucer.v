@@ -24,6 +24,7 @@ module flying_saucer(
 	// Inputs
 	input wire clk,
 	input wire rst,
+	input wire restart,
 	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
@@ -40,16 +41,7 @@ module flying_saucer(
 	
 	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
-	parameter COLOR_SPACESHIP = 8'b01111000;
-	parameter COLOR_ALIEN = 8'b10101010;
 	parameter COLOR_FLYING_SAUCER = 8'b10100111;
-	parameter COLOR_SPACE = 8'b00000000;
-	parameter COLOR_BLACK = 8'b00000000;
-	parameter COLOR_WHITE = 8'b11111111;
-	parameter COLOR_GREEN = 8'b00111000;
-	parameter COLOR_RED = 8'b00000111;
-	parameter COLOR_BLUE = 8'b11000000;
-	parameter COLOR_YELLOW = 8'b00111111;
 	
 	// Flying Saucer Parameters
 	parameter FLYING_SAUCER_HEIGHT = 11'd15;
@@ -80,7 +72,7 @@ module flying_saucer(
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
 	// Flying Saucer Controls
-		if (rst || mode == 0 || mode == 1) begin
+		if (rst || mode == 0 || mode == 1 || restart) begin
 			flying_saucer_coord = FLYING_SAUCER_INITIAL;
 			flying_saucer_wait_timer = 11'd0;
 			flying_saucer_move_left = 1;
