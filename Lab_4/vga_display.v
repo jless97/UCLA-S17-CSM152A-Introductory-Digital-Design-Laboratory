@@ -81,9 +81,12 @@ module vga_display(
 	// Mode 1: Start screen
 	// Mode 2: Game screen
 	wire [1:0] mode;	
+	wire [2:0] lives;
 	reg [1:0] mode_temp;
+	reg [2:0] lives_temp;
 	initial begin
 		mode_temp = 0;
+		lives_temp = 3;
 	end
 	always @ (posedge button_display or posedge rst) begin
 		if (rst) begin
@@ -97,6 +100,10 @@ module vga_display(
 				mode_temp = mode + 1;
 			end
 		end
+		// TODO: new mode, display game over screen (if out of lives), or restart level (if lose a life)
+//		if (lives == 0) begin
+//			mode_temp = 3;
+//		end
 	end
 	
 	assign mode = mode_temp;
@@ -168,10 +175,10 @@ module vga_display(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // ALIEN IMPLEMENTATION
 		// Instantiate aliens
-	wire [4:0] aliens;
-	wire [40:0] rgb_aliens;
-	wire [4:0] is_alien;
-	wire [4:0] is_edge;
+	wire [54:0] aliens;
+	wire [440:0] rgb_aliens;
+	wire [54:0] is_alien;
+	wire [54:0] is_edge;
 	wire move_left;
 	wire move_right;
 	wire move_down;
@@ -204,18 +211,17 @@ module vga_display(
 			move_down_temp <= 0;
 		end
 		else begin
-			if (is_edge) begin
+			if (is_edge && move_left) begin
 				move_down_temp <= 1;
-				if (move_left) begin
-					move_right_temp <= 1;
-					move_left_temp <= 0;
-				end
-				if (move_right) begin
-					move_left_temp <= 1;
-					move_right_temp <= 0;
-				end
+				move_right_temp <= 1;
+				move_left_temp <= 0;
 			end
-			else begin
+			if (is_edge && move_right) begin
+				move_down_temp <= 1;
+				move_left_temp <= 1;
+				move_right_temp <= 0;
+			end
+			if (!is_edge) begin
 				move_left_temp <= move_left;
 				move_right_temp <= move_right;
 				move_down_temp <= 0;
@@ -227,6 +233,9 @@ module vga_display(
 	assign move_right = move_right_temp;
 	assign move_down = move_down_temp;
  
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
+// First row
 	// Alien 0
 	aliens update_alien_0(
 		.clk(clk),
@@ -235,7 +244,7 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd220),
+		.initial_xCoord(11'd70),
 		.initial_yCoord(11'd88),
 		.move_left(move_left),
 		.move_right(move_right),
@@ -255,7 +264,7 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[1]),
-		.initial_xCoord(11'd270),
+		.initial_xCoord(11'd120),
 		.initial_yCoord(11'd88),
 		.move_left(move_left),
 		.move_right(move_right),
@@ -267,7 +276,6 @@ module vga_display(
 //		.is_hit(is_hit[1])
 		);
 
-
 		// Alien 2
 	aliens update_alien_2(
 		.clk(clk),
@@ -276,7 +284,7 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[2]),
-		.initial_xCoord(11'd320),
+		.initial_xCoord(11'd170),
 		.initial_yCoord(11'd88),
 		.move_left(move_left),
 		.move_right(move_right),
@@ -296,7 +304,7 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[3]),
-		.initial_xCoord(11'd370),
+		.initial_xCoord(11'd220),
 		.initial_yCoord(11'd88),
 		.move_left(move_left),
 		.move_right(move_right),
@@ -316,7 +324,7 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[4]),
-		.initial_xCoord(11'd420),
+		.initial_xCoord(11'd270),
 		.initial_yCoord(11'd88),
 		.move_left(move_left),
 		.move_right(move_right),
@@ -326,6 +334,1022 @@ module vga_display(
 		.is_edge(is_edge[4])
 //		.is_bottom(is_bottom[4]),
 //		.is_hit(is_hit[4])
+		);
+
+	// Alien 5
+	aliens update_alien_5(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[5]),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[47:40]),
+		.is_alien(is_alien[5]),
+		.is_edge(is_edge[5])
+//		.is_bottom(is_bottom[5]),
+//		.is_hit(is_hit[5])
+		);
+
+	// Alien 6
+	aliens update_alien_6(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[6]),
+		.initial_xCoord(11'd370),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[55:48]),
+		.is_alien(is_alien[6]),
+		.is_edge(is_edge[6])
+//		.is_bottom(is_bottom[6]),
+//		.is_hit(is_hit[6])
+		);
+
+		// Alien 7
+	aliens update_alien_7(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[7]),
+		.initial_xCoord(11'd420),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[63:56]),
+		.is_alien(is_alien[7]),
+		.is_edge(is_edge[7])
+//		.is_bottom(is_bottom[7]),
+//		.is_hit(is_hit[7])
+		);
+		
+	// Alien 8
+	aliens update_alien_8(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[8]),
+		.initial_xCoord(11'd470),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[71:64]),
+		.is_alien(is_alien[8]),
+		.is_edge(is_edge[8])
+//		.is_bottom(is_bottom[8]),
+//		.is_hit(is_hit[8])
+		);
+		
+	// Alien 9
+	aliens update_alien_9(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[9]),
+		.initial_xCoord(11'd520),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[79:72]),
+		.is_alien(is_alien[9]),
+		.is_edge(is_edge[9])
+//		.is_bottom(is_bottom[9]),
+//		.is_hit(is_hit[9])
+		);
+		
+	// Alien 10
+	aliens update_alien_10(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[0]),
+		.initial_xCoord(11'd570),
+		.initial_yCoord(11'd88),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[87:80]),
+		.is_alien(is_alien[10]),
+		.is_edge(is_edge[10])
+//		.is_bottom(is_bottom[10]),
+//		.is_hit(is_hit[10])
+		);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
+// Second row	
+	// Alien 11
+	aliens update_alien_11(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[11]),
+		.initial_xCoord(11'd70),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[95:88]),
+		.is_alien(is_alien[11]),
+		.is_edge(is_edge[11])
+//		.is_bottom(is_bottom[11]),
+//		.is_hit(is_hit[11])
+		);
+
+		// Alien 12
+	aliens update_alien_12(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[12]),
+		.initial_xCoord(11'd120),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[103:96]),
+		.is_alien(is_alien[12]),
+		.is_edge(is_edge[12])
+//		.is_bottom(is_bottom[12]),
+//		.is_hit(is_hit[12])
+		);
+		
+	// Alien 13
+	aliens update_alien_13(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[13]),
+		.initial_xCoord(11'd170),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[111:104]),
+		.is_alien(is_alien[13]),
+		.is_edge(is_edge[13])
+//		.is_bottom(is_bottom[13]),
+//		.is_hit(is_hit[13])
+		);
+		
+	// Alien 14
+	aliens update_alien_14(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[14]),
+		.initial_xCoord(11'd220),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[119:112]),
+		.is_alien(is_alien[14]),
+		.is_edge(is_edge[14])
+//		.is_bottom(is_bottom[14]),
+//		.is_hit(is_hit[14])
+		);
+		
+	// Alien 15
+	aliens update_alien_15(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[15]),
+		.initial_xCoord(11'd270),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[127:120]),
+		.is_alien(is_alien[15]),
+		.is_edge(is_edge[15])
+//		.is_bottom(is_bottom[15]),
+//		.is_hit(is_hit[15])
+		);
+		
+	// Alien 16
+	aliens update_alien_16(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[16]),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[135:128]),
+		.is_alien(is_alien[16]),
+		.is_edge(is_edge[16])
+//		.is_bottom(is_bottom[16]),
+//		.is_hit(is_hit[16])
+		);
+
+
+		// Alien 17
+	aliens update_alien_17(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[17]),
+		.initial_xCoord(11'd370),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[143:136]),
+		.is_alien(is_alien[17]),
+		.is_edge(is_edge[17])
+//		.is_bottom(is_bottom[17]),
+//		.is_hit(is_hit[17])
+		);
+		
+	// Alien 18
+	aliens update_alien_18(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[18]),
+		.initial_xCoord(11'd420),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[151:144]),
+		.is_alien(is_alien[18]),
+		.is_edge(is_edge[18])
+//		.is_bottom(is_bottom[18]),
+//		.is_hit(is_hit[18])
+		);
+		
+	// Alien 19
+	aliens update_alien_19(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[19]),
+		.initial_xCoord(11'd470),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[159:152]),
+		.is_alien(is_alien[19]),
+		.is_edge(is_edge[19])
+//		.is_bottom(is_bottom[19]),
+//		.is_hit(is_hit[19])
+		);
+		
+	// Alien 20
+	aliens update_alien_20(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[20]),
+		.initial_xCoord(11'd520),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[167:160]),
+		.is_alien(is_alien[20]),
+		.is_edge(is_edge[20])
+//		.is_bottom(is_bottom[20]),
+//		.is_hit(is_hit[20])
+		);
+		
+	// Alien 21
+	aliens update_alien_21(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[21]),
+		.initial_xCoord(11'd570),
+		.initial_yCoord(11'd118),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[175:168]),
+		.is_alien(is_alien[21]),
+		.is_edge(is_edge[21])
+//		.is_bottom(is_bottom[21]),
+//		.is_hit(is_hit[21])
+		);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
+// Third row
+	// Alien 22
+	aliens update_alien_22(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[22]),
+		.initial_xCoord(11'd70),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[183:176]),
+		.is_alien(is_alien[22]),
+		.is_edge(is_edge[22])
+//		.is_bottom(is_bottom[22]),
+//		.is_hit(is_hit[22])
+		);
+
+	// Alien 23
+	aliens update_alien_23(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[23]),
+		.initial_xCoord(11'd120),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[191:184]),
+		.is_alien(is_alien[23]),
+		.is_edge(is_edge[23])
+//		.is_bottom(is_bottom[23]),
+//		.is_hit(is_hit[23])
+		);
+		
+	// Alien 24
+	aliens update_alien_24(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[24]),
+		.initial_xCoord(11'd170),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[199:192]),
+		.is_alien(is_alien[24]),
+		.is_edge(is_edge[24])
+//		.is_bottom(is_bottom[24]),
+//		.is_hit(is_hit[24])
+		);
+		
+	// Alien 25
+	aliens update_alien_25(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[25]),
+		.initial_xCoord(11'd170),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[207:200]),
+		.is_alien(is_alien[25]),
+		.is_edge(is_edge[25])
+//		.is_bottom(is_bottom[25]),
+//		.is_hit(is_hit[25])
+		);
+		
+	// Alien 26
+	aliens update_alien_26(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[26]),
+		.initial_xCoord(11'd220),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[215:208]),
+		.is_alien(is_alien[26]),
+		.is_edge(is_edge[26])
+//		.is_bottom(is_bottom[26]),
+//		.is_hit(is_hit[26])
+		);
+		
+	// Alien 27
+	aliens update_alien_27(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[27]),
+		.initial_xCoord(11'd270),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[223:216]),
+		.is_alien(is_alien[27]),
+		.is_edge(is_edge[27])
+//		.is_bottom(is_bottom[27]),
+//		.is_hit(is_hit[27])
+		);
+
+		// Alien 28
+	aliens update_alien_28(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[28]),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[231:224]),
+		.is_alien(is_alien[28]),
+		.is_edge(is_edge[28])
+//		.is_bottom(is_bottom[28]),
+//		.is_hit(is_hit[28])
+		);
+		
+	// Alien 29
+	aliens update_alien_29(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[29]),
+		.initial_xCoord(11'd370),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[239:232]),
+		.is_alien(is_alien[29]),
+		.is_edge(is_edge[29])
+//		.is_bottom(is_bottom[29]),
+//		.is_hit(is_hit[29])
+		);
+		
+	// Alien 30
+	aliens update_alien_30(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[30]),
+		.initial_xCoord(11'd420),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[247:240]),
+		.is_alien(is_alien[30]),
+		.is_edge(is_edge[30])
+//		.is_bottom(is_bottom[30]),
+//		.is_hit(is_hit[30])
+		);
+		
+	// Alien 31
+	aliens update_alien_31(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[31]),
+		.initial_xCoord(11'd470),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[255:248]),
+		.is_alien(is_alien[31]),
+		.is_edge(is_edge[31])
+//		.is_bottom(is_bottom[31]),
+//		.is_hit(is_hit[31])
+		);
+		
+	// Alien 32
+	aliens update_alien_32(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[32]),
+		.initial_xCoord(11'd520),
+		.initial_yCoord(11'd148),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[263:256]),
+		.is_alien(is_alien[32]),
+		.is_edge(is_edge[32])
+//		.is_bottom(is_bottom[32]),
+//		.is_hit(is_hit[32])
+		);
+		
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
+// Fourth row
+
+	// Alien 33
+	aliens update_alien_33(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[33]),
+		.initial_xCoord(11'd70),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[271:264]),
+		.is_alien(is_alien[33]),
+		.is_edge(is_edge[33])
+//		.is_bottom(is_bottom[33]),
+//		.is_hit(is_hit[33])
+		);
+
+	// Alien 34
+	aliens update_alien_34(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[34]),
+		.initial_xCoord(11'd120),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[279:272]),
+		.is_alien(is_alien[34]),
+		.is_edge(is_edge[34])
+//		.is_bottom(is_bottom[34]),
+//		.is_hit(is_hit[34])
+		);
+		
+	// Alien 35
+	aliens update_alien_35(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[35]),
+		.initial_xCoord(11'd170),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[287:280]),
+		.is_alien(is_alien[35]),
+		.is_edge(is_edge[35])
+//		.is_bottom(is_bottom[35]),
+//		.is_hit(is_hit[35])
+		);
+
+	// Alien 36
+	aliens update_alien_36(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[36]),
+		.initial_xCoord(11'd220),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[295:288]),
+		.is_alien(is_alien[36]),
+		.is_edge(is_edge[36])
+//		.is_bottom(is_bottom[36]),
+//		.is_hit(is_hit[36])
+		);
+		
+	// Alien 37
+	aliens update_alien_37(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[37]),
+		.initial_xCoord(11'd270),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[303:296]),
+		.is_alien(is_alien[37]),
+		.is_edge(is_edge[37])
+//		.is_bottom(is_bottom[37]),
+//		.is_hit(is_hit[37])
+		);
+		
+	// Alien 38
+	aliens update_alien_38(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[38]),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[311:304]),
+		.is_alien(is_alien[38]),
+		.is_edge(is_edge[38])
+//		.is_bottom(is_bottom[38]),
+//		.is_hit(is_hit[38])
+		);
+
+	// Alien 39
+	aliens update_alien_39(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[39]),
+		.initial_xCoord(11'd370),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[319:312]),
+		.is_alien(is_alien[39]),
+		.is_edge(is_edge[39])
+//		.is_bottom(is_bottom[39]),
+//		.is_hit(is_hit[39])
+		);
+		
+	// Alien 40
+	aliens update_alien_40(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[40]),
+		.initial_xCoord(11'd420),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[327:320]),
+		.is_alien(is_alien[40]),
+		.is_edge(is_edge[40])
+//		.is_bottom(is_bottom[40]),
+//		.is_hit(is_hit[40])
+		);
+		
+	// Alien 41
+	aliens update_alien_41(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[41]),
+		.initial_xCoord(11'd470),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[335:328]),
+		.is_alien(is_alien[41]),
+		.is_edge(is_edge[41])
+//		.is_bottom(is_bottom[41]),
+//		.is_hit(is_hit[41])
+		);
+		
+	// Alien 42
+	aliens update_alien_42(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[42]),
+		.initial_xCoord(11'd520),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[343:336]),
+		.is_alien(is_alien[42]),
+		.is_edge(is_edge[42])
+//		.is_bottom(is_bottom[42]),
+//		.is_hit(is_hit[42])
+		);
+		
+	// Alien 43
+	aliens update_alien_43(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[43]),
+		.initial_xCoord(11'd570),
+		.initial_yCoord(11'd178),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[351:344]),
+		.is_alien(is_alien[43]),
+		.is_edge(is_edge[43])
+//		.is_bottom(is_bottom[43]),
+//		.is_hit(is_hit[43])
+		);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+
+// Fifth row
+
+	// Alien 44
+	aliens update_alien_44(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[44]),
+		.initial_xCoord(11'd70),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[359:352]),
+		.is_alien(is_alien[44]),
+		.is_edge(is_edge[44])
+//		.is_bottom(is_bottom[44]),
+//		.is_hit(is_hit[44])
+		);
+
+	// Alien 45
+	aliens update_alien_45(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[45]),
+		.initial_xCoord(11'd120),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[367:360]),
+		.is_alien(is_alien[45]),
+		.is_edge(is_edge[45])
+//		.is_bottom(is_bottom[45]),
+//		.is_hit(is_hit[45])
+		);
+		
+	// Alien 46
+	aliens update_alien_46(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[46]),
+		.initial_xCoord(11'd170),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[375:368]),
+		.is_alien(is_alien[46]),
+		.is_edge(is_edge[46])
+//		.is_bottom(is_bottom[46]),
+//		.is_hit(is_hit[46])
+		);
+		
+	// Alien 47
+	aliens update_alien_47(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[47]),
+		.initial_xCoord(11'd220),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[383:376]),
+		.is_alien(is_alien[47]),
+		.is_edge(is_edge[47])
+//		.is_bottom(is_bottom[47]),
+//		.is_hit(is_hit[47])
+		);
+		
+	// Alien 48
+	aliens update_alien_48(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[48]),
+		.initial_xCoord(11'd270),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[391:384]),
+		.is_alien(is_alien[48]),
+		.is_edge(is_edge[48])
+//		.is_bottom(is_bottom[48]),
+//		.is_hit(is_hit[48])
+		);
+		
+	// Alien 49
+	aliens update_alien_49(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[49]),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[399:392]),
+		.is_alien(is_alien[49]),
+		.is_edge(is_edge[49])
+//		.is_bottom(is_bottom[49]),
+//		.is_hit(is_hit[49])
+		);
+
+
+	// Alien 50
+	aliens update_alien_50(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[50]),
+		.initial_xCoord(11'd370),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[407:400]),
+		.is_alien(is_alien[50]),
+		.is_edge(is_edge[50])
+//		.is_bottom(is_bottom[50]),
+//		.is_hit(is_hit[50])
+		);
+		
+	// Alien 51
+	aliens update_alien_51(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[51]),
+		.initial_xCoord(11'd420),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[415:408]),
+		.is_alien(is_alien[51]),
+		.is_edge(is_edge[51])
+//		.is_bottom(is_bottom[51]),
+//		.is_hit(is_hit[51])
+		);
+		
+	// Alien 52
+	aliens update_alien_52(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[52]),
+		.initial_xCoord(11'd470),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[423:416]),
+		.is_alien(is_alien[52]),
+		.is_edge(is_edge[52])
+//		.is_bottom(is_bottom[52]),
+//		.is_hit(is_hit[52])
+		);
+		
+	// Alien 53
+	aliens update_alien_53(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[53]),
+		.initial_xCoord(11'd520),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[431:424]),
+		.is_alien(is_alien[53]),
+		.is_edge(is_edge[53])
+//		.is_bottom(is_bottom[53]),
+//		.is_hit(is_hit[53])
+		);
+		
+	// Alien 54
+	aliens update_alien_54(
+		.clk(clk),
+		.rst(rst),
+		.mode(mode),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.aliens(aliens[54]),
+		.initial_xCoord(11'd570),
+		.initial_yCoord(11'd208),
+		.move_left(move_left),
+		.move_right(move_right),
+		.move_down(move_down),
+		.rgb(rgb_aliens[439:432]),
+		.is_alien(is_alien[54]),
+		.is_edge(is_edge[54])
+//		.is_bottom(is_bottom[54]),
+//		.is_hit(is_hit[54])
 		);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -392,6 +1416,156 @@ module vga_display(
 				end
 				else if (is_alien[4]) begin
 					set_color <= rgb_aliens[39:32];
+				end
+				else if (is_alien[5]) begin
+					set_color <= rgb_aliens[47:40];
+				end
+				else if (is_alien[6]) begin
+					set_color <= rgb_aliens[55:48];
+				end
+				else if (is_alien[7]) begin
+					set_color <= rgb_aliens[63:56];
+				end
+				else if (is_alien[8]) begin
+					set_color <= rgb_aliens[71:64];
+				end
+				else if (is_alien[9]) begin
+					set_color <= rgb_aliens[79:72];
+				end
+				else if (is_alien[10]) begin
+					set_color <= rgb_aliens[87:80];
+				end
+				else if (is_alien[11]) begin
+					set_color <= rgb_aliens[95:88];
+				end
+				else if (is_alien[12]) begin
+					set_color <= rgb_aliens[103:96];
+				end
+				else if (is_alien[13]) begin
+					set_color <= rgb_aliens[111:104];
+				end
+				else if (is_alien[14]) begin
+					set_color <= rgb_aliens[119:112];
+				end
+				else if (is_alien[15]) begin
+					set_color <= rgb_aliens[127:120];
+				end
+				else if (is_alien[16]) begin
+					set_color <= rgb_aliens[135:128];
+				end
+				else if (is_alien[17]) begin
+					set_color <= rgb_aliens[143:136];
+				end
+				else if (is_alien[18]) begin
+					set_color <= rgb_aliens[151:144];
+				end
+				else if (is_alien[19]) begin
+					set_color <= rgb_aliens[159:152];
+				end
+				else if (is_alien[20]) begin
+					set_color <= rgb_aliens[167:160];
+				end
+				else if (is_alien[21]) begin
+					set_color <= rgb_aliens[175:168];
+				end
+				else if (is_alien[22]) begin
+					set_color <= rgb_aliens[183:176];
+				end
+				else if (is_alien[23]) begin
+					set_color <= rgb_aliens[191:184];
+				end
+				else if (is_alien[24]) begin
+					set_color <= rgb_aliens[199:192];
+				end
+				else if (is_alien[25]) begin
+					set_color <= rgb_aliens[207:200];
+				end
+				else if (is_alien[26]) begin
+					set_color <= rgb_aliens[215:208];
+				end
+				else if (is_alien[27]) begin
+					set_color <= rgb_aliens[223:216];
+				end
+				else if (is_alien[28]) begin
+					set_color <= rgb_aliens[231:224];
+				end
+				else if (is_alien[29]) begin
+					set_color <= rgb_aliens[239:232];
+				end
+				else if (is_alien[30]) begin
+					set_color <= rgb_aliens[247:240];
+				end
+				else if (is_alien[31]) begin
+					set_color <= rgb_aliens[255:248];
+				end
+				else if (is_alien[32]) begin
+					set_color <= rgb_aliens[263:256];
+				end
+				else if (is_alien[33]) begin
+					set_color <= rgb_aliens[271:264];
+				end
+				else if (is_alien[34]) begin
+					set_color <= rgb_aliens[279:272];
+				end
+				else if (is_alien[35]) begin
+					set_color <= rgb_aliens[287:280];
+				end
+				else if (is_alien[36]) begin
+					set_color <= rgb_aliens[295:288];
+				end
+				else if (is_alien[37]) begin
+					set_color <= rgb_aliens[303:296];
+				end
+				else if (is_alien[38]) begin
+					set_color <= rgb_aliens[311:304];
+				end
+				else if (is_alien[39]) begin
+					set_color <= rgb_aliens[319:312];
+				end
+				else if (is_alien[40]) begin
+					set_color <= rgb_aliens[327:320];
+				end
+				else if (is_alien[41]) begin
+					set_color <= rgb_aliens[335:328];
+				end
+				else if (is_alien[42]) begin
+					set_color <= rgb_aliens[343:336];
+				end
+				else if (is_alien[43]) begin
+					set_color <= rgb_aliens[351:344];
+				end
+				else if (is_alien[44]) begin
+					set_color <= rgb_aliens[359:352];
+				end
+				else if (is_alien[45]) begin
+					set_color <= rgb_aliens[367:360];
+				end
+				else if (is_alien[46]) begin
+					set_color <= rgb_aliens[375:368];
+				end
+				else if (is_alien[47]) begin
+					set_color <= rgb_aliens[383:376];
+				end
+				else if (is_alien[48]) begin
+					set_color <= rgb_aliens[391:384];
+				end
+				else if (is_alien[49]) begin
+					set_color <= rgb_aliens[399:392];
+				end
+				else if (is_alien[50]) begin
+					set_color <= rgb_aliens[407:400];
+				end
+				else if (is_alien[51]) begin
+					set_color <= rgb_aliens[415:408];
+				end
+				else if (is_alien[52]) begin
+					set_color <= rgb_aliens[423:416];
+				end
+				else if (is_alien[53]) begin
+					set_color <= rgb_aliens[431:424];
+				end
+				else if (is_alien[54]) begin
+					set_color <= rgb_aliens[439:432];
 				end
 				else begin
 					set_color <= COLOR_SPACE;
