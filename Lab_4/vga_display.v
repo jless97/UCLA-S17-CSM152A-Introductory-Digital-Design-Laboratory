@@ -125,9 +125,12 @@ module vga_display(
 		// Instantiate space ship
 	wire [10:0] rgb_spaceship;
 	wire is_spaceship;
+	wire restart;
+	reg restart_temp;
 	spaceship update_spaceship(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.button_left(button_left),
 		.button_right(button_right),
 		.button_center(button_center),
@@ -144,6 +147,7 @@ module vga_display(
 	flying_saucer update_flying_saucer(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -163,6 +167,7 @@ module vga_display(
 	set_barriers update_barriers(
 		.clk(clk),
 	   .rst(rst),
+		.restart(restart),
 	   .xCoord(xCoord),
 	   .yCoord(yCoord),
 	   .damage_x(damage_x),
@@ -182,8 +187,6 @@ module vga_display(
 		// Player Lives
 	wire [2:0] lives;
 	reg [2:0] lives_temp;
-	wire restart;
-	reg restart_temp;
 	wire gameover;
 	reg gameover_temp;
 		// Controls
@@ -209,6 +212,20 @@ module vga_display(
 //		.is_alien(is_alien)
 //		);
 
+//		// Instantiate bottom scoreboard
+//	wire [7:0] rgb_scoreboard_bottom;
+//	wire is_scoreboard_bottom;
+//	scoreboard_bottom scoreboard_bottom_display(
+//		.clk(clk),
+//		.rst(rst),
+//		.mode(mode),
+//		.lives(lives),
+//		.xCoord(xCoord),
+//		.yCoord(yCoord),
+//		.rgb(rgb_scoreboard_bottom),
+//		.is_scoreboard_bottom(is_scoreboard_bottom)
+//		);
+
 	reg move_left_temp;
 	reg move_right_temp;
 	reg move_down_temp;
@@ -226,6 +243,7 @@ module vga_display(
 			move_left_temp <= 0;
 			move_right_temp <= 1;
 			move_down_temp <= 0;
+			restart_temp <= 0;
 		end
 		else begin
 			if (is_bottom) begin
@@ -233,12 +251,15 @@ module vga_display(
 				if (lives == 0) begin
 					gameover_temp <= 1;
 				end
-//				else begin
-//					restart_temp <= 1;
-//				end
+				else begin
+					restart_temp <= 1;
+				end
+				move_left_temp <= 0;
+				move_right_temp <= 1;
+				move_down_temp <= 0;
 			end
 			else begin
-				restart_temp <= 0;
+				//restart_temp <= 0;
 				if (is_edge && move_left) begin
 					move_down_temp <= 1;
 					move_right_temp <= 1;
@@ -280,7 +301,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
 		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -301,7 +322,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[1]),
 		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -322,7 +343,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[2]),
 		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -343,7 +364,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[3]),
 		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -364,7 +385,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[4]),
 		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -385,7 +406,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[5]),
 		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -406,7 +427,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[6]),
 		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -427,7 +448,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[7]),
 		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -448,7 +469,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[8]),
 		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -469,7 +490,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[9]),
 		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -490,7 +511,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
 		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd88),
+		.initial_yCoord(11'd90),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -514,7 +535,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[11]),
 		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -535,7 +556,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[12]),
 		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -556,7 +577,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[13]),
 		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -577,7 +598,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[14]),
 		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -598,7 +619,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[15]),
 		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -619,7 +640,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[16]),
 		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -641,7 +662,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[17]),
 		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -662,7 +683,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[18]),
 		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -683,7 +704,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[19]),
 		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -704,7 +725,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[20]),
 		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -725,7 +746,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[21]),
 		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd118),
+		.initial_yCoord(11'd120),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -749,7 +770,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[22]),
 		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -770,7 +791,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[23]),
 		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -791,7 +812,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[24]),
 		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -812,7 +833,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[25]),
 		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -833,7 +854,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[26]),
 		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -854,7 +875,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[27]),
 		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -875,7 +896,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[28]),
 		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -896,7 +917,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[29]),
 		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -917,7 +938,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[30]),
 		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -938,7 +959,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[31]),
 		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -959,7 +980,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[32]),
 		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd148),
+		.initial_yCoord(11'd150),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -984,7 +1005,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[33]),
 		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1005,7 +1026,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[34]),
 		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1026,7 +1047,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[35]),
 		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1047,7 +1068,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[36]),
 		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1068,7 +1089,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[37]),
 		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1089,7 +1110,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[38]),
 		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1110,7 +1131,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[39]),
 		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1131,7 +1152,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[40]),
 		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1152,7 +1173,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[41]),
 		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1173,7 +1194,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[42]),
 		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1194,7 +1215,7 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[43]),
 		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd178),
+		.initial_yCoord(11'd180),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1220,8 +1241,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[44]),
 		.initial_xCoord(11'd70),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1243,8 +1264,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[45]),
 		.initial_xCoord(11'd120),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd280),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1266,8 +1287,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[46]),
 		.initial_xCoord(11'd170),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1289,8 +1310,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[47]),
 		.initial_xCoord(11'd220),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1312,8 +1333,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[48]),
 		.initial_xCoord(11'd270),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1335,8 +1356,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[49]),
 		.initial_xCoord(11'd320),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1359,8 +1380,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[50]),
 		.initial_xCoord(11'd370),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1382,8 +1403,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[51]),
 		.initial_xCoord(11'd420),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1405,8 +1426,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[52]),
 		.initial_xCoord(11'd470),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1428,8 +1449,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[53]),
 		.initial_xCoord(11'd520),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1451,8 +1472,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.aliens(aliens[54]),
 		.initial_xCoord(11'd570),
-//		.initial_yCoord(11'd208),
 		.initial_yCoord(11'd320),
+//		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
@@ -1500,6 +1521,30 @@ module vga_display(
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
+						// Extra lives scoreboard
+//					else if (is_scoreboard_bottom) begin
+//						set_color <= rgb_scoreboard_bottom;
+//					end
+						// Life 2
+					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 50 && xCoord <= 90 && lives > 0) begin
+						set_color <= COLOR_SPACESHIP;
+					end
+						 //Life 3
+					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 100 && xCoord <= 140 && lives > 1) begin
+						set_color <= COLOR_SPACESHIP;
+					end
+				// Life 4 (when cheat code)
+//					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 150 && xCoord <= 190 && lives > 2) begin
+//						set_color <= COLOR_SPACESHIP;
+//					end
+//						// Life 5 (when cheat code)
+//					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 200 && xCoord <= 240 && lives > 3) begin
+//						set_color <= COLOR_SPACESHIP;
+//					end
+//						// Life 6 (when cheat code)
+//					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 250 && xCoord <= 290 && lives > 4) begin
+//						set_color <= COLOR_SPACESHIP;
+//					end
 					// Color in flying saucer
 					else if (is_flying_saucer) begin
 						set_color <= rgb_flying_saucer;
