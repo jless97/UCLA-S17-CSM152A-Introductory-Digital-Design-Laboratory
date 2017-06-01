@@ -26,6 +26,7 @@ module space_invaders_top(
 	input wire button_left,
 	input wire button_right,
 	input wire button_center,
+	input wire button_display,
 		// Switches
 	input wire start_screen,
 	input wire switch_screen,
@@ -41,13 +42,15 @@ module space_invaders_top(
 	
 	// Wires for clocks
 	wire dclk;
-	//wire gameclk;
+	wire flying_saucer_clk;
+	wire alien_clk;
 	
 	// Wires for signals
 	wire rst_db;
 	wire button_left_db;
 	wire button_right_db;
 	wire button_center_db;
+	wire button_display_db;
 	wire start_screen_db;
 	wire switch_screen_db;
 	
@@ -76,6 +79,12 @@ module space_invaders_top(
 		.button(button_center),
 		.bounce_state(button_center_db)
 	);
+		// Change display button
+	debouncer button_display_func(
+		.clk(clk),
+		.button(button_display),
+		.bounce_state(button_display_db)
+	);
 		// Start screen switch
 	debouncer start_screen_func(
 		.clk(clk),
@@ -94,7 +103,8 @@ module space_invaders_top(
 		.clk(clk),
 		.rst(rst_db),
 		.dclk(dclk),
-		.gameclk(gameclk)
+		.flying_saucer_clk(flying_saucer_clk),
+		.alien_clk(alien_clk)
 	);
 	
 	// VGA controller
@@ -110,10 +120,13 @@ module space_invaders_top(
 	// VGA display
 	vga_display display(
 		.clk(clk),
+		.flying_saucer_clk(flying_saucer_clk),
+		.alien_clk(alien_clk),
 		.rst(rst_db),
 		.button_left(button_left_db),
 		.button_right(button_right_db),
 		.button_center(button_center_db),
+		.button_display(button_display_db),
 		.start_screen(start_screen_db),
 		.switch_screen(switch_screen_db),
 		.xCoord(xCoord),
