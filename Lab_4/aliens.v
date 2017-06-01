@@ -111,8 +111,9 @@ module aliens(
 				end
 				else if (move_left && !is_edge) begin
 					// If at left edge of the display, bounce back
-					if (alien_xCoord <= 10 + LEFT_EDGE + ALIEN_LENGTH / 2) begin
+					if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2 + 2*ALIEN_MOVE_LEFT ) begin
 						is_edge_temp <= 1;
+                        alien_xCoord <= alien_xCoord - ALIEN_MOVE_LEFT;
 					end
 					//Normal left move
 					else begin
@@ -122,8 +123,9 @@ module aliens(
 				// Moving right, update alien position to the right (if possible)
 				else if (move_right && !is_edge) begin
 					// If at right edge of the display, bounce back
-					if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2) begin
+					if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT) begin
 						is_edge_temp <= 1;
+                        alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
 					end
 					// Normal right move
 					else begin
