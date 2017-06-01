@@ -47,7 +47,7 @@ module debouncer(
 		end
 		else begin
 			counter <= counter + 1'b1;
-			if (counter == 10) begin
+			if (counter == 20) begin
 				debounce_temp <= ~bounce_state;
 			end
       end

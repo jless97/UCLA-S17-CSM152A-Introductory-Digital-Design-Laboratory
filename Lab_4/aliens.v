@@ -22,6 +22,7 @@ module aliens(
 	// Inputs
 	input wire clk,
 	input wire rst,
+	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
 	// Outputs
@@ -31,7 +32,7 @@ module aliens(
 
 	// Display screen boundaries
    parameter LEFT_EDGE = 11'd0;
-   parameter RIGHT_EDGE = 11'd640;
+   parameter RIGHT_EDGE = 11'd635;
    parameter TOP_EDGE = 11'd0;
    parameter BOTTOM_EDGE = 11'd480;
 
@@ -50,7 +51,7 @@ module aliens(
 
 		// Alien Parameters
 	parameter ALIEN_HEIGHT = 11'd16;
-	parameter ALIEN_LENGTH = 11'd35;
+	parameter ALIEN_LENGTH = 11'd30;
 		// TEMPORARY
 		parameter ALIEN_TOP = 11'd80;
 		parameter ALIEN_BOTTOM = 11'd96;
@@ -80,25 +81,25 @@ module aliens(
 	initial begin
 		alien_xCoord = ALIEN_INITIAL_X;
 		alien_yCoord = ALIEN_INITIAL_Y;
-		alien_move_left = 1;
-		alien_move_right = 0;
+		alien_move_left = 0;
+		alien_move_right = 1;
 		alien_move_down = 0;
 		alien_counter = 0;
 	end
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst) begin
+		if (rst || mode == 0 || mode == 1) begin
 			// TODO: When new objects added, reset their properties
 			// TODO: Reset screens (right now, just resets game level)
 			// Reset alien spaceship
 			alien_xCoord = ALIEN_INITIAL_X;
 			alien_yCoord = ALIEN_INITIAL_Y;
-			alien_move_left = 1;
-			alien_move_right = 0;
+			alien_move_left = 0;
+			alien_move_right = 1;
 			alien_move_down = 0;
 		end
-		if (clk_frame) begin
+		if (clk_frame && mode == 2) begin
 			// Alien Controls
 			// Moving left, update alien position to the left (if possible)
 			if (alien_counter == 100) begin
@@ -118,9 +119,9 @@ module aliens(
 				// Moving right, update alien position to the right (if possible)
 				if (alien_move_right) begin
 					// If at right edge of the display, bounce back
-					if (alien_xCoord >= RIGHT_EDGE - (ALIEN_LENGTH - 1) / 2) begin
-						alien_move_right = 0;
+					if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2) begin
 						alien_move_left = 1;
+						alien_move_right = 0;
 						alien_move_down = 1;
 					end
 					// Normal right move

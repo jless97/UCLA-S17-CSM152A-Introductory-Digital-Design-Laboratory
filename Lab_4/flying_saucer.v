@@ -24,6 +24,7 @@ module flying_saucer(
 	// Inputs
 	input wire clk,
 	input wire rst,
+	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
 	// Outputs
@@ -55,7 +56,7 @@ module flying_saucer(
 	parameter FLYING_SAUCER_LENGTH = 11'd40;
 	parameter FLYING_SAUCER_TOP = 11'd50;
 	parameter FLYING_SAUCER_BOTTOM = 11'd65;
-	parameter FLYING_SAUCER_INITIAL = -11'd20;
+	parameter FLYING_SAUCER_INITIAL = -11'd50;
 	 
 	// Position Updates
    parameter MOVE_LEFT  = 11'd1;
@@ -79,13 +80,16 @@ module flying_saucer(
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
 	// Flying Saucer Controls
-		if (rst) begin
-			// TODO
+		if (rst || mode == 0 || mode == 1) begin
+			flying_saucer_coord = FLYING_SAUCER_INITIAL;
+			flying_saucer_wait_timer = 11'd0;
+			flying_saucer_move_left = 1;
+			flying_saucer_counter = 0;
 		end
-		if (clk_frame) begin
+		if (clk_frame && mode == 2) begin
 			if (flying_saucer_move_left) begin
 				// If valid operation, move left
-				if (flying_saucer_coord == -20) begin
+				if (flying_saucer_coord == -50) begin
 					flying_saucer_move_left = 0;
 				end
 				if (flying_saucer_counter == 2) begin

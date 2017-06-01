@@ -174,6 +174,7 @@ module vga_display(
         .rgb(rgb_barrier),
         .is_barrier(is_barrier)
         );
+
    always @ (posedge clk) begin
 		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
