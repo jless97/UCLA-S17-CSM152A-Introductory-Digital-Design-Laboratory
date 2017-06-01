@@ -22,6 +22,7 @@ module set_barriers(
     // Inputs
     input wire clk,
     input wire rst,
+	 input wire restart,
     //Current X and Y of the screen
     input wire [10:0] xCoord,
     input wire [10:0] yCoord,
@@ -33,6 +34,8 @@ module set_barriers(
     output wire [7:0] rgb,
     output wire is_barrier
     );
+	 
+	 // Barrier Parameters
     parameter BARR_BLK_SZ = 19;
     parameter BARR_WIDTH = 76;
     parameter BARR_HEIGHT = 57;
@@ -57,6 +60,7 @@ module set_barriers(
             end
         end
     end
+	 
     //shifted x and y values for calculation of which barrier block we're "in" - values for display
     reg [10:0] shiftedYCoord;
     wire [1:0] currBarrier;
@@ -69,6 +73,7 @@ module set_barriers(
     wire [1:0] damage_x_blk;
     wire [1:0] damage_y_blk;
     wire isDamage;
+	 
     //Get location of barrier for display
     extract_barrier_blk getDisplayVals(
         //Inputs
@@ -76,6 +81,7 @@ module set_barriers(
         //Outputs
         .currBarrier(currBarrier), .xVal(currXblk), .yVal(currYblk), .inBarrier(inBarrier)
         );
+		  
     //Get location of which block within the barrier the new damage hit
     extract_barrier_blk getDamageVals(
         //Inputs
@@ -83,10 +89,11 @@ module set_barriers(
         //Outputs
         .currBarrier(damage_barrier), .xVal(damage_x_blk), .yVal(damage_y_blk), .inBarrier(isDamage)
         );
+		  
     reg is_barrier_temp;
     reg [7:0] rgb_temp;
     always @ (posedge clk) begin
-        if(rst) begin
+        if(rst || restart) begin
             for(i = 0; i <= 3; i = i+1) begin
                 for(k = 0; k <= 3; k = k+1) begin
                     for(m = 0; m <= 3; m = m+1) begin
@@ -125,7 +132,8 @@ module set_barriers(
             end
         end
     end
+	 
     assign rgb = rgb_temp;
     assign is_barrier = is_barrier_temp;
 
-endmodule
+endmodule 
