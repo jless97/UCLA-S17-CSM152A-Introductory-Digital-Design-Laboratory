@@ -81,33 +81,26 @@ module vga_display(
 	// Mode 1: Start screen
 	// Mode 2: Game screen
 	wire [1:0] mode;	
-	wire [2:0] lives;
 	reg [1:0] mode_temp;
-	reg [2:0] lives_temp;
 	initial begin
 		mode_temp = 0;
-		lives_temp = 3;
 	end
 	always @ (posedge button_display or posedge rst) begin
 		if (rst) begin
-			mode_temp = 0;
+			mode_temp <= 0;
 		end
 		else begin
 			if (mode == 2) begin
-				mode_temp = 0;
+					mode_temp <= 0;
 			end
 			else begin
-				mode_temp = mode + 1;
+				mode_temp <= mode + 1;
 			end
 		end
-		// TODO: new mode, display game over screen (if out of lives), or restart level (if lose a life)
-//		if (lives == 0) begin
-//			mode_temp = 3;
-//		end
 	end
 	
 	assign mode = mode_temp;
-	
+
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Instantiate modules
@@ -120,6 +113,15 @@ module vga_display(
 		.rgb(rgb_start_screen)
 		);
 
+		// Instantiate gameover screen display
+	wire [10:0] rgb_gameover_screen;
+	gameover_screen gameover_screen_display(
+		.clk(clk),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+		.rgb(rgb_gameover_screen)
+		);
+	
 		// Instantiate space ship
 	wire [10:0] rgb_spaceship;
 	wire is_spaceship;
@@ -177,11 +179,25 @@ module vga_display(
 		// Instantiate aliens
 	wire [54:0] aliens;
 	wire [440:0] rgb_aliens;
+		// Player Lives
+	wire [2:0] lives;
+	reg [2:0] lives_temp;
+	wire restart;
+	reg restart_temp;
+	wire gameover;
+	reg gameover_temp;
+		// Controls
 	wire [54:0] is_alien;
 	wire [54:0] is_edge;
+	wire [54:0] is_bottom;
+		// Directions
 	wire move_left;
 	wire move_right;
 	wire move_down;
+		// Color scheme
+	wire color;
+	
+	// Instantiation of alien top module (not working right now, so just instantiating aliens here)
 //	aliens_top create_aliens(
 //		.clk(clk),
 //		.rst(rst),
@@ -196,45 +212,64 @@ module vga_display(
 	reg move_left_temp;
 	reg move_right_temp;
 	reg move_down_temp;
-		reg halt_temp;
 	initial begin
 		move_left_temp = 0;
 		move_right_temp = 1;
 		move_down_temp = 0;
-		halt_temp = 0;
+		lives_temp = 2;
+		gameover_temp = 0;
+		restart_temp = 0;
 	end
 
 	always @ (posedge clk) begin
-		if (rst || button_display) begin
-			move_left_temp <= 1;
-			move_right_temp <= 0;
+		if (rst || button_display || restart) begin
+			move_left_temp <= 0;
+			move_right_temp <= 1;
 			move_down_temp <= 0;
 		end
 		else begin
-			if (is_edge && move_left) begin
-				move_down_temp <= 1;
-				move_right_temp <= 1;
-				move_left_temp <= 0;
+			if (is_bottom) begin
+				lives_temp <= lives - 1;
+				if (lives == 0) begin
+					gameover_temp <= 1;
+				end
+//				else begin
+//					restart_temp <= 1;
+//				end
 			end
-			if (is_edge && move_right) begin
-				move_down_temp <= 1;
-				move_left_temp <= 1;
-				move_right_temp <= 0;
-			end
-			if (!is_edge) begin
-				move_left_temp <= move_left;
-				move_right_temp <= move_right;
-				move_down_temp <= 0;
+			else begin
+				restart_temp <= 0;
+				if (is_edge && move_left) begin
+					move_down_temp <= 1;
+					move_right_temp <= 1;
+					move_left_temp <= 0;
+				end
+				if (is_edge && move_right) begin
+					move_down_temp <= 1;
+					move_left_temp <= 1;
+					move_right_temp <= 0;
+				end
+				if (!is_edge) begin
+					move_left_temp <= move_left;
+					move_right_temp <= move_right;
+					move_down_temp <= 0;
+				end
 			end
 		end
 	end
 	
+	// Assign Directions
 	assign move_left = move_left_temp;
 	assign move_right = move_right_temp;
 	assign move_down = move_down_temp;
- 
+	
+	// Assign Player Lives
+	assign lives = lives_temp;
+	assign gameover = gameover_temp;
+	assign restart = restart_temp;
+	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
+/*
 // First row
 	// Alien 0
 	aliens update_alien_0(
@@ -249,10 +284,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		//.color(0),
 		.rgb(rgb_aliens[7:0]),
 		.is_alien(is_alien[0]),
-		.is_edge(is_edge[0])
-//		.is_bottom(is_bottom[0]),
+		.is_edge(is_edge[0]),
+		.is_bottom(is_bottom[0])
 //		.is_hit(is_hit[0])
 		);
 		
@@ -269,10 +305,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		//.color(0),
 		.rgb(rgb_aliens[15:8]),
 		.is_alien(is_alien[1]),
-		.is_edge(is_edge[1])
-//		.is_bottom(is_bottom[1]),
+		.is_edge(is_edge[1]),
+		.is_bottom(is_bottom[1])
 //		.is_hit(is_hit[1])
 		);
 
@@ -289,10 +326,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[23:16]),
 		.is_alien(is_alien[2]),
-		.is_edge(is_edge[2])
-//		.is_bottom(is_bottom[2]),
+		.is_edge(is_edge[2]),
+		.is_bottom(is_bottom[2])
 //		.is_hit(is_hit[2])
 		);
 		
@@ -309,10 +347,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[31:24]),
 		.is_alien(is_alien[3]),
-		.is_edge(is_edge[3])
-//		.is_bottom(is_bottom[3]),
+		.is_edge(is_edge[3]),
+		.is_bottom(is_bottom[3])
 //		.is_hit(is_hit[3])
 		);
 		
@@ -329,10 +368,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[39:32]),
 		.is_alien(is_alien[4]),
-		.is_edge(is_edge[4])
-//		.is_bottom(is_bottom[4]),
+		.is_edge(is_edge[4]),
+		.is_bottom(is_bottom[4])
 //		.is_hit(is_hit[4])
 		);
 
@@ -349,10 +389,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[47:40]),
 		.is_alien(is_alien[5]),
-		.is_edge(is_edge[5])
-//		.is_bottom(is_bottom[5]),
+		.is_edge(is_edge[5]),
+		.is_bottom(is_bottom[5])
 //		.is_hit(is_hit[5])
 		);
 
@@ -369,10 +410,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[55:48]),
 		.is_alien(is_alien[6]),
-		.is_edge(is_edge[6])
-//		.is_bottom(is_bottom[6]),
+		.is_edge(is_edge[6]),
+		.is_bottom(is_bottom[6])
 //		.is_hit(is_hit[6])
 		);
 
@@ -389,10 +431,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[63:56]),
 		.is_alien(is_alien[7]),
-		.is_edge(is_edge[7])
-//		.is_bottom(is_bottom[7]),
+		.is_edge(is_edge[7]),
+		.is_bottom(is_bottom[7])
 //		.is_hit(is_hit[7])
 		);
 		
@@ -409,10 +452,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[71:64]),
 		.is_alien(is_alien[8]),
-		.is_edge(is_edge[8])
-//		.is_bottom(is_bottom[8]),
+		.is_edge(is_edge[8]),
+		.is_bottom(is_bottom[8])
 //		.is_hit(is_hit[8])
 		);
 		
@@ -429,10 +473,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[79:72]),
 		.is_alien(is_alien[9]),
-		.is_edge(is_edge[9])
-//		.is_bottom(is_bottom[9]),
+		.is_edge(is_edge[9]),
+		.is_bottom(is_bottom[9])
 //		.is_hit(is_hit[9])
 		);
 		
@@ -449,10 +494,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(0),
 		.rgb(rgb_aliens[87:80]),
 		.is_alien(is_alien[10]),
-		.is_edge(is_edge[10])
-//		.is_bottom(is_bottom[10]),
+		.is_edge(is_edge[10]),
+		.is_bottom(is_bottom[10])
 //		.is_hit(is_hit[10])
 		);
 
@@ -472,10 +518,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[95:88]),
 		.is_alien(is_alien[11]),
-		.is_edge(is_edge[11])
-//		.is_bottom(is_bottom[11]),
+		.is_edge(is_edge[11]),
+		.is_bottom(is_bottom[11])
 //		.is_hit(is_hit[11])
 		);
 
@@ -492,10 +539,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[103:96]),
 		.is_alien(is_alien[12]),
-		.is_edge(is_edge[12])
-//		.is_bottom(is_bottom[12]),
+		.is_edge(is_edge[12]),
+		.is_bottom(is_bottom[12])
 //		.is_hit(is_hit[12])
 		);
 		
@@ -512,10 +560,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[111:104]),
 		.is_alien(is_alien[13]),
-		.is_edge(is_edge[13])
-//		.is_bottom(is_bottom[13]),
+		.is_edge(is_edge[13]),
+		.is_bottom(is_bottom[13])
 //		.is_hit(is_hit[13])
 		);
 		
@@ -532,10 +581,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[119:112]),
 		.is_alien(is_alien[14]),
-		.is_edge(is_edge[14])
-//		.is_bottom(is_bottom[14]),
+		.is_edge(is_edge[14]),
+		.is_bottom(is_bottom[14])
 //		.is_hit(is_hit[14])
 		);
 		
@@ -552,10 +602,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[127:120]),
 		.is_alien(is_alien[15]),
-		.is_edge(is_edge[15])
-//		.is_bottom(is_bottom[15]),
+		.is_edge(is_edge[15]),
+		.is_bottom(is_bottom[15])
 //		.is_hit(is_hit[15])
 		);
 		
@@ -572,10 +623,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[135:128]),
 		.is_alien(is_alien[16]),
-		.is_edge(is_edge[16])
-//		.is_bottom(is_bottom[16]),
+		.is_edge(is_edge[16]),
+		.is_bottom(is_bottom[16])
 //		.is_hit(is_hit[16])
 		);
 
@@ -593,10 +645,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[143:136]),
 		.is_alien(is_alien[17]),
-		.is_edge(is_edge[17])
-//		.is_bottom(is_bottom[17]),
+		.is_edge(is_edge[17]),
+		.is_bottom(is_bottom[17])
 //		.is_hit(is_hit[17])
 		);
 		
@@ -613,10 +666,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[151:144]),
 		.is_alien(is_alien[18]),
-		.is_edge(is_edge[18])
-//		.is_bottom(is_bottom[18]),
+		.is_edge(is_edge[18]),
+		.is_bottom(is_bottom[18])
 //		.is_hit(is_hit[18])
 		);
 		
@@ -633,10 +687,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[159:152]),
 		.is_alien(is_alien[19]),
-		.is_edge(is_edge[19])
-//		.is_bottom(is_bottom[19]),
+		.is_edge(is_edge[19]),
+		.is_bottom(is_bottom[19])
 //		.is_hit(is_hit[19])
 		);
 		
@@ -653,10 +708,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[167:160]),
 		.is_alien(is_alien[20]),
-		.is_edge(is_edge[20])
-//		.is_bottom(is_bottom[20]),
+		.is_edge(is_edge[20]),
+		.is_bottom(is_bottom[20])
 //		.is_hit(is_hit[20])
 		);
 		
@@ -673,10 +729,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(1),
 		.rgb(rgb_aliens[175:168]),
 		.is_alien(is_alien[21]),
-		.is_edge(is_edge[21])
-//		.is_bottom(is_bottom[21]),
+		.is_edge(is_edge[21]),
+		.is_bottom(is_bottom[21])
 //		.is_hit(is_hit[21])
 		);
 
@@ -696,10 +753,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[183:176]),
 		.is_alien(is_alien[22]),
-		.is_edge(is_edge[22])
-//		.is_bottom(is_bottom[22]),
+		.is_edge(is_edge[22]),
+		.is_bottom(is_bottom[22])
 //		.is_hit(is_hit[22])
 		);
 
@@ -716,10 +774,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[191:184]),
 		.is_alien(is_alien[23]),
-		.is_edge(is_edge[23])
-//		.is_bottom(is_bottom[23]),
+		.is_edge(is_edge[23]),
+		.is_bottom(is_bottom[23])
 //		.is_hit(is_hit[23])
 		);
 		
@@ -736,10 +795,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[199:192]),
 		.is_alien(is_alien[24]),
-		.is_edge(is_edge[24])
-//		.is_bottom(is_bottom[24]),
+		.is_edge(is_edge[24]),
+		.is_bottom(is_bottom[24])
 //		.is_hit(is_hit[24])
 		);
 		
@@ -756,10 +816,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[207:200]),
 		.is_alien(is_alien[25]),
-		.is_edge(is_edge[25])
-//		.is_bottom(is_bottom[25]),
+		.is_edge(is_edge[25]),
+		.is_bottom(is_bottom[25])
 //		.is_hit(is_hit[25])
 		);
 		
@@ -776,10 +837,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[215:208]),
 		.is_alien(is_alien[26]),
-		.is_edge(is_edge[26])
-//		.is_bottom(is_bottom[26]),
+		.is_edge(is_edge[26]),
+		.is_bottom(is_bottom[26])
 //		.is_hit(is_hit[26])
 		);
 		
@@ -796,10 +858,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[223:216]),
 		.is_alien(is_alien[27]),
-		.is_edge(is_edge[27])
-//		.is_bottom(is_bottom[27]),
+		.is_edge(is_edge[27]),
+		.is_bottom(is_bottom[27])
 //		.is_hit(is_hit[27])
 		);
 
@@ -816,10 +879,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[231:224]),
 		.is_alien(is_alien[28]),
-		.is_edge(is_edge[28])
-//		.is_bottom(is_bottom[28]),
+		.is_edge(is_edge[28]),
+		.is_bottom(is_bottom[28])
 //		.is_hit(is_hit[28])
 		);
 		
@@ -836,10 +900,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[239:232]),
 		.is_alien(is_alien[29]),
-		.is_edge(is_edge[29])
-//		.is_bottom(is_bottom[29]),
+		.is_edge(is_edge[29]),
+		.is_bottom(is_bottom[29])
 //		.is_hit(is_hit[29])
 		);
 		
@@ -856,10 +921,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[247:240]),
 		.is_alien(is_alien[30]),
-		.is_edge(is_edge[30])
-//		.is_bottom(is_bottom[30]),
+		.is_edge(is_edge[30]),
+		.is_bottom(is_bottom[30])
 //		.is_hit(is_hit[30])
 		);
 		
@@ -876,10 +942,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[255:248]),
 		.is_alien(is_alien[31]),
-		.is_edge(is_edge[31])
-//		.is_bottom(is_bottom[31]),
+		.is_edge(is_edge[31]),
+		.is_bottom(is_bottom[31])
 //		.is_hit(is_hit[31])
 		);
 		
@@ -896,10 +963,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(2),
 		.rgb(rgb_aliens[263:256]),
 		.is_alien(is_alien[32]),
-		.is_edge(is_edge[32])
-//		.is_bottom(is_bottom[32]),
+		.is_edge(is_edge[32]),
+		.is_bottom(is_bottom[32])
 //		.is_hit(is_hit[32])
 		);
 		
@@ -920,10 +988,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[271:264]),
 		.is_alien(is_alien[33]),
-		.is_edge(is_edge[33])
-//		.is_bottom(is_bottom[33]),
+		.is_edge(is_edge[33]),
+		.is_bottom(is_bottom[33])
 //		.is_hit(is_hit[33])
 		);
 
@@ -940,10 +1009,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[279:272]),
 		.is_alien(is_alien[34]),
-		.is_edge(is_edge[34])
-//		.is_bottom(is_bottom[34]),
+		.is_edge(is_edge[34]),
+		.is_bottom(is_bottom[34])
 //		.is_hit(is_hit[34])
 		);
 		
@@ -960,10 +1030,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[287:280]),
 		.is_alien(is_alien[35]),
-		.is_edge(is_edge[35])
-//		.is_bottom(is_bottom[35]),
+		.is_edge(is_edge[35]),
+		.is_bottom(is_bottom[35])
 //		.is_hit(is_hit[35])
 		);
 
@@ -980,10 +1051,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[295:288]),
 		.is_alien(is_alien[36]),
-		.is_edge(is_edge[36])
-//		.is_bottom(is_bottom[36]),
+		.is_edge(is_edge[36]),
+		.is_bottom(is_bottom[36])
 //		.is_hit(is_hit[36])
 		);
 		
@@ -1000,10 +1072,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[303:296]),
 		.is_alien(is_alien[37]),
-		.is_edge(is_edge[37])
-//		.is_bottom(is_bottom[37]),
+		.is_edge(is_edge[37]),
+		.is_bottom(is_bottom[37])
 //		.is_hit(is_hit[37])
 		);
 		
@@ -1020,10 +1093,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[311:304]),
 		.is_alien(is_alien[38]),
-		.is_edge(is_edge[38])
-//		.is_bottom(is_bottom[38]),
+		.is_edge(is_edge[38]),
+		.is_bottom(is_bottom[38])
 //		.is_hit(is_hit[38])
 		);
 
@@ -1040,10 +1114,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[319:312]),
 		.is_alien(is_alien[39]),
-		.is_edge(is_edge[39])
-//		.is_bottom(is_bottom[39]),
+		.is_edge(is_edge[39]),
+		.is_bottom(is_bottom[39])
 //		.is_hit(is_hit[39])
 		);
 		
@@ -1060,10 +1135,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[327:320]),
 		.is_alien(is_alien[40]),
-		.is_edge(is_edge[40])
-//		.is_bottom(is_bottom[40]),
+		.is_edge(is_edge[40]),
+		.is_bottom(is_bottom[40])
 //		.is_hit(is_hit[40])
 		);
 		
@@ -1080,10 +1156,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[335:328]),
 		.is_alien(is_alien[41]),
-		.is_edge(is_edge[41])
-//		.is_bottom(is_bottom[41]),
+		.is_edge(is_edge[41]),
+		.is_bottom(is_bottom[41])
 //		.is_hit(is_hit[41])
 		);
 		
@@ -1100,10 +1177,11 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[343:336]),
 		.is_alien(is_alien[42]),
-		.is_edge(is_edge[42])
-//		.is_bottom(is_bottom[42]),
+		.is_edge(is_edge[42]),
+		.is_bottom(is_bottom[42])
 //		.is_hit(is_hit[42])
 		);
 		
@@ -1120,13 +1198,14 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(3),
 		.rgb(rgb_aliens[351:344]),
 		.is_alien(is_alien[43]),
-		.is_edge(is_edge[43])
-//		.is_bottom(is_bottom[43]),
+		.is_edge(is_edge[43]),
+		.is_bottom(is_bottom[43])
 //		.is_hit(is_hit[43])
 		);
-
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
 // Fifth row
@@ -1135,19 +1214,22 @@ module vga_display(
 	aliens update_alien_44(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[44]),
 		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[359:352]),
 		.is_alien(is_alien[44]),
-		.is_edge(is_edge[44])
-//		.is_bottom(is_bottom[44]),
+		.is_edge(is_edge[44]),
+		.is_bottom(is_bottom[44])
 //		.is_hit(is_hit[44])
 		);
 
@@ -1155,19 +1237,22 @@ module vga_display(
 	aliens update_alien_45(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[45]),
 		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[367:360]),
 		.is_alien(is_alien[45]),
-		.is_edge(is_edge[45])
-//		.is_bottom(is_bottom[45]),
+		.is_edge(is_edge[45]),
+		.is_bottom(is_bottom[45])
 //		.is_hit(is_hit[45])
 		);
 		
@@ -1175,19 +1260,22 @@ module vga_display(
 	aliens update_alien_46(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[46]),
 		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[375:368]),
 		.is_alien(is_alien[46]),
-		.is_edge(is_edge[46])
-//		.is_bottom(is_bottom[46]),
+		.is_edge(is_edge[46]),
+		.is_bottom(is_bottom[46])
 //		.is_hit(is_hit[46])
 		);
 		
@@ -1195,19 +1283,22 @@ module vga_display(
 	aliens update_alien_47(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[47]),
 		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[383:376]),
 		.is_alien(is_alien[47]),
-		.is_edge(is_edge[47])
-//		.is_bottom(is_bottom[47]),
+		.is_edge(is_edge[47]),
+		.is_bottom(is_bottom[47])
 //		.is_hit(is_hit[47])
 		);
 		
@@ -1215,19 +1306,22 @@ module vga_display(
 	aliens update_alien_48(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[48]),
 		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[391:384]),
 		.is_alien(is_alien[48]),
-		.is_edge(is_edge[48])
-//		.is_bottom(is_bottom[48]),
+		.is_edge(is_edge[48]),
+		.is_bottom(is_bottom[48])
 //		.is_hit(is_hit[48])
 		);
 		
@@ -1235,19 +1329,22 @@ module vga_display(
 	aliens update_alien_49(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[49]),
 		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[399:392]),
 		.is_alien(is_alien[49]),
-		.is_edge(is_edge[49])
-//		.is_bottom(is_bottom[49]),
+		.is_edge(is_edge[49]),
+		.is_bottom(is_bottom[49])
 //		.is_hit(is_hit[49])
 		);
 
@@ -1256,19 +1353,22 @@ module vga_display(
 	aliens update_alien_50(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[50]),
 		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[407:400]),
 		.is_alien(is_alien[50]),
-		.is_edge(is_edge[50])
-//		.is_bottom(is_bottom[50]),
+		.is_edge(is_edge[50]),
+		.is_bottom(is_bottom[50])
 //		.is_hit(is_hit[50])
 		);
 		
@@ -1276,19 +1376,22 @@ module vga_display(
 	aliens update_alien_51(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[51]),
 		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[415:408]),
 		.is_alien(is_alien[51]),
-		.is_edge(is_edge[51])
-//		.is_bottom(is_bottom[51]),
+		.is_edge(is_edge[51]),
+		.is_bottom(is_bottom[51])
 //		.is_hit(is_hit[51])
 		);
 		
@@ -1296,19 +1399,22 @@ module vga_display(
 	aliens update_alien_52(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[52]),
 		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[423:416]),
 		.is_alien(is_alien[52]),
-		.is_edge(is_edge[52])
-//		.is_bottom(is_bottom[52]),
+		.is_edge(is_edge[52]),
+		.is_bottom(is_bottom[52])
 //		.is_hit(is_hit[52])
 		);
 		
@@ -1316,19 +1422,22 @@ module vga_display(
 	aliens update_alien_53(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[53]),
 		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[431:424]),
 		.is_alien(is_alien[53]),
-		.is_edge(is_edge[53])
-//		.is_bottom(is_bottom[53]),
+		.is_edge(is_edge[53]),
+		.is_bottom(is_bottom[53])
 //		.is_hit(is_hit[53])
 		);
 		
@@ -1336,19 +1445,22 @@ module vga_display(
 	aliens update_alien_54(
 		.clk(clk),
 		.rst(rst),
+		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[54]),
 		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd208),
+//		.initial_yCoord(11'd208),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+//		.color(4),
 		.rgb(rgb_aliens[439:432]),
 		.is_alien(is_alien[54]),
-		.is_edge(is_edge[54])
-//		.is_bottom(is_bottom[54]),
+		.is_edge(is_edge[54]),
+		.is_bottom(is_bottom[54])
 //		.is_hit(is_hit[54])
 		);
 
@@ -1371,208 +1483,207 @@ module vga_display(
 			// Switch screen
 			// Game mode
 			else if (mode == 2) begin
-				// Color in borders (temporary to show how much space is available)
-					// Scoreboard border
-				if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
-					set_color <= COLOR_RED;
-				end
-					// Barrier border
-				else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
-					set_color <= COLOR_BLUE;
-				end
-					// Extra lives border 
-				else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
-					set_color <= COLOR_GREEN;
-				end
-				// Color in flying saucer
-				else if (is_flying_saucer) begin
-					set_color <= rgb_flying_saucer;
-				end
-				// Color in scoreboard
-				
-				// Color in barriers
-				else if(is_barrier) begin
-					set_color <= rgb_barrier;
-				end
-				// Color in spaceship
-				else if (is_spaceship) begin
-					set_color <= rgb_spaceship;
-				end
-				// Color in aliens
-//				else if (is_alien) begin
-//					set_color <= rgb_aliens;
-//				end
-				else if (is_alien[0]) begin
-					set_color <= rgb_aliens[7:0];
-				end
-				else if (is_alien[1]) begin
-					set_color <= rgb_aliens[15:8];
-				end
-				else if (is_alien[2]) begin
-					set_color <= rgb_aliens[23:16];
-				end
-				else if (is_alien[3]) begin
-					set_color <= rgb_aliens[31:24];
-				end
-				else if (is_alien[4]) begin
-					set_color <= rgb_aliens[39:32];
-				end
-				else if (is_alien[5]) begin
-					set_color <= rgb_aliens[47:40];
-				end
-				else if (is_alien[6]) begin
-					set_color <= rgb_aliens[55:48];
-				end
-				else if (is_alien[7]) begin
-					set_color <= rgb_aliens[63:56];
-				end
-				else if (is_alien[8]) begin
-					set_color <= rgb_aliens[71:64];
-				end
-				else if (is_alien[9]) begin
-					set_color <= rgb_aliens[79:72];
-				end
-				else if (is_alien[10]) begin
-					set_color <= rgb_aliens[87:80];
-				end
-				else if (is_alien[11]) begin
-					set_color <= rgb_aliens[95:88];
-				end
-				else if (is_alien[12]) begin
-					set_color <= rgb_aliens[103:96];
-				end
-				else if (is_alien[13]) begin
-					set_color <= rgb_aliens[111:104];
-				end
-				else if (is_alien[14]) begin
-					set_color <= rgb_aliens[119:112];
-				end
-				else if (is_alien[15]) begin
-					set_color <= rgb_aliens[127:120];
-				end
-				else if (is_alien[16]) begin
-					set_color <= rgb_aliens[135:128];
-				end
-				else if (is_alien[17]) begin
-					set_color <= rgb_aliens[143:136];
-				end
-				else if (is_alien[18]) begin
-					set_color <= rgb_aliens[151:144];
-				end
-				else if (is_alien[19]) begin
-					set_color <= rgb_aliens[159:152];
-				end
-				else if (is_alien[20]) begin
-					set_color <= rgb_aliens[167:160];
-				end
-				else if (is_alien[21]) begin
-					set_color <= rgb_aliens[175:168];
-				end
-				else if (is_alien[22]) begin
-					set_color <= rgb_aliens[183:176];
-				end
-				else if (is_alien[23]) begin
-					set_color <= rgb_aliens[191:184];
-				end
-				else if (is_alien[24]) begin
-					set_color <= rgb_aliens[199:192];
-				end
-				else if (is_alien[25]) begin
-					set_color <= rgb_aliens[207:200];
-				end
-				else if (is_alien[26]) begin
-					set_color <= rgb_aliens[215:208];
-				end
-				else if (is_alien[27]) begin
-					set_color <= rgb_aliens[223:216];
-				end
-				else if (is_alien[28]) begin
-					set_color <= rgb_aliens[231:224];
-				end
-				else if (is_alien[29]) begin
-					set_color <= rgb_aliens[239:232];
-				end
-				else if (is_alien[30]) begin
-					set_color <= rgb_aliens[247:240];
-				end
-				else if (is_alien[31]) begin
-					set_color <= rgb_aliens[255:248];
-				end
-				else if (is_alien[32]) begin
-					set_color <= rgb_aliens[263:256];
-				end
-				else if (is_alien[33]) begin
-					set_color <= rgb_aliens[271:264];
-				end
-				else if (is_alien[34]) begin
-					set_color <= rgb_aliens[279:272];
-				end
-				else if (is_alien[35]) begin
-					set_color <= rgb_aliens[287:280];
-				end
-				else if (is_alien[36]) begin
-					set_color <= rgb_aliens[295:288];
-				end
-				else if (is_alien[37]) begin
-					set_color <= rgb_aliens[303:296];
-				end
-				else if (is_alien[38]) begin
-					set_color <= rgb_aliens[311:304];
-				end
-				else if (is_alien[39]) begin
-					set_color <= rgb_aliens[319:312];
-				end
-				else if (is_alien[40]) begin
-					set_color <= rgb_aliens[327:320];
-				end
-				else if (is_alien[41]) begin
-					set_color <= rgb_aliens[335:328];
-				end
-				else if (is_alien[42]) begin
-					set_color <= rgb_aliens[343:336];
-				end
-				else if (is_alien[43]) begin
-					set_color <= rgb_aliens[351:344];
-				end
-				else if (is_alien[44]) begin
-					set_color <= rgb_aliens[359:352];
-				end
-				else if (is_alien[45]) begin
-					set_color <= rgb_aliens[367:360];
-				end
-				else if (is_alien[46]) begin
-					set_color <= rgb_aliens[375:368];
-				end
-				else if (is_alien[47]) begin
-					set_color <= rgb_aliens[383:376];
-				end
-				else if (is_alien[48]) begin
-					set_color <= rgb_aliens[391:384];
-				end
-				else if (is_alien[49]) begin
-					set_color <= rgb_aliens[399:392];
-				end
-				else if (is_alien[50]) begin
-					set_color <= rgb_aliens[407:400];
-				end
-				else if (is_alien[51]) begin
-					set_color <= rgb_aliens[415:408];
-				end
-				else if (is_alien[52]) begin
-					set_color <= rgb_aliens[423:416];
-				end
-				else if (is_alien[53]) begin
-					set_color <= rgb_aliens[431:424];
-				end
-				else if (is_alien[54]) begin
-					set_color <= rgb_aliens[439:432];
+				if (gameover) begin
+					set_color <= rgb_gameover_screen;
 				end
 				else begin
-					set_color <= COLOR_SPACE;
-				end
-			end 
-			else if (mode == 3) begin
-				set_color <= COLOR_YELLOW;
+					// Color in borders (temporary to show how much space is available)
+						// Scoreboard border
+					if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
+						set_color <= COLOR_RED;
+					end
+						// Barrier border
+					else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
+						set_color <= COLOR_BLUE;
+					end
+						// Extra lives border 
+					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
+						set_color <= COLOR_GREEN;
+					end
+					// Color in flying saucer
+					else if (is_flying_saucer) begin
+						set_color <= rgb_flying_saucer;
+					end
+					// Color in scoreboard
+					
+					// Color in barriers
+					else if(is_barrier) begin
+						set_color <= rgb_barrier;
+					end
+					// Color in spaceship
+					else if (is_spaceship) begin
+						set_color <= rgb_spaceship;
+					end
+					// Color in aliens
+					else if (is_alien[0]) begin
+						set_color <= rgb_aliens[7:0];
+					end
+					else if (is_alien[1]) begin
+						set_color <= rgb_aliens[15:8];
+					end
+					else if (is_alien[2]) begin
+						set_color <= rgb_aliens[23:16];
+					end
+					else if (is_alien[3]) begin
+						set_color <= rgb_aliens[31:24];
+					end
+					else if (is_alien[4]) begin
+						set_color <= rgb_aliens[39:32];
+					end
+					else if (is_alien[5]) begin
+						set_color <= rgb_aliens[47:40];
+					end
+					else if (is_alien[6]) begin
+						set_color <= rgb_aliens[55:48];
+					end
+					else if (is_alien[7]) begin
+						set_color <= rgb_aliens[63:56];
+					end
+					else if (is_alien[8]) begin
+						set_color <= rgb_aliens[71:64];
+					end
+					else if (is_alien[9]) begin
+						set_color <= rgb_aliens[79:72];
+					end
+					else if (is_alien[10]) begin
+						set_color <= rgb_aliens[87:80];
+					end
+					else if (is_alien[11]) begin
+						set_color <= rgb_aliens[95:88];
+					end
+					else if (is_alien[12]) begin
+						set_color <= rgb_aliens[103:96];
+					end
+					else if (is_alien[13]) begin
+						set_color <= rgb_aliens[111:104];
+					end
+					else if (is_alien[14]) begin
+						set_color <= rgb_aliens[119:112];
+					end
+					else if (is_alien[15]) begin
+						set_color <= rgb_aliens[127:120];
+					end
+					else if (is_alien[16]) begin
+						set_color <= rgb_aliens[135:128];
+					end
+					else if (is_alien[17]) begin
+						set_color <= rgb_aliens[143:136];
+					end
+					else if (is_alien[18]) begin
+						set_color <= rgb_aliens[151:144];
+					end
+					else if (is_alien[19]) begin
+						set_color <= rgb_aliens[159:152];
+					end
+					else if (is_alien[20]) begin
+						set_color <= rgb_aliens[167:160];
+					end
+					else if (is_alien[21]) begin
+						set_color <= rgb_aliens[175:168];
+					end
+					else if (is_alien[22]) begin
+						set_color <= rgb_aliens[183:176];
+					end
+					else if (is_alien[23]) begin
+						set_color <= rgb_aliens[191:184];
+					end
+					else if (is_alien[24]) begin
+						set_color <= rgb_aliens[199:192];
+					end
+					else if (is_alien[25]) begin
+						set_color <= rgb_aliens[207:200];
+					end
+					else if (is_alien[26]) begin
+						set_color <= rgb_aliens[215:208];
+					end
+					else if (is_alien[27]) begin
+						set_color <= rgb_aliens[223:216];
+					end
+					else if (is_alien[28]) begin
+						set_color <= rgb_aliens[231:224];
+					end
+					else if (is_alien[29]) begin
+						set_color <= rgb_aliens[239:232];
+					end
+					else if (is_alien[30]) begin
+						set_color <= rgb_aliens[247:240];
+					end
+					else if (is_alien[31]) begin
+						set_color <= rgb_aliens[255:248];
+					end
+					else if (is_alien[32]) begin
+						set_color <= rgb_aliens[263:256];
+					end
+					else if (is_alien[33]) begin
+						set_color <= rgb_aliens[271:264];
+					end
+					else if (is_alien[34]) begin
+						set_color <= rgb_aliens[279:272];
+					end
+					else if (is_alien[35]) begin
+						set_color <= rgb_aliens[287:280];
+					end
+					else if (is_alien[36]) begin
+						set_color <= rgb_aliens[295:288];
+					end
+					else if (is_alien[37]) begin
+						set_color <= rgb_aliens[303:296];
+					end
+					else if (is_alien[38]) begin
+						set_color <= rgb_aliens[311:304];
+					end
+					else if (is_alien[39]) begin
+						set_color <= rgb_aliens[319:312];
+					end
+					else if (is_alien[40]) begin
+						set_color <= rgb_aliens[327:320];
+					end
+					else if (is_alien[41]) begin
+						set_color <= rgb_aliens[335:328];
+					end
+					else if (is_alien[42]) begin
+						set_color <= rgb_aliens[343:336];
+					end
+					else if (is_alien[43]) begin
+						set_color <= rgb_aliens[351:344];
+					end
+					else if (is_alien[44]) begin
+						set_color <= rgb_aliens[359:352];
+					end
+					else if (is_alien[45]) begin
+						set_color <= rgb_aliens[367:360];
+					end
+					else if (is_alien[46]) begin
+						set_color <= rgb_aliens[375:368];
+					end
+					else if (is_alien[47]) begin
+						set_color <= rgb_aliens[383:376];
+					end
+					else if (is_alien[48]) begin
+						set_color <= rgb_aliens[391:384];
+					end
+					else if (is_alien[49]) begin
+						set_color <= rgb_aliens[399:392];
+					end
+					else if (is_alien[50]) begin
+						set_color <= rgb_aliens[407:400];
+					end
+					else if (is_alien[51]) begin
+						set_color <= rgb_aliens[415:408];
+					end
+					else if (is_alien[52]) begin
+						set_color <= rgb_aliens[423:416];
+					end
+					else if (is_alien[53]) begin
+						set_color <= rgb_aliens[431:424];
+					end
+					else if (is_alien[54]) begin
+						set_color <= rgb_aliens[439:432];
+					end
+					else begin
+						set_color <= COLOR_SPACE;
+					end
+				end 
 			end
 		end
 	end
