@@ -83,12 +83,14 @@ module aliens(
 	parameter BARRIER_BOTTOM = 11'd400;
 
 	// Initialize alien ships
+	reg temp;
 	initial begin
 		alien_xCoord = initial_xCoord;
 		alien_yCoord = initial_yCoord;
 		alien_counter = 0;
 		is_edge_temp = 0;
 		is_bottom_temp = 0;
+		temp = 0;
 	end
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
@@ -99,12 +101,16 @@ module aliens(
 			// Reset alien spaceship
 			alien_xCoord <= initial_xCoord;
 			alien_yCoord <= initial_yCoord;
+			is_bottom_temp <= 0;
+			alien_counter <= 0;
+			temp <= 0;
 		end
 		if (clk_frame && mode == 2) begin
 			// Alien Controls
+			if (temp) begin
 			if (alien_counter >= 200) begin
 				alien_counter <= 0;
-				is_bottom_temp <= 0;
+				//is_bottom_temp <= 0;
 				// Moving down
 				if (move_down) begin
 					// If at the bottom edge of the barriers, then game over
@@ -135,7 +141,7 @@ module aliens(
 					// If at right edge of the display, bounce back
 					if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT) begin
 						is_edge_temp <= 1;
-                        alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
+                  alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
 					end
 					// Normal right move
 					else begin
@@ -145,6 +151,10 @@ module aliens(
 			end
 			else begin
 				alien_counter <= alien_counter + 1;
+			end
+			end
+			else begin
+				temp <= 1;
 			end
 			// Update display of aliens
 			if (yCoord >= alien_yCoord - ALIEN_HEIGHT / 2 && yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 &&
