@@ -23,6 +23,7 @@ module vga_display(
 	// Inputs
    input wire clk, 
 	input wire flying_saucer_clk,
+	input wire alien_clk,
 	input wire rst,
    input wire button_left, 
 	input wire button_right, 
@@ -65,14 +66,41 @@ module vga_display(
 	parameter SCOREBOARD_TOP = 11'd0;
 	parameter SCOREBOARD_BOTTOM = 11'd40;
 	parameter BARRIER_TOP = 11'd340;
-	parameter BARRIER_BOTTOM = 11'd397;
+	parameter BARRIER_BOTTOM = 11'd400;
 	parameter EXTRA_LIVES_TOP = 11'd460;
 	parameter EXTRA_LIVES_BOTTOM = 11'd480;
 	
 	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////`
+	///////////////////////////////////////////////////////
 	// Scoreboard Parameters
 
+	///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	// Screen display mode
+	// Mode 0: Black screen
+	// Mode 1: Start screen
+	// Mode 2: Game screen
+	wire [1:0] mode;	
+	reg [1:0] mode_temp;
+	initial begin
+		mode_temp = 0;
+	end
+	always @ (posedge button_display or posedge rst) begin
+		if (rst) begin
+			mode_temp = 0;
+		end
+		else begin
+			if (mode == 2) begin
+				mode_temp = 0;
+			end
+			else begin
+				mode_temp = mode + 1;
+			end
+		end
+	end
+	
+	assign mode = mode_temp;
+	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Instantiate modules
@@ -94,6 +122,7 @@ module vga_display(
 		.button_left(button_left),
 		.button_right(button_right),
 		.button_center(button_center),
+		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.rgb(rgb_spaceship),
@@ -106,6 +135,7 @@ module vga_display(
 	flying_saucer update_flying_saucer(
 		.clk(clk),
 		.rst(rst),
+		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.rgb(rgb_flying_saucer),
@@ -118,12 +148,14 @@ module vga_display(
 	aliens update_aliens(
 		.clk(clk),
 		.rst(rst),
+		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.rgb(rgb_aliens),
 		.is_alien(is_alien)
 		);
-    wire [10:0] rgb_barrier;
+        
+    wire [7:0] rgb_barrier;
     wire is_barrier;
     wire [10:0] damage_x;
     wire [10:0] damage_y;
@@ -140,48 +172,30 @@ module vga_display(
         .damage_y(damage_y),
         .new_damage(new_damage),
         .rgb(rgb_barrier),
-        .is_alien(is_barrier)
+        .is_barrier(is_barrier)
         );
-	// Screen display mode
-	/*
-	wire [1:0] mode;	
-	initial begin
-		mode = 0;
-	end
-	always @ (posedge clk) begin
-		if (rst) begin
-			mode = 0;
-		end
-		if (button_display) begin
-			if (mode == 3) begin
-				mode = 0;
-			end
-			else begin
-				mode = mode + 1;
-			end
-		end
-	end
-	*/
-	
    always @ (posedge clk) begin
 		// Display visual (in valid screen display)
       if (xCoord >= 0 && xCoord < 640 && yCoord >= 0 && yCoord < 480) begin
+			// Blank screen
+			if (mode == 0) begin
+				set_color <= COLOR_BLACK;
+			end
 			// Start screen
-			if (start_screen && !switch_screen) begin
+			else if (mode == 1) begin
 				// Read in pixels from the start_screen module
 				set_color <= rgb_start_screen;
 			end
 			// Switch screen
 			// Game mode
-			else if (switch_screen) begin
+			else if (mode == 2) begin
 				// Color in borders (temporary to show how much space is available)
 					// Scoreboard border
 				if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
 					set_color <= COLOR_RED;
 				end
 					// Barrier border
-				//else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
-				else if(is_barrier)	
+                else if(is_barrier)	begin
                     set_color <= rgb_barrier;
 				end
 					// Extra lives border 

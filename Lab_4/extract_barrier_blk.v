@@ -1,18 +1,18 @@
-module extract_barrier_blk{
+module extract_barrier_blk(
     //inputs
-    wire [10:0] xCoord;
-    wire [10:0] shiftedYCoord;
+    input wire [10:0] xCoord,
+    input wire [10:0] shiftedYCoord,
     //output
-    reg [1:0] currBarrier
-    reg [1:0] xVal;
-    reg [1:0] yVal;
-    reg inBarrier;
-};
+    output reg [1:0] currBarrier,
+    output reg [1:0] xVal,
+    output reg [1:0] yVal,
+    output reg inBarrier
+);
     parameter BARR_WIDTH = 76;
     parameter BARR0_XSTART = 74;
     parameter BARR1_XSTART = BARR0_XSTART+(2*BARR_WIDTH);
     parameter BARR2_XSTART = BARR0_XSTART+(4*BARR_WIDTH);
-    parameter BARR2_XSTART = BARR0_XSTART+(6*BARR_WIDTH);
+    parameter BARR3_XSTART = BARR0_XSTART+(6*BARR_WIDTH);
     parameter BARR_BLK_SZ = 19;
     reg [10:0] shiftedXCoord;
     always@(*) begin
