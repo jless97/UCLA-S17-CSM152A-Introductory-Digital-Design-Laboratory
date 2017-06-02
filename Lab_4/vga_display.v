@@ -104,7 +104,8 @@ module vga_display(
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Instantiate modules
-		// Instantiate start screen display
+	
+	// Instantiate start screen display
 	wire [10:0] rgb_start_screen;
 	start_screen start_screen_display(
 	//Inputs
@@ -115,7 +116,7 @@ module vga_display(
 		.rgb(rgb_start_screen)
 		);
 
-		// Instantiate gameover screen display
+	// Instantiate gameover screen display
 	wire [10:0] rgb_gameover_screen;
 	gameover_screen gameover_screen_display(
 	//Inputs
@@ -126,7 +127,7 @@ module vga_display(
 		.rgb(rgb_gameover_screen)
 		);
 	
-		// Instantiate space ship
+	// Instantiate space ship
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
 		// Eventually it will be (604:0) as there are 55 alien modules, so spaceship needs to check to see if hits any of the 55 aliens	
@@ -137,8 +138,12 @@ module vga_display(
 	wire [10:0] flying_saucer_xCoord;
 	wire [10:0] flying_saucer_yCoord;
 		// Coordinates of barrier(pieces)
-	wire [7:0] rgb_laser;
-	wire is_laser;
+		
+		// Coordinates of spaceship laser
+	wire [10:0] spaceship_laser_xCoord;
+	wire [10:0] spaceship_laser_yCoord;
+	wire [7:0] rgb_spaceship_laser;
+	wire is_spaceship_laser;
 	wire restart;
 	reg restart_temp;
 	spaceship update_spaceship(
@@ -159,11 +164,13 @@ module vga_display(
 	//Outputs
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship),
-		.rgb_laser(rgb_laser),
-		.is_laser(is_laser)
+		.rgb_spaceship_laser(rgb_spaceship_laser),
+		.is_spaceship_laser(is_spaceship_laser),
+		.current_laser_xCoord(spaceship_laser_xCoord),
+		.current_laser_yCoord(spaceship_laser_yCoord)
 		);
 	
-		// Instantiate flying saucer 
+	// Instantiate flying saucer 
 	wire [10:0] rgb_flying_saucer;
 	wire is_flying_saucer;
 	flying_saucer update_flying_saucer(
@@ -174,6 +181,8 @@ module vga_display(
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
+		.spaceship_laser_xCoord(spaceship_laser_xCoord),
+		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 	//Outputs
 		.rgb(rgb_flying_saucer),
 		.is_flying_saucer(is_flying_saucer),
@@ -532,7 +541,6 @@ module vga_display(
 //		.is_hit(is_hit[10])
 		);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
 // Second row	
 	// Alien 11
 	aliens update_alien_11(
@@ -996,7 +1004,6 @@ module vga_display(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 /*
 // Fourth row
-
 	// Alien 33
 	aliens update_alien_33(
 		.clk(clk),
@@ -1017,7 +1024,6 @@ module vga_display(
 		.is_bottom(is_bottom[33])
 //		.is_hit(is_hit[33])
 		);
-
 	// Alien 34
 	aliens update_alien_34(
 		.clk(clk),
@@ -1059,7 +1065,6 @@ module vga_display(
 		.is_bottom(is_bottom[35])
 //		.is_hit(is_hit[35])
 		);
-
 	// Alien 36
 	aliens update_alien_36(
 		.clk(clk),
@@ -1122,7 +1127,6 @@ module vga_display(
 		.is_bottom(is_bottom[38])
 //		.is_hit(is_hit[38])
 		);
-
 	// Alien 39
 	aliens update_alien_39(
 		.clk(clk),
@@ -1227,11 +1231,8 @@ module vga_display(
 		.is_bottom(is_bottom[43])
 //		.is_hit(is_hit[43])
 		);
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
 // Fifth row
-
 	// Alien 44
 	aliens update_alien_44(
 		.clk(clk),
@@ -1254,7 +1255,6 @@ module vga_display(
 		.is_bottom(is_bottom[44])
 //		.is_hit(is_hit[44])
 		);
-
 	// Alien 45
 	aliens update_alien_45(
 		.clk(clk),
@@ -1369,8 +1369,6 @@ module vga_display(
 		.is_bottom(is_bottom[49])
 //		.is_hit(is_hit[49])
 		);
-
-
 	// Alien 50
 	aliens update_alien_50(
 		.clk(clk),
@@ -1537,8 +1535,8 @@ module vga_display(
 						set_color <= rgb_spaceship;
 					end
 					// Color in spaceship laser
-					else if (is_laser) begin
-						set_color <= rgb_laser;
+					else if (is_spaceship_laser) begin
+						set_color <= rgb_spaceship_laser;
 					end
 					// Extra lives border 
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
