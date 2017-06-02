@@ -130,10 +130,9 @@ module vga_display(
 	// Instantiate space ship
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
-		// Eventually it will be (604:0) as there are 55 alien modules, so spaceship needs to check to see if hits any of the 55 aliens	
-		// Coordinates of alien modules
-	wire [10:0] alien_xCoord;
-	wire [10:0] alien_yCoord;
+		// Coordinates of alien modules (55 aliens, each having 11 bits)
+	wire [604:0] alien_xCoord;
+	wire [604:0] alien_yCoord;
 		// Coordinates of the flying saucer
 	wire [10:0] flying_saucer_xCoord;
 	wire [10:0] flying_saucer_yCoord;
@@ -190,7 +189,7 @@ module vga_display(
 		.current_yCoord(flying_saucer_yCoord)
 		);
 		
-			// Instantiate barriers
+	// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
 	wire [10:0] damage_x;
@@ -319,8 +318,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd320),
+		.initial_xCoord(11'd70),
+		.initial_yCoord(11'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -336,7 +335,7 @@ module vga_display(
 		.is_bottom(is_bottom[0])
 //		.is_hit(is_hit[0])
 		);
-/*		
+		
 	// Alien 1
 	aliens update_alien_1(
 		.clk(clk),
@@ -435,6 +434,7 @@ module vga_display(
 		.is_bottom(is_bottom[4])
 //		.is_hit(is_hit[4])
 		);
+
 	// Alien 5
 	aliens update_alien_5(
 		.clk(clk),
@@ -459,6 +459,7 @@ module vga_display(
 		.is_bottom(is_bottom[5])
 //		.is_hit(is_hit[5])
 		);
+		
 	// Alien 6
 	aliens update_alien_6(
 		.clk(clk),
@@ -483,6 +484,7 @@ module vga_display(
 		.is_bottom(is_bottom[6])
 //		.is_hit(is_hit[6])
 		);
+		
 		// Alien 7
 	aliens update_alien_7(
 		.clk(clk),
@@ -552,7 +554,7 @@ module vga_display(
 		.rgb(rgb_aliens[79:72]),
 		.is_alien(is_alien[9]),
 		.current_xCoord(alien_xCoord[109:99]),
-		.current_yCoord(alien_yCoord[10:99]),
+		.current_yCoord(alien_yCoord[109:99]),
 		.is_edge(is_edge[9]),
 		.is_bottom(is_bottom[9])
 //		.is_hit(is_hit[9])
@@ -1130,9 +1132,9 @@ module vga_display(
 		.is_bottom(is_bottom[32])
 //		.is_hit(is_hit[32])
 		);
-*/
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-/*
+
 // Fourth row
 	// Alien 33
 	aliens update_alien_33(
@@ -1158,6 +1160,7 @@ module vga_display(
 		.is_bottom(is_bottom[33])
 //		.is_hit(is_hit[33])
 		);
+		
 	// Alien 34
 	aliens update_alien_34(
 		.clk(clk),
@@ -1207,6 +1210,7 @@ module vga_display(
 		.is_bottom(is_bottom[35])
 //		.is_hit(is_hit[35])
 		);
+		
 	// Alien 36
 	aliens update_alien_36(
 		.clk(clk),
@@ -1281,6 +1285,7 @@ module vga_display(
 		.is_bottom(is_bottom[38])
 //		.is_hit(is_hit[38])
 		);
+		
 	// Alien 39
 	aliens update_alien_39(
 		.clk(clk),
@@ -1411,7 +1416,6 @@ module vga_display(
 	aliens update_alien_44(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1433,11 +1437,11 @@ module vga_display(
 		.is_bottom(is_bottom[44])
 //		.is_hit(is_hit[44])
 		);
+		
 	// Alien 45
 	aliens update_alien_45(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1464,7 +1468,6 @@ module vga_display(
 	aliens update_alien_46(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1491,7 +1494,6 @@ module vga_display(
 	aliens update_alien_47(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1518,7 +1520,6 @@ module vga_display(
 	aliens update_alien_48(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1545,7 +1546,6 @@ module vga_display(
 	aliens update_alien_49(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1570,7 +1570,6 @@ module vga_display(
 	aliens update_alien_50(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1597,7 +1596,6 @@ module vga_display(
 	aliens update_alien_51(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1624,7 +1622,6 @@ module vga_display(
 	aliens update_alien_52(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1651,7 +1648,6 @@ module vga_display(
 	aliens update_alien_53(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1678,7 +1674,6 @@ module vga_display(
 	aliens update_alien_54(
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -1700,7 +1695,7 @@ module vga_display(
 		.is_bottom(is_bottom[54])
 //		.is_hit(is_hit[54])
 		);
-*/
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -1787,7 +1782,6 @@ module vga_display(
 					else if (is_alien[0]) begin
 						set_color <= rgb_aliens[7:0];
 					end
-					/*
 					else if (is_alien[1]) begin
 						set_color <= rgb_aliens[15:8];
 					end
@@ -1950,7 +1944,7 @@ module vga_display(
 					else if (is_alien[54]) begin
 						set_color <= rgb_aliens[439:432];
 					end
-					*/
+					
 					else begin
 						set_color <= COLOR_SPACE;
 					end
