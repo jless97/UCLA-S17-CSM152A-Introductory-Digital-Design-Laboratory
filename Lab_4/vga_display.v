@@ -27,7 +27,7 @@ module vga_display(
 	input wire rst,
    input wire button_left, 
 	input wire button_right, 
-	input wire button_center,
+	input wire button_shoot,
 	input wire button_display,
 	input wire start_screen,
 	input wire switch_screen,
@@ -107,50 +107,67 @@ module vga_display(
 		// Instantiate start screen display
 	wire [10:0] rgb_start_screen;
 	start_screen start_screen_display(
+	//Inputs
 		.clk(clk),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
+	//Outputs
 		.rgb(rgb_start_screen)
 		);
 
 		// Instantiate gameover screen display
 	wire [10:0] rgb_gameover_screen;
 	gameover_screen gameover_screen_display(
+	//Inputs
 		.clk(clk),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
+	//Outputs
 		.rgb(rgb_gameover_screen)
 		);
 	
 		// Instantiate space ship
-	wire [10:0] rgb_spaceship;
+	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
+		// Eventually it will be (604:0) as there are 55 alien modules, so spaceship needs to check to see if hits any of the 55 aliens
+	wire [10:0] alien_xCoord;
+	wire [10:0] alien_yCoord;
+	wire [7:0] rgb_laser;
+	wire is_laser;
 	wire restart;
 	reg restart_temp;
 	spaceship update_spaceship(
+	//Inputs
 		.clk(clk),
 		.rst(rst),
 		.restart(restart),
 		.button_left(button_left),
 		.button_right(button_right),
-		.button_center(button_center),
+		.button_shoot(button_shoot),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
+		.alien_xCoord(alien_xCoord),
+		.alien_yCoord(alien_yCoord),
+	//Outputs
 		.rgb(rgb_spaceship),
-		.is_spaceship(is_spaceship)
+		.is_spaceship(is_spaceship),
+		.rgb_laser(rgb_laser),
+		.is_laser(is_laser)
 		);
 	
 		// Instantiate flying saucer 
 	wire [10:0] rgb_flying_saucer;
 	wire is_flying_saucer;
 	flying_saucer update_flying_saucer(
+	//Inputs
 		.clk(clk),
 		.rst(rst),
 		.restart(restart),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
+	//Outputs
 		.rgb(rgb_flying_saucer),
 		.is_flying_saucer(is_flying_saucer)
 		);
@@ -165,6 +182,7 @@ module vga_display(
 	assign damage_y = 0;
 	assign is_damage = 0;
 	set_barriers update_barriers(
+	//Inputs
 		.clk(clk),
 	   .rst(rst),
 		.restart(restart),
@@ -173,6 +191,7 @@ module vga_display(
 	   .damage_x(damage_x),
 	   .damage_y(damage_y),
 	   .new_damage(new_damage),
+	//Outputs
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier)
 		);
@@ -229,57 +248,38 @@ module vga_display(
 	reg move_left_temp;
 	reg move_right_temp;
 	reg move_down_temp;
+		reg halt_temp;
 	initial begin
 		move_left_temp = 0;
-		move_right_temp = 1;
+		move_right_temp = 0;
 		move_down_temp = 0;
-		lives_temp = 2;
-		gameover_temp = 0;
-		restart_temp = 0;
 	end
 
-	always @ (posedge clk or negedge clk) begin
-		if (rst || button_display || restart) begin
+	always @ (posedge clk) begin
+		if (rst || button_display) begin
 			move_left_temp <= 0;
-			move_right_temp <= 1;
+			move_right_temp <= 0;
 			move_down_temp <= 0;
-			restart_temp <= 0;
 		end
 		else begin
-			if (is_bottom) begin
-				restart_temp <= 1;
-//				lives_temp <= lives - 1;
-//				if (lives == 0) begin
-//					gameover_temp <= 1;
-//				end
-//				else begin
-//					restart_temp <= 1;
-//				end
-				move_left_temp <= 0;
+			if (is_edge && move_left) begin
+				move_down_temp <= 1;
 				move_right_temp <= 1;
-				move_down_temp <= 0;
+				move_left_temp <= 0;
 			end
-			else begin
-				if (is_edge && move_left) begin
-					move_down_temp <= 1;
-					move_right_temp <= 1;
-					move_left_temp <= 0;
-				end
-				if (is_edge && move_right) begin
-					move_down_temp <= 1;
-					move_left_temp <= 1;
-					move_right_temp <= 0;
-				end
-				if (!is_edge) begin
-					move_left_temp <= move_left;
-					move_right_temp <= move_right;
-					move_down_temp <= 0;
-				end
+			if (is_edge && move_right) begin
+				move_down_temp <= 1;
+				move_left_temp <= 1;
+				move_right_temp <= 0;
+			end
+			if (!is_edge) begin
+				move_left_temp <= move_left;
+				move_right_temp <= move_right;
+				move_down_temp <= 0;
 			end
 		end
 	end
 	
-	// Assign Directions
 	assign move_left = move_left_temp;
 	assign move_right = move_right_temp;
 	assign move_down = move_down_temp;
@@ -290,29 +290,33 @@ module vga_display(
 	assign restart = restart_temp;
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-/*
+
 // First row
 	// Alien 0
 	aliens update_alien_0(
+	// Inputs
 		.clk(clk),
 		.rst(rst),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd320),
+		.initial_yCoord(11'd320),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
 		//.color(0),
+	// Outputs
 		.rgb(rgb_aliens[7:0]),
 		.is_alien(is_alien[0]),
+		.current_xCoord(alien_xCoord),
+		.current_yCoord(alien_yCoord),
 		.is_edge(is_edge[0]),
 		.is_bottom(is_bottom[0])
 //		.is_hit(is_hit[0])
 		);
-		
+/*		
 	// Alien 1
 	aliens update_alien_1(
 		.clk(clk),
@@ -1214,7 +1218,7 @@ module vga_display(
 		.is_bottom(is_bottom[43])
 //		.is_hit(is_hit[43])
 		);
-*/
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
 // Fifth row
@@ -1472,7 +1476,7 @@ module vga_display(
 		.is_bottom(is_bottom[54])
 //		.is_hit(is_hit[54])
 		);
-
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -1523,7 +1527,11 @@ module vga_display(
 					else if (is_spaceship) begin
 						set_color <= rgb_spaceship;
 					end
-											// Extra lives border 
+					// Color in spaceship laser
+					else if (is_laser) begin
+						set_color <= rgb_laser;
+					end
+					// Extra lives border 
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
@@ -1532,13 +1540,13 @@ module vga_display(
 //						set_color <= rgb_scoreboard_bottom;
 //					end
 						// Life 2
-					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 50 && xCoord <= 90 && lives > 0) begin
-						set_color <= COLOR_SPACESHIP;
-					end
-						 //Life 3
-					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 100 && xCoord <= 140 && lives > 1) begin
-						set_color <= COLOR_SPACESHIP;
-					end
+//					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 50 && xCoord <= 90 && lives > 0) begin
+//						set_color <= COLOR_SPACESHIP;
+//					end
+//						 //Life 3
+//					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 100 && xCoord <= 140 && lives > 1) begin
+//						set_color <= COLOR_SPACESHIP;
+//					end
 				// Life 4 (when cheat code)
 //					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 150 && xCoord <= 190 && lives > 2) begin
 //						set_color <= COLOR_SPACESHIP;
@@ -1551,10 +1559,11 @@ module vga_display(
 //					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 250 && xCoord <= 290 && lives > 4) begin
 //						set_color <= COLOR_SPACESHIP;
 //					end
-					// Color in aliens
+					// Color in aliens				
 					else if (is_alien[0]) begin
 						set_color <= rgb_aliens[7:0];
 					end
+					/*
 					else if (is_alien[1]) begin
 						set_color <= rgb_aliens[15:8];
 					end
@@ -1717,6 +1726,7 @@ module vga_display(
 					else if (is_alien[54]) begin
 						set_color <= rgb_aliens[439:432];
 					end
+					*/
 					else begin
 						set_color <= COLOR_SPACE;
 					end
