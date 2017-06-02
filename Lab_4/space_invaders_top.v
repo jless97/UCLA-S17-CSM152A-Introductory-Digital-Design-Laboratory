@@ -125,7 +125,7 @@ module space_invaders_top(
 		.rst(rst_db),
 		.button_left(button_left_db),
 		.button_right(button_right_db),
-		.button_center(button_shoot_db),
+		.button_shoot(button_shoot_db),
 		.button_display(button_display_db),
 		.start_screen(start_screen_db),
 		.switch_screen(switch_screen_db),
