@@ -25,7 +25,7 @@ module spaceship(
 	input wire restart,
 	input wire button_left,
 	input wire button_right,
-	input wire button_center,
+	input wire button_shoot,
 	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
@@ -117,7 +117,7 @@ module spaceship(
 				set_color <= COLOR_SPACESHIP;
 			end
 			// Update spaceship laser
-			if (button_center) begin
+			if (button_shoot) begin
 				is_active_laser <= 1;
 			end
 			if (is_active_laser) begin
