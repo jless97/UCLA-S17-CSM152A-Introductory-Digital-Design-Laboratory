@@ -29,6 +29,8 @@ module spaceship(
 	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
+	input wire [10:0] alien_xCoord,
+	input wire [10:0] alien_yCoord,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
@@ -68,6 +70,10 @@ module spaceship(
 	parameter LASER_LENGTH = 11'd3;
 	parameter LASER_INITIAL_X = 11'd320;
 	parameter LASER_INITIAL_Y = 11'd417;
+	
+	// Alien Parameters
+	parameter ALIEN_HEIGHT = 11'd16;
+	parameter ALIEN_LENGTH = 11'd30;
 	
 	// Position Updates
    parameter MOVE_LEFT  = 11'd1;
@@ -116,35 +122,31 @@ module spaceship(
 				) begin
 				set_color <= COLOR_SPACESHIP;
 			end
+			// Laser controls
 			// Update spaceship laser
 			if (button_shoot) begin
 				is_active_laser <= 1;
+				laser_xCoord <= spaceship_coord;
 			end
 			if (is_active_laser) begin
-							// If hit the top of the screen, disappear
-				if (laser_yCoord <= SCOREBOARD_BOTTOM + LASER_HEIGHT / 2 + MOVE_UP) begin
+				// If hit the top of the screen, disappear
+				if ((laser_yCoord <= SCOREBOARD_BOTTOM + LASER_HEIGHT / 2 + MOVE_UP) || (laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					 laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)) begin
 					// Reset laser back to the spaceship
-					laser_xCoord <= LASER_INITIAL_X;
+					laser_xCoord <= spaceship_coord;
 					laser_yCoord <= LASER_INITIAL_Y;
 					set_color_laser <= COLOR_LASER_BLACK;
 					is_active_laser <= 0;
 				end
-				// Laser moves at a certain speed (TBD)
-				if (laser_counter == 2) begin
+				else begin
 					laser_yCoord <= laser_yCoord - MOVE_UP;
 					laser_xCoord <= laser_xCoord;
-					laser_counter <= 0;
-					set_color_laser <= COLOR_LASER;
-				end
-				else begin
-					laser_counter <= laser_counter + 1;
 					set_color_laser <= COLOR_LASER;
 				end
 			end
 			else begin
 				set_color_laser <= COLOR_LASER_BLACK;
 			end
-			
 		end
 	end
 
@@ -152,7 +154,7 @@ module spaceship(
 	assign rgb = set_color;
 	assign is_spaceship = (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
 								  xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
-									);
+								  );
 	// Assign laser colors
 	assign rgb_laser = set_color_laser;
 	assign is_laser = (yCoord >= laser_yCoord - LASER_HEIGHT / 2 && yCoord <= laser_yCoord + LASER_HEIGHT / 2 &&
