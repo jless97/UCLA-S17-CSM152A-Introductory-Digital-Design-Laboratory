@@ -51,8 +51,6 @@ module space_invaders_top(
 	wire button_right_db;
 	wire button_shoot_db;
 	wire button_display_db;
-	wire start_screen_db;
-	wire switch_screen_db;
 	
 	// Debounce signals
 		// Reset button
@@ -85,18 +83,6 @@ module space_invaders_top(
 		.button(button_display),
 		.bounce_state(button_display_db)
 	);
-		// Start screen switch
-	debouncer start_screen_func(
-		.clk(clk),
-		.button(start_screen),
-		.bounce_state(start_screen_db)
-	);	
-		// Switch screen switch
-	debouncer switch_screen_switch(
-		.clk(clk),
-		.button(switch_screen),
-		.bounce_state(switch_screen_db)
-	);
 	
 	// Generate display clock and in-game clock
 	clk_div clk_div(
@@ -127,8 +113,6 @@ module space_invaders_top(
 		.button_right(button_right_db),
 		.button_shoot(button_shoot_db),
 		.button_display(button_display_db),
-		.start_screen(start_screen_db),
-		.switch_screen(switch_screen_db),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.rgb(rgb)
