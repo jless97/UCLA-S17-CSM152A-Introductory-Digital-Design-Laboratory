@@ -129,9 +129,14 @@ module vga_display(
 		// Instantiate space ship
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
-		// Eventually it will be (604:0) as there are 55 alien modules, so spaceship needs to check to see if hits any of the 55 aliens
+		// Eventually it will be (604:0) as there are 55 alien modules, so spaceship needs to check to see if hits any of the 55 aliens	
+		// Coordinates of alien modules
 	wire [10:0] alien_xCoord;
 	wire [10:0] alien_yCoord;
+		// Coordinates of the flying saucer
+	wire [10:0] flying_saucer_xCoord;
+	wire [10:0] flying_saucer_yCoord;
+		// Coordinates of barrier(pieces)
 	wire [7:0] rgb_laser;
 	wire is_laser;
 	wire restart;
@@ -149,6 +154,8 @@ module vga_display(
 		.yCoord(yCoord),
 		.alien_xCoord(alien_xCoord),
 		.alien_yCoord(alien_yCoord),
+		.flying_saucer_xCoord(flying_saucer_xCoord),
+		.flying_saucer_yCoord(flying_saucer_yCoord),
 	//Outputs
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship),
@@ -169,7 +176,9 @@ module vga_display(
 		.yCoord(yCoord),
 	//Outputs
 		.rgb(rgb_flying_saucer),
-		.is_flying_saucer(is_flying_saucer)
+		.is_flying_saucer(is_flying_saucer),
+		.current_xCoord(flying_saucer_xCoord),
+		.current_yCoord(flying_saucer_yCoord)
 		);
 		
 			// Instantiate barriers
