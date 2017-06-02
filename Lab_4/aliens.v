@@ -29,6 +29,8 @@ module aliens(
 	// Trying to add aliens top
 	input wire [10:0] initial_xCoord,
 	input wire [10:0] initial_yCoord,
+	input wire [10:0] spaceship_laser_xCoord,
+	input wire [10:0] spaceship_laser_yCoord,
 	input wire move_left,
 	input wire move_right,
 	input wire move_down,
@@ -53,17 +55,24 @@ module aliens(
 		// Alien Parameters
 	parameter ALIEN_HEIGHT = 11'd16;
 	parameter ALIEN_LENGTH = 11'd30;
+	parameter ALIEN_DEAD = 11'd700;
+	
+	// Laser Parameters
+	parameter LASER_HEIGHT = 11'd10;
+	parameter LASER_LENGTH = 11'd3;
 	
 	// Alien registers
 	reg [10:0] alien_xCoord;
 	reg [10:0] alien_yCoord;
 	reg [10:0] alien_counter;
+	reg can_move;
 	reg is_edge_temp;
 		
 	// Position Updates
 	parameter ALIEN_MOVE_LEFT = 11'd10;
 	parameter ALIEN_MOVE_RIGHT = 11'd10;
 	parameter ALIEN_MOVE_DOWN = 11'd10;	
+	parameter MOVE_UP = 11'd1;
 	
 	// Border (separation of objects) Parameters
 	parameter BARRIER_TOP = 11'd340;
@@ -73,6 +82,7 @@ module aliens(
 		alien_xCoord = initial_xCoord;
 		alien_yCoord = initial_yCoord;
 		alien_counter = 0;
+		can_move = 1;
 		is_edge_temp = 0;
 	end
 
@@ -84,53 +94,63 @@ module aliens(
 			// Reset alien spaceship
 			alien_xCoord <= initial_xCoord;
 			alien_yCoord <= initial_yCoord;
+			alien_counter <= 0;
+			can_move <= 1;
 		end
 		if (clk_frame && mode == 2) begin
 			// Alien Controls
-			// Moving left, update alien position to the left (if possible)
-			if (alien_counter >= 200) begin
-				alien_counter <= 0;
-				// Moving down, update alien position downwards (if possible)
-				if (move_down) begin
-					// If at the bottom edge of the barriers, then game over
-					if (alien_yCoord >= BARRIER_TOP - ALIEN_HEIGHT / 2) begin
-						// gameover
-						//is_start_screen = 1;
-						//is_switch_screen = 0;
-						//is_gameover_screen = 1;
-					end
-					// Normal move down
-					else begin
-						alien_yCoord <= alien_yCoord + ALIEN_MOVE_DOWN;
-						is_edge_temp <= 0;
-					end
-				end
-				else if (move_left && !is_edge) begin
-					// If at left edge of the display, bounce back
-					if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2 + 2*ALIEN_MOVE_LEFT ) begin
-						is_edge_temp <= 1;
-                        alien_xCoord <= alien_xCoord - ALIEN_MOVE_LEFT;
-					end
-					//Normal left move
-					else begin
-						alien_xCoord <= alien_xCoord - ALIEN_MOVE_LEFT;
-					end
-				end
-				// Moving right, update alien position to the right (if possible)
-				else if (move_right && !is_edge) begin
-					// If at right edge of the display, bounce back
-					if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT) begin
-						is_edge_temp <= 1;
-                        alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
-					end
-					// Normal right move
-					else begin
-						alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
-					end
-				end
+			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
+			if ((spaceship_laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
+				  spaceship_laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && spaceship_laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)
+				) begin
+				alien_xCoord <= ALIEN_DEAD;
+				can_move <= 0;
 			end
-			else begin
-				alien_counter <= alien_counter + 1;
+			// Check to see that alien is not destroyed
+			if (can_move) begin
+				if (alien_counter >= 200) begin
+					alien_counter <= 0;
+					// Moving down
+					if (move_down) begin
+						// If at the bottom edge of the barriers, then game over
+						if (alien_yCoord >= BARRIER_TOP - ALIEN_HEIGHT / 2 - ALIEN_MOVE_DOWN) begin
+							// gameover or remove a life
+
+						end
+						// Normal move down
+						else begin
+							alien_yCoord <= alien_yCoord + ALIEN_MOVE_DOWN;
+							is_edge_temp <= 0;
+						end
+					end
+					// Moving left
+					else if (move_left && !is_edge) begin
+						// If at left edge of the display, bounce back
+						if (alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2 + 2*ALIEN_MOVE_LEFT ) begin
+							is_edge_temp <= 1;
+									alien_xCoord <= alien_xCoord - ALIEN_MOVE_LEFT;
+						end
+						//Normal left move
+						else begin
+							alien_xCoord <= alien_xCoord - ALIEN_MOVE_LEFT;
+						end
+					end
+					// Moving right
+					else if (move_right && !is_edge) begin
+						// If at right edge of the display, bounce back
+						if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT) begin
+							is_edge_temp <= 1;
+									alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
+						end
+						// Normal right move
+						else begin
+							alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
+						end
+					end
+				end
+				else begin
+					alien_counter <= alien_counter + 1;
+				end
 			end
 			// Update display of aliens
 			if (yCoord >= alien_yCoord - ALIEN_HEIGHT / 2 && yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 &&
