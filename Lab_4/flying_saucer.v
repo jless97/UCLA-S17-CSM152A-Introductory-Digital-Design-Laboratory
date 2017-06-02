@@ -30,7 +30,9 @@ module flying_saucer(
 	input wire [10:0] yCoord,
 	// Outputs
 	output wire [7:0] rgb,
-	output wire is_flying_saucer
+	output wire is_flying_saucer,
+	output wire [10:0] current_xCoord,
+	output wire [10:0] current_yCoord
     );
 	  	  
 	// Display screen boundaries
@@ -47,8 +49,9 @@ module flying_saucer(
 	parameter FLYING_SAUCER_HEIGHT = 11'd15;
 	parameter FLYING_SAUCER_LENGTH = 11'd40;
 	parameter FLYING_SAUCER_TOP = 11'd50;
-	parameter FLYING_SAUCER_BOTTOM = 11'd65;
-	parameter FLYING_SAUCER_INITIAL = -11'd50;
+	parameter FLYING_SAUCER_BOTTOM = 11'd66;
+	parameter FLYING_SAUCER_INITIAL_X = -11'd50;
+	parameter FLYING_SAUCER_Y = 11'd58;
 	 
 	// Position Updates
    parameter MOVE_LEFT  = 11'd1;
@@ -62,7 +65,7 @@ module flying_saucer(
 	
 	// Initialize flying saucer
 	initial begin
-		flying_saucer_coord = FLYING_SAUCER_INITIAL;
+		flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
 		flying_saucer_wait_timer = 11'd0;
 		flying_saucer_move_left = 1;
 		flying_saucer_counter = 0;
@@ -73,7 +76,7 @@ module flying_saucer(
 	always @ (posedge clk) begin
 	// Flying Saucer Controls
 		if (rst || mode == 0 || mode == 1 || restart) begin
-			flying_saucer_coord = FLYING_SAUCER_INITIAL;
+			flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
 			flying_saucer_wait_timer = 11'd0;
 			flying_saucer_move_left = 1;
 			flying_saucer_counter = 0;
@@ -97,7 +100,7 @@ module flying_saucer(
 				flying_saucer_wait_timer = flying_saucer_wait_timer + 11'b1;
 				if (flying_saucer_wait_timer == 11'd25) begin
 					flying_saucer_move_left = 1;
-					flying_saucer_coord = FLYING_SAUCER_INITIAL;
+					flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
 					flying_saucer_wait_timer = 11'd0;
 				end
 			end
@@ -111,6 +114,11 @@ module flying_saucer(
 		end
 	 end 
 	 
+	 // Assign coordiates (to be passed to spaceship module)
+	 assign current_xCoord = flying_saucer_coord;
+	 assign current_yCoord = FLYING_SAUCER_Y;
+	 
+	 // Assign color parameters
 	 assign rgb = set_color;
 	 assign is_flying_saucer = (yCoord >= FLYING_SAUCER_TOP && yCoord <= FLYING_SAUCER_BOTTOM &&
 										 xCoord >= flying_saucer_coord - FLYING_SAUCER_LENGTH / 2 && xCoord <= flying_saucer_coord + FLYING_SAUCER_LENGTH / 2
