@@ -94,14 +94,14 @@ module set_barriers(
     reg [7:0] rgb_temp;
     always @ (posedge clk) begin
         if(rst || restart) begin
-            for(i = 0; i <= 3; i = i+1) begin
-                for(k = 0; k <= 3; k = k+1) begin
-                    for(m = 0; m <= 3; m = m+1) begin
+            for(i = 3'b000; i <= 3'b011; i = i+1) begin
+                for(k = 3'b000; k <= 3'b011; k = k+1) begin
+                    for(m = 3'b000; m <= 3'b011; m = m+1) begin
                         if(((k == 2'b00 || k == 2'b11) && m == 2'b11) || ((k == 2'b01 || k == 2'b10) && m > 2'b01)) begin
-                            barrierInfo [i] [k] [m] = 2'b11;
+                            barrierInfo [i] [k] [m] = 3'b000;
                         end
                         else begin
-                            barrierInfo [i] [k] [m] = 2'b00;
+                            barrierInfo [i] [k] [m] = 3'b011;
                         end
                     end
                 end
