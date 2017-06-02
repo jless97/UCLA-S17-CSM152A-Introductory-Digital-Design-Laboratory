@@ -128,7 +128,10 @@ module scoreboard(
 					end // else: !if(...
 				end // if (dig_6 == 3)
 			end
-      end
+      		end
+		else begin
+			set_color <= COLOR_BLACK;
+		end
    end
    
    assign rgb = set_color;
