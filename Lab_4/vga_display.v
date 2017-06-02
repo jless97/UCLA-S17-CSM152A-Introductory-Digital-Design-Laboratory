@@ -269,14 +269,14 @@ module vga_display(
 		reg halt_temp;
 	initial begin
 		move_left_temp = 0;
-		move_right_temp = 0;
+		move_right_temp = 1;
 		move_down_temp = 0;
 	end
 
 	always @ (posedge clk) begin
 		if (rst || button_display) begin
 			move_left_temp <= 0;
-			move_right_temp <= 0;
+			move_right_temp <= 1;
 			move_down_temp <= 0;
 		end
 		else begin
@@ -321,6 +321,8 @@ module vga_display(
 		.aliens(aliens[0]),
 		.initial_xCoord(11'd320),
 		.initial_yCoord(11'd320),
+		.spaceship_laser_xCoord(spaceship_laser_xCoord),
+		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
