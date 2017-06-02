@@ -860,7 +860,7 @@ module vga_display(
 		);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-/*
+
 // Third row
 	// Alien 22
 	aliens update_alien_22(
@@ -882,10 +882,11 @@ module vga_display(
 		.is_alien(is_alien[22]),
 		.current_xCoord(alien_xCoord[252:242]),
 		.current_yCoord(alien_yCoord[252:242]),
-		.is_edge(is_edge[22]),
+		.is_edge(is_edge[22])
 		//.is_bottom(is_bottom[22])
 //		.is_hit(is_hit[22])
 		);
+		
 	// Alien 23
 	aliens update_alien_23(
 		.clk(clk),
@@ -906,11 +907,11 @@ module vga_display(
 		.is_alien(is_alien[23]),
 		.current_xCoord(alien_xCoord[263:253]),
 		.current_yCoord(alien_yCoord[263:253]),
-		.is_edge(is_edge[23]),
+		.is_edge(is_edge[23])
 		//.is_bottom(is_bottom[23])
 //		.is_hit(is_hit[23])
 		);
-		
+	/*
 	// Alien 24
 	aliens update_alien_24(
 		.clk(clk),
@@ -931,7 +932,7 @@ module vga_display(
 		.is_alien(is_alien[24]),
 		.current_xCoord(alien_xCoord[274:264]),
 		.current_yCoord(alien_yCoord[274:264]),
-		.is_edge(is_edge[24]),
+		.is_edge(is_edge[24])
 		//.is_bottom(is_bottom[24])
 //		.is_hit(is_hit[24])
 		);
@@ -956,7 +957,7 @@ module vga_display(
 		.is_alien(is_alien[25]),
 		.current_xCoord(alien_xCoord[285:275]),
 		.current_yCoord(alien_yCoord[285:275]),
-		.is_edge(is_edge[25]),
+		.is_edge(is_edge[25])
 		//.is_bottom(is_bottom[25])
 //		.is_hit(is_hit[25])
 		);
@@ -1855,13 +1856,13 @@ module vga_display(
 					else if (is_alien[21]) begin
 						set_color <= rgb_aliens[175:168];
 					end
-					/*
 					else if (is_alien[22]) begin
 						set_color <= rgb_aliens[183:176];
 					end
 					else if (is_alien[23]) begin
 						set_color <= rgb_aliens[191:184];
 					end
+					/*
 					else if (is_alien[24]) begin
 						set_color <= rgb_aliens[199:192];
 					end
