@@ -25,7 +25,7 @@ module space_invaders_top(
 		// Buttons
 	input wire button_left,
 	input wire button_right,
-	input wire button_center,
+	input wire button_shoot,
 	input wire button_display,
 		// Switches
 	input wire start_screen,
@@ -49,7 +49,7 @@ module space_invaders_top(
 	wire rst_db;
 	wire button_left_db;
 	wire button_right_db;
-	wire button_center_db;
+	wire button_shoot_db;
 	wire button_display_db;
 	wire start_screen_db;
 	wire switch_screen_db;
@@ -74,10 +74,10 @@ module space_invaders_top(
 		.bounce_state(button_right_db)
 	);
 		// Center button
-	debouncer button_center_func(
+	debouncer button_shoot_func(
 		.clk(clk),
-		.button(button_center),
-		.bounce_state(button_center_db)
+		.button(button_shoot),
+		.bounce_state(button_shoot_db)
 	);
 		// Change display button
 	debouncer_display_button button_display_func(
@@ -125,7 +125,7 @@ module space_invaders_top(
 		.rst(rst_db),
 		.button_left(button_left_db),
 		.button_right(button_right_db),
-		.button_center(button_center_db),
+		.button_center(button_shoot_db),
 		.button_display(button_display_db),
 		.start_screen(start_screen_db),
 		.switch_screen(switch_screen_db),
