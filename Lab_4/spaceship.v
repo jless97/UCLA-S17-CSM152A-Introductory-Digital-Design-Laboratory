@@ -210,15 +210,15 @@ module spaceship(
 					  laser_xCoord >= alien_xCoord[230:220] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[230:220] + ALIEN_LENGTH / 2) ||
 					  // Alien 21
 					 (laser_yCoord <= alien_yCoord[241:231] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					  laser_xCoord >= alien_xCoord[241:231] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[241:231] + ALIEN_LENGTH / 2)  
+					  laser_xCoord >= alien_xCoord[241:231] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[241:231] + ALIEN_LENGTH / 2) ||  
 					  // Alien 22
-/*					  (laser_yCoord <= alien_yCoord[252:242] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  (laser_yCoord <= alien_yCoord[252:242] + ALIEN_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= alien_xCoord[252:242] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[252:242] + ALIEN_LENGTH / 2) ||
 					  // Alien 23
 					 (laser_yCoord <= alien_yCoord[263:253] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					  laser_xCoord >= alien_xCoord[263:253] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[263:253] + ALIEN_LENGTH / 2) ||
+					  laser_xCoord >= alien_xCoord[263:253] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[263:253] + ALIEN_LENGTH / 2) 
 					  // Alien 24
-					  (laser_yCoord <= alien_yCoord[274:264] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+/*					  (laser_yCoord <= alien_yCoord[274:264] + ALIEN_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= alien_xCoord[274:264] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[274:264] + ALIEN_LENGTH / 2) ||
 					  // Alien 25
 					 (laser_yCoord <= alien_yCoord[285:275] + ALIEN_HEIGHT / 2 + MOVE_UP &&
