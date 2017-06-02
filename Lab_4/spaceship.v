@@ -36,8 +36,10 @@ module spaceship(
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
-	output wire [7:0] rgb_laser,
-	output wire is_laser
+	output wire [7:0] rgb_spaceship_laser,
+	output wire is_spaceship_laser,
+	output wire [10:0] current_laser_xCoord,
+	output wire [10:0] current_laser_yCoord
     );
 
 	///////////////////////////////////////////////////////
@@ -144,7 +146,8 @@ module spaceship(
 					  laser_xCoord <= flying_saucer_xCoord + FLYING_SAUCER_LENGTH / 2) ||
 					// Aliens
     				 (laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					  laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)) begin
+					  laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)
+					  ) begin
 					laser_xCoord <= spaceship_coord;
 					laser_yCoord <= LASER_INITIAL_Y;
 					set_color_laser <= COLOR_LASER_BLACK;
@@ -162,14 +165,18 @@ module spaceship(
 		end
 	end
 
+	// Assign laser coordinates (to be fed into barriers, aliens, and flying saucer modules)
+	assign current_laser_xCoord = laser_xCoord;
+	assign current_laser_yCoord = laser_yCoord;
+
 	// Assign spaceship colors
 	assign rgb = set_color;
 	assign is_spaceship = (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
 								  xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
 								  );
 	// Assign laser colors
-	assign rgb_laser = set_color_laser;
-	assign is_laser = (yCoord >= laser_yCoord - LASER_HEIGHT / 2 && yCoord <= laser_yCoord + LASER_HEIGHT / 2 &&
+	assign rgb_spaceship_laser = set_color_laser;
+	assign is_spaceship_laser = (yCoord >= laser_yCoord - LASER_HEIGHT / 2 && yCoord <= laser_yCoord + LASER_HEIGHT / 2 &&
 							 xCoord >= laser_xCoord - LASER_LENGTH / 2 && xCoord <= laser_xCoord + LASER_LENGTH / 2); // TODO
 	
 endmodule
