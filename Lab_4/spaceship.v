@@ -29,6 +29,8 @@ module spaceship(
 	input wire [1:0] mode,
 	input wire [10:0] xCoord,
 	input wire [10:0] yCoord,
+	input wire [10:0] flying_saucer_xCoord,
+	input wire [10:0] flying_saucer_yCoord,
 	input wire [10:0] alien_xCoord,
 	input wire [10:0] alien_yCoord,
 	// Outputs
@@ -70,6 +72,10 @@ module spaceship(
 	parameter LASER_LENGTH = 11'd3;
 	parameter LASER_INITIAL_X = 11'd320;
 	parameter LASER_INITIAL_Y = 11'd417;
+	
+	// Flying Saucer Parameters
+	parameter FLYING_SAUCER_HEIGHT = 11'd15;
+	parameter FLYING_SAUCER_LENGTH = 11'd40;
 	
 	// Alien Parameters
 	parameter ALIEN_HEIGHT = 11'd16;
@@ -129,10 +135,16 @@ module spaceship(
 				laser_xCoord <= spaceship_coord;
 			end
 			if (is_active_laser) begin
-				// If hit the top of the screen, disappear
-				if ((laser_yCoord <= SCOREBOARD_BOTTOM + LASER_HEIGHT / 2 + MOVE_UP) || (laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					 laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)) begin
-					// Reset laser back to the spaceship
+				// If hit any objects, then reset laser back to the spaceship
+					// Top of the display (the bottom of the scoreboard)
+				if ((laser_yCoord <= SCOREBOARD_BOTTOM + LASER_HEIGHT / 2 + MOVE_UP) ||
+					// Flying saucer
+					 (laser_yCoord <= flying_saucer_yCoord + FLYING_SAUCER_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= flying_saucer_xCoord - FLYING_SAUCER_LENGTH / 2 &&
+					  laser_xCoord <= flying_saucer_xCoord + FLYING_SAUCER_LENGTH / 2) ||
+					// Aliens
+    				 (laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)) begin
 					laser_xCoord <= spaceship_coord;
 					laser_yCoord <= LASER_INITIAL_Y;
 					set_color_laser <= COLOR_LASER_BLACK;
