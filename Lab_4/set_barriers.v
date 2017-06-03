@@ -358,7 +358,7 @@ module set_barriers(
             begin: check_aliens
                 isInBarrier alien_laser(
                 //Inputs
-                .xCoord(alienLaserXcoord[(10*n+9) -: (10*n)]), .yCoord(alienLaserYcoord[(10*n+9) -: (10*n)]),
+                .xCoord(alienLaserXcoord[10*n +: 10]), .yCoord(alienLaserYcoord[(10*n) +: 10]),
                //Outputs
                .currBarrier(alienIgnoreBarr), .inBarrier(alienInBarrier[n]), .shiftedXCoord(alien_ignoreX)
                 );
