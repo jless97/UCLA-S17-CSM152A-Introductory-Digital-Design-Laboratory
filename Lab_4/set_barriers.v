@@ -35,7 +35,8 @@ module set_barriers(
     */
     //Output that states whether the current position is a barrier
     output wire [7:0] rgb,
-    output wire is_barrier
+    output wire is_barrier,
+    output reg spaceshipLaserHit
     );
 	 
 `include "barrier_params.vh"
@@ -423,6 +424,10 @@ module set_barriers(
 */
         if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
+            spaceShipLaserHit <= 1;
+        end
+        else begin
+            spaceshipLaserHit <= 0;
         end
 /*
         if(numAlienBullets >= 1 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin

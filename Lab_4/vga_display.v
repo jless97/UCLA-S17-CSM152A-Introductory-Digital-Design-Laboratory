@@ -193,12 +193,7 @@ module vga_display(
 			// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
-	wire [10:0] damage_x;
-	wire [10:0] damage_y;
-	wire is_damage;
-	assign damage_x = 0;
-	assign damage_y = 0;
-	assign is_damage = 0;
+    wire barr_spaceShipLaserHit;
 	set_barriers update_barriers(
 	//Inputs
 		.clk(clk),
@@ -210,7 +205,8 @@ module vga_display(
 	   .spaceshipLaserYcoord(spaceship_laser_yCoord),
 	//Outputs
 	   .rgb(rgb_barrier),
-	   .is_barrier(is_barrier)
+	   .is_barrier(is_barrier),
+       .spaceShipLaserHit(barr_spaceShipLaserHit)
 		);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
