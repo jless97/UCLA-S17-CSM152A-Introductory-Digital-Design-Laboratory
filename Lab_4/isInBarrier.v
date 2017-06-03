@@ -1,11 +1,11 @@
 module isInBarrier(
     //inputs
-   input wire [9:0] xCoord,
-   input wire [9:0] yCoord,
+   input wire [10:0] xCoord,
+   input wire [10:0] yCoord,
    //Outputs
    output reg [1:0] currBarrier,
    output reg inBarrier,
-   output reg [9:0] shiftedXCoord
+   output reg [10:0] shiftedXCoord
 );
 `include "barrier_params.vh"
 always @ (*) begin
