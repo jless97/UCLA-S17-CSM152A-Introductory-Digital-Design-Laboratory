@@ -37,11 +37,11 @@ module aliens(
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_alien,
-	output wire [10:0] current_xCoord,
-	output wire [10:0] current_yCoord,
+//	output wire [10:0] current_xCoord,
+//	output wire [10:0] current_yCoord,
 	output wire is_edge,
-	output wire is_bottom
-//	output wire is_hit
+//	output wire is_bottom
+	output wire is_hit
     );
 
 	// Display screen boundaries
@@ -67,6 +67,7 @@ module aliens(
 	reg [10:0] alien_counter;
 	reg can_move;
 	reg is_edge_temp;
+	reg is_hit_temp;
 		
 	// Position Updates
 	parameter ALIEN_MOVE_LEFT = 11'd10;
@@ -84,6 +85,7 @@ module aliens(
 		alien_counter = 0;
 		can_move = 1;
 		is_edge_temp = 0;
+		is_hit_temp = 0;
 	end
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
@@ -105,6 +107,7 @@ module aliens(
 				) begin
 				alien_xCoord <= ALIEN_DEAD;
 				can_move <= 0;
+				is_hit_temp <= 1;
 			end
 			// Check to see that alien is not destroyed
 			if (can_move) begin
@@ -163,10 +166,11 @@ module aliens(
 	
 	// Assign movement conditions
 	assign is_edge = is_edge_temp;
+	assign is_hit = is_hit_temp;
 	
 	// Assign coordinates (to be fed to the spaceship coordinate)
-	assign current_xCoord = alien_xCoord;
-	assign current_yCoord = alien_yCoord;
+//	assign current_xCoord = alien_xCoord;
+//	assign current_yCoord = alien_yCoord;
 	
 	// Assign color parameters
 	assign rgb = set_color;
