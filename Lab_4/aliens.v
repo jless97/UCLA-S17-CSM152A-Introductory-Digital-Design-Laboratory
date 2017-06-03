@@ -23,14 +23,14 @@ module aliens(
 	input wire clk,
 	input wire rst,
 	input wire [1:0] mode,
-	input wire [10:0] xCoord,
-	input wire [10:0] yCoord,
+	input wire [9:0] xCoord,
+	input wire [9:0] yCoord,
 	input wire aliens,
 	// Trying to add aliens top
-	input wire [10:0] initial_xCoord,
-	input wire [10:0] initial_yCoord,
-	input wire [10:0] spaceship_laser_xCoord,
-	input wire [10:0] spaceship_laser_yCoord,
+	input wire [9:0] initial_xCoord,
+	input wire [9:0] initial_yCoord,
+	input wire [9:0] spaceship_laser_xCoord,
+	input wire [9:0] spaceship_laser_yCoord,
 	input wire move_left,
 	input wire move_right,
 	input wire move_down,
@@ -45,26 +45,26 @@ module aliens(
     );
 
 	// Display screen boundaries
-   parameter LEFT_EDGE = 11'd5;
-   parameter RIGHT_EDGE = 11'd635;
+   parameter LEFT_EDGE = 10'd5;
+   parameter RIGHT_EDGE = 10'd635;
 
 	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
 	parameter COLOR_ALIEN = 8'b10101010;
 
 		// Alien Parameters
-	parameter ALIEN_HEIGHT = 11'd16;
-	parameter ALIEN_LENGTH = 11'd30;
-	parameter ALIEN_DEAD = 11'd700;
+	parameter ALIEN_HEIGHT = 10'd16;
+	parameter ALIEN_LENGTH = 10'd30;
+	parameter ALIEN_DEAD = 10'd700;
 	
 	// Laser Parameters
-	parameter LASER_HEIGHT = 11'd10;
-	parameter LASER_LENGTH = 11'd3;
+	parameter LASER_HEIGHT = 10'd10;
+	parameter LASER_LENGTH = 10'd3;
 	
 	// Alien registers
-	reg [10:0] alien_xCoord;
-	reg [10:0] alien_yCoord;
-	reg [10:0] alien_counter;
+	reg [9:0] alien_xCoord;
+	reg [9:0] alien_yCoord;
+	reg [7:0] alien_counter;
 	reg can_move;
 	reg is_edge_temp;
 	reg is_hit_temp;
