@@ -50,7 +50,7 @@ module scoreboard(
 
 	// Scoreboard Registers
    reg [7:0] set_color;
-   reg [10:0] temp;
+   reg [20:0] temp;
    reg [3:0] dig_6;
    reg [3:0] dig_5;
    reg [3:0] dig_4;
