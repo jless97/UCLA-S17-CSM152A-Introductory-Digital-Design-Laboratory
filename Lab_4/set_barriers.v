@@ -422,7 +422,7 @@ module set_barriers(
             end
         end
 */
-        if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
+        if(isSpaceshipDamage && spaceShipLaserHit == 0 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
             spaceShipLaserHit <= 1;
         end

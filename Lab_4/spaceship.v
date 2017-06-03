@@ -33,6 +33,7 @@ module spaceship(
 	input wire [10:0] flying_saucer_yCoord,
 	input wire [604:0] alien_xCoord,
 	input wire [604:0] alien_yCoord,
+    input wire barrSpaceShipLaserHit,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
@@ -310,7 +311,8 @@ module spaceship(
 					  // Alien 54
 					  (laser_yCoord <= alien_yCoord[604:594] + ALIEN_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= alien_xCoord[604:594] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[604:594] + ALIEN_LENGTH / 2) */
-					  ) begin
+					  || barrSpaceShipLaserHit
+                      ) begin
 					laser_xCoord <= spaceship_coord;
 					laser_yCoord <= LASER_INITIAL_Y;
 					set_color_laser <= COLOR_LASER_BLACK;

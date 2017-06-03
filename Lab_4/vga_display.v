@@ -161,6 +161,7 @@ module vga_display(
 		.alien_yCoord(alien_yCoord),
 		.flying_saucer_xCoord(flying_saucer_xCoord),
 		.flying_saucer_yCoord(flying_saucer_yCoord),
+        .barrSpaceShipLaserHit(barrSpaceShipLaserHit),
 	//Outputs
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship),
@@ -193,7 +194,7 @@ module vga_display(
 			// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
-    wire barr_spaceShipLaserHit;
+    wire barrSpaceShipLaserHit;
 	set_barriers update_barriers(
 	//Inputs
 		.clk(clk),
@@ -206,7 +207,7 @@ module vga_display(
 	//Outputs
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier),
-       .spaceShipLaserHit(barr_spaceShipLaserHit)
+       .spaceShipLaserHit(barrSpaceShipLaserHit)
 		);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
