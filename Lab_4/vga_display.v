@@ -206,9 +206,8 @@ module vga_display(
 		.restart(restart),
 	   .xCoord(xCoord),
 	   .yCoord(yCoord),
-	   .damage_x(damage_x),
-	   .damage_y(damage_y),
-	   .new_damage(new_damage),
+	   .spaceshipLaserXcoord(spaceship_laser_xCoord),
+	   .spaceshipLaserYcoord(spaceship_laser_yCoord),
 	//Outputs
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier)
