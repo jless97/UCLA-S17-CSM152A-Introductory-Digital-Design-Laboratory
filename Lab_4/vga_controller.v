@@ -76,4 +76,3 @@ module vga_controller(
     assign yCoord = vc - vbp;
 
 endmodule
-
