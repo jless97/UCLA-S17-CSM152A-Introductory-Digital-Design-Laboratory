@@ -23,51 +23,50 @@ module aliens(
 	input wire clk,
 	input wire rst,
 	input wire [1:0] mode,
-	input wire [9:0] xCoord,
-	input wire [9:0] yCoord,
+	input wire [10:0] xCoord,
+	input wire [10:0] yCoord,
 	input wire aliens,
 	// Trying to add aliens top
-	input wire [9:0] initial_xCoord,
-	input wire [9:0] initial_yCoord,
-	input wire [9:0] spaceship_laser_xCoord,
-	input wire [9:0] spaceship_laser_yCoord,
+	input wire [10:0] initial_xCoord,
+	input wire [10:0] initial_yCoord,
+	input wire [10:0] spaceship_laser_xCoord,
+	input wire [10:0] spaceship_laser_yCoord,
 	input wire move_left,
 	input wire move_right,
 	input wire move_down,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_alien,
-//	output wire [10:0] current_xCoord,
-//	output wire [10:0] current_yCoord,
+	output wire [10:0] current_xCoord,
+	output wire [10:0] current_yCoord,
 	output wire is_edge,
-//	output wire is_bottom
-	output wire is_hit
+	output wire is_bottom
+//	output wire is_hit
     );
 
 	// Display screen boundaries
-   parameter LEFT_EDGE = 10'd5;
-   parameter RIGHT_EDGE = 10'd635;
+   parameter LEFT_EDGE = 11'd5;
+   parameter RIGHT_EDGE = 11'd635;
 
 	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
 	parameter COLOR_ALIEN = 8'b10101010;
 
 		// Alien Parameters
-	parameter ALIEN_HEIGHT = 10'd16;
-	parameter ALIEN_LENGTH = 10'd30;
-	parameter ALIEN_DEAD = 10'd700;
+	parameter ALIEN_HEIGHT = 11'd16;
+	parameter ALIEN_LENGTH = 11'd30;
+	parameter ALIEN_DEAD = 11'd700;
 	
 	// Laser Parameters
-	parameter LASER_HEIGHT = 10'd10;
-	parameter LASER_LENGTH = 10'd3;
+	parameter LASER_HEIGHT = 11'd10;
+	parameter LASER_LENGTH = 11'd3;
 	
 	// Alien registers
-	reg [9:0] alien_xCoord;
-	reg [9:0] alien_yCoord;
-	reg [7:0] alien_counter;
+	reg [10:0] alien_xCoord;
+	reg [10:0] alien_yCoord;
+	reg [10:0] alien_counter;
 	reg can_move;
 	reg is_edge_temp;
-	reg is_hit_temp;
 		
 	// Position Updates
 	parameter ALIEN_MOVE_LEFT = 11'd10;
@@ -85,7 +84,6 @@ module aliens(
 		alien_counter = 0;
 		can_move = 1;
 		is_edge_temp = 0;
-		is_hit_temp = 0;
 	end
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
@@ -98,18 +96,15 @@ module aliens(
 			alien_yCoord <= initial_yCoord;
 			alien_counter <= 0;
 			can_move <= 1;
-			is_hit_temp <= 0;
 		end
 		if (clk_frame && mode == 2) begin
 			// Alien Controls
-			is_hit_temp <= 0;
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
 			if ((spaceship_laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
 				  spaceship_laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && spaceship_laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)
 				) begin
 				alien_xCoord <= ALIEN_DEAD;
 				can_move <= 0;
-				is_hit_temp <= 1;
 			end
 			// Check to see that alien is not destroyed
 			if (can_move) begin
@@ -168,11 +163,10 @@ module aliens(
 	
 	// Assign movement conditions
 	assign is_edge = is_edge_temp;
-	assign is_hit = is_hit_temp;
 	
 	// Assign coordinates (to be fed to the spaceship coordinate)
-//	assign current_xCoord = alien_xCoord;
-//	assign current_yCoord = alien_yCoord;
+	assign current_xCoord = alien_xCoord;
+	assign current_yCoord = alien_yCoord;
 	
 	// Assign color parameters
 	assign rgb = set_color;
