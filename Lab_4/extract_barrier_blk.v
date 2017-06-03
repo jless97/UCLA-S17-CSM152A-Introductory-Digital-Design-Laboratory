@@ -1,7 +1,7 @@
 module extract_barrier_blk(
 	//inputs
-   input wire [9:0] xCoord,
-   input wire [9:0] yCoord,
+   input wire [10:0] xCoord,
+   input wire [10:0] yCoord,
    //output
    output reg [1:0] currBarrier,
    output reg [1:0] xVal,
@@ -10,7 +10,7 @@ module extract_barrier_blk(
 	);
 	`include "barrier_params.vh"
 	// Barrier Parameters
-   reg [9:0] shiftedXCoord;
+   reg [10:0] shiftedXCoord;
    isInBarrier findBarrier(
     //Inputs
     .xCoord(xCoord), .yCoord(yCoord),
@@ -18,7 +18,7 @@ module extract_barrier_blk(
     .currBarrier(currBarrier), .inBarrier(inBarrier), .shiftedXCoord(shiftedXCoord)
     );
 
-   wire [9:0] shiftedYCoord;
+   wire [10:0] shiftedYCoord;
    assign shiftedYCoord = yCoord - BARR_YSTART;
 	always @ (*) begin
 		if(inBarrier) begin
