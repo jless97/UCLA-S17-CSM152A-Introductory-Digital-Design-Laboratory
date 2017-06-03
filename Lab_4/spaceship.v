@@ -31,9 +31,9 @@ module spaceship(
 	input wire [10:0] yCoord,
 	input wire [10:0] flying_saucer_xCoord,
 	input wire [10:0] flying_saucer_yCoord,
-//	input wire [604:0] alien_xCoord,
-//	input wire [604:0] alien_yCoord,
-	input wire [21:0] laser_hit_alien,
+//	input wire [241:0] alien_xCoord,
+//	input wire [241:0] alien_yCoord,
+	input wire [10:0] hit_alien,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
@@ -145,10 +145,10 @@ module spaceship(
 					 (laser_yCoord <= flying_saucer_yCoord + FLYING_SAUCER_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= flying_saucer_xCoord - FLYING_SAUCER_LENGTH / 2 &&
 					  laser_xCoord <= flying_saucer_xCoord + FLYING_SAUCER_LENGTH / 2) ||
-					  (|laser_hit_alien)
+					  ( | hit_alien)
 					// Aliens
-						// Alien 0
-/*    				 (laser_yCoord <= alien_yCoord[10:0] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+/*						// Alien 0
+    				 (laser_yCoord <= alien_yCoord[10:0] + ALIEN_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= alien_xCoord[10:0] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[10:0] + ALIEN_LENGTH / 2) ||
 					  // Alien 1
 					 (laser_yCoord <= alien_yCoord[21:11] + ALIEN_HEIGHT / 2 + MOVE_UP &&
@@ -179,7 +179,7 @@ module spaceship(
 					  laser_xCoord >= alien_xCoord[109:99] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[109:99] + ALIEN_LENGTH / 2) ||
 					  // Alien 10
 					  (laser_yCoord <= alien_yCoord[120:110] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					  laser_xCoord >= alien_xCoord[120:110] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[120:110] + ALIEN_LENGTH / 2) ||
+					  laser_xCoord >= alien_xCoord[120:110] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[120:110] + ALIEN_LENGTH / 2) 
 					  // Alien 11
 					 (laser_yCoord <= alien_yCoord[131:121] + ALIEN_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= alien_xCoord[131:121] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[131:121] + ALIEN_LENGTH / 2) ||
@@ -212,13 +212,106 @@ module spaceship(
 					  laser_xCoord >= alien_xCoord[230:220] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[230:220] + ALIEN_LENGTH / 2) ||
 					  // Alien 21
 					 (laser_yCoord <= alien_yCoord[241:231] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					  laser_xCoord >= alien_xCoord[241:231] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[241:231] + ALIEN_LENGTH / 2)   
-					  // Alien 22
+					  laser_xCoord >= alien_xCoord[241:231] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[241:231] + ALIEN_LENGTH / 2) 
+				     // Alien 22
 					  (laser_yCoord <= alien_yCoord[252:242] + ALIEN_HEIGHT / 2 + MOVE_UP &&
 					  laser_xCoord >= alien_xCoord[252:242] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[252:242] + ALIEN_LENGTH / 2) ||
 					  // Alien 23
 					 (laser_yCoord <= alien_yCoord[263:253] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-					  laser_xCoord >= alien_xCoord[263:253] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[263:253] + ALIEN_LENGTH / 2) */
+					  laser_xCoord >= alien_xCoord[263:253] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[263:253] + ALIEN_LENGTH / 2) ||
+					  // Alien 24
+					  (laser_yCoord <= alien_yCoord[274:264] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[274:264] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[274:264] + ALIEN_LENGTH / 2) ||
+					  // Alien 25
+					 (laser_yCoord <= alien_yCoord[285:275] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[285:275] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[285:275] + ALIEN_LENGTH / 2) ||
+					  // Alien 26
+					  (laser_yCoord <= alien_yCoord[296:286] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[296:286] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[296:286] + ALIEN_LENGTH / 2) ||
+					  // Alien 27
+					 (laser_yCoord <= alien_yCoord[307:297] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[307:297] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[307:297] + ALIEN_LENGTH / 2) ||
+					  // Alien 28
+					  (laser_yCoord <= alien_yCoord[318:308] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[318:308] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[318:308] + ALIEN_LENGTH / 2) ||
+					  // Alien 29
+					 (laser_yCoord <= alien_yCoord[329:319] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[329:319] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[329:319] + ALIEN_LENGTH / 2) ||
+					  // Alien 30
+					  (laser_yCoord <= alien_yCoord[340:330] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[340:330] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[340:330] + ALIEN_LENGTH / 2) ||
+					  // Alien 31
+					 (laser_yCoord <= alien_yCoord[351:341] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[351:341] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[351:341] + ALIEN_LENGTH / 2) ||
+					  // Alien 32
+					  (laser_yCoord <= alien_yCoord[362:352] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[362:352] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[362:352] + ALIEN_LENGTH / 2) ||
+					  // Alien 33
+					 (laser_yCoord <= alien_yCoord[373:363] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[373:363] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[373:363] + ALIEN_LENGTH / 2) ||
+					  // Alien 34
+					  (laser_yCoord <= alien_yCoord[384:374] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[384:374] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[384:374] + ALIEN_LENGTH / 2) ||
+					  // Alien 35
+					 (laser_yCoord <= alien_yCoord[395:385] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[395:385] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[395:385] + ALIEN_LENGTH / 2) ||
+					  // Alien 36
+					  (laser_yCoord <= alien_yCoord[406:396] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[406:396] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[406:396] + ALIEN_LENGTH / 2) ||
+					  // Alien 37
+					 (laser_yCoord <= alien_yCoord[417:407] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[417:407] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[417:407] + ALIEN_LENGTH / 2) ||
+					  // Alien 38
+					  (laser_yCoord <= alien_yCoord[428:418] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[428:418] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[428:418] + ALIEN_LENGTH / 2) ||
+					  // Alien 39
+					 (laser_yCoord <= alien_yCoord[439:429] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[439:429] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[439:429] + ALIEN_LENGTH / 2) ||
+					  // Alien 40
+					  (laser_yCoord <= alien_yCoord[450:440] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[450:440] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[450:440] + ALIEN_LENGTH / 2) ||
+					  // Alien 41
+					 (laser_yCoord <= alien_yCoord[461:451] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[461:451] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[461:451] + ALIEN_LENGTH / 2) ||
+					  // Alien 42
+					  (laser_yCoord <= alien_yCoord[472:462] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[472:462] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[472:462] + ALIEN_LENGTH / 2) ||
+					  // Alien 43
+					 (laser_yCoord <= alien_yCoord[483:473] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[483:473] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[483:473] + ALIEN_LENGTH / 2) ||
+					  // Alien 44
+					  (laser_yCoord <= alien_yCoord[494:484] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[494:484] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[494:484] + ALIEN_LENGTH / 2) ||
+					  // Alien 45
+					 (laser_yCoord <= alien_yCoord[505:495] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[505:495] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[505:495] + ALIEN_LENGTH / 2) ||
+					  // Alien 46
+					  (laser_yCoord <= alien_yCoord[516:506] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[516:506] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[516:506] + ALIEN_LENGTH / 2) ||
+					  // Alien 47
+					 (laser_yCoord <= alien_yCoord[527:517] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[527:517] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[527:517] + ALIEN_LENGTH / 2) ||
+					  // Alien 48
+					  (laser_yCoord <= alien_yCoord[538:528] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[538:528] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[538:528] + ALIEN_LENGTH / 2) ||
+					  // Alien 49
+					 (laser_yCoord <= alien_yCoord[549:539] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[549:539] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[549:539] + ALIEN_LENGTH / 2) ||
+					  // Alien 50
+					  (laser_yCoord <= alien_yCoord[560:550] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[560:550] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[560:550] + ALIEN_LENGTH / 2) ||
+					  // Alien 51
+					 (laser_yCoord <= alien_yCoord[571:561] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[571:561] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[571:561] + ALIEN_LENGTH / 2) ||
+					  // Alien 52
+					  (laser_yCoord <= alien_yCoord[582:572] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[582:572] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[582:572] + ALIEN_LENGTH / 2) ||
+					  // Alien 53
+					 (laser_yCoord <= alien_yCoord[593:583] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[593:583] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[593:583] + ALIEN_LENGTH / 2) ||
+					  // Alien 54
+					  (laser_yCoord <= alien_yCoord[604:594] + ALIEN_HEIGHT / 2 + MOVE_UP &&
+					  laser_xCoord >= alien_xCoord[604:594] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[604:594] + ALIEN_LENGTH / 2) */
 					  ) begin
 					laser_xCoord <= spaceship_coord;
 					laser_yCoord <= LASER_INITIAL_Y;
@@ -251,4 +344,4 @@ module spaceship(
 	assign is_spaceship_laser = (yCoord >= laser_yCoord - LASER_HEIGHT / 2 && yCoord <= laser_yCoord + LASER_HEIGHT / 2 &&
 							 xCoord >= laser_xCoord - LASER_LENGTH / 2 && xCoord <= laser_xCoord + LASER_LENGTH / 2); // TODO
 	
-endmodule 
+endmodule
