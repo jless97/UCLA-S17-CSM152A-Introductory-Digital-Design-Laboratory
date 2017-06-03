@@ -31,8 +31,8 @@ module vga_display(
 	input wire button_display,
 	input wire start_screen,
 	input wire switch_screen,
-   input wire [10:0] xCoord, 
-	input wire [10:0] yCoord,
+   input wire [9:0] xCoord, 
+	input wire [9:0] yCoord,
 	// Outputs
    output wire [7:0] rgb
 	);
@@ -63,12 +63,12 @@ module vga_display(
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Border (separation of objects) Parameters
-	parameter SCOREBOARD_TOP = 11'd0;
-	parameter SCOREBOARD_BOTTOM = 11'd40;
-	parameter BARRIER_TOP = 11'd340;
-	parameter BARRIER_BOTTOM = 11'd400;
-	parameter EXTRA_LIVES_TOP = 11'd460;
-	parameter EXTRA_LIVES_BOTTOM = 11'd480;
+	parameter SCOREBOARD_TOP = 10'd0;
+	parameter SCOREBOARD_BOTTOM = 10'd40;
+	parameter BARRIER_TOP = 10'd340;
+	parameter BARRIER_BOTTOM = 10'd400;
+	parameter EXTRA_LIVES_TOP = 10'd460;
+	parameter EXTRA_LIVES_BOTTOM = 10'd480;
 	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ module vga_display(
 	// Instantiate modules
 	
 	// Instantiate start screen display
-	wire [10:0] rgb_start_screen;
+	wire [7:0] rgb_start_screen;
 	start_screen start_screen_display(
 	//Inputs
 		.clk(clk),
@@ -117,7 +117,7 @@ module vga_display(
 		);
 
 	// Instantiate gameover screen display
-	wire [10:0] rgb_gameover_screen;
+	wire [7:0] rgb_gameover_screen;
 	gameover_screen gameover_screen_display(
 	//Inputs
 		.clk(clk),
@@ -136,13 +136,13 @@ module vga_display(
 //	wire [120:0] alien_yCoord;
 	wire [10:0] is_hit;
 		// Coordinates of the flying saucer
-	wire [10:0] flying_saucer_xCoord;
-	wire [10:0] flying_saucer_yCoord;
+	wire [9:0] flying_saucer_xCoord;
+	wire [9:0] flying_saucer_yCoord;
 		// Coordinates of barrier(pieces)
 		
 		// Coordinates of spaceship laser
-	wire [10:0] spaceship_laser_xCoord;
-	wire [10:0] spaceship_laser_yCoord;
+	wire [9:0] spaceship_laser_xCoord;
+	wire [9:0] spaceship_laser_yCoord;
 	wire [7:0] rgb_spaceship_laser;
 	wire is_spaceship_laser;
 	wire restart;
@@ -173,7 +173,7 @@ module vga_display(
 		);
 	
 	// Instantiate flying saucer 
-	wire [10:0] rgb_flying_saucer;
+	wire [7:0] rgb_flying_saucer;
 	wire is_flying_saucer;
 	flying_saucer update_flying_saucer(
 	//Inputs
@@ -195,8 +195,8 @@ module vga_display(
 			// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
-	wire [10:0] damage_x;
-	wire [10:0] damage_y;
+	wire [9:0] damage_x;
+	wire [9:0] damage_y;
 	wire is_damage;
 	assign damage_x = 0;
 	assign damage_y = 0;
@@ -221,7 +221,7 @@ module vga_display(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // ALIEN IMPLEMENTATION
 		// Instantiate aliens
-	wire [54:0] aliens;
+	wire [10:0] aliens;
 	wire [87:0] rgb_aliens;
 		// Player Lives
 	wire [2:0] lives;
@@ -309,7 +309,6 @@ module vga_display(
 	assign restart = restart_temp;
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
 // First row
 	// Alien 0
 	aliens update_alien_0(
@@ -320,8 +319,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd70),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -346,8 +345,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[1]),
-		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd120),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -370,8 +369,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[2]),
-		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd170),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -395,8 +394,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[3]),
-		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd220),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -420,8 +419,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[4]),
-		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd270),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -444,8 +443,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[5]),
-		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd320),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -469,8 +468,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[6]),
-		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd370),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -518,8 +517,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[8]),
-		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd470),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -543,8 +542,8 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[9]),
-		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(10'd520),
+		.initial_yCoord(10'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
@@ -568,7 +567,7 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd570),
+		.initial_xCoord(10'd570),
 		.initial_yCoord(11'd90),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
@@ -607,11 +606,11 @@ module vga_display(
 		.is_alien(is_alien[11]),
 		//.current_xCoord(alien_xCoord[131:121]),
 		//.current_yCoord(alien_yCoord[131:121]),
-		.is_edge(is_edge[11])
+		.is_edge(is_edge[11]),
 		//.is_bottom(is_bottom[11])
-//		.is_hit(is_hit[11])
+		.is_hit(is_hit[11])
 		);
-		
+	
 		// Alien 12
 	aliens update_alien_12(
 		.clk(clk),
@@ -632,11 +631,12 @@ module vga_display(
 		.is_alien(is_alien[12]),
 		//.current_xCoord(alien_xCoord[142:132]),
 		//.current_yCoord(alien_yCoord[142:132]),
-		.is_edge(is_edge[12])
+		.is_edge(is_edge[12]),
 		//.is_bottom(is_bottom[12])
-//		.is_hit(is_hit[12])
+		.is_hit(is_hit[12])
 		);
-		
+
+	
 	// Alien 13
 	aliens update_alien_13(
 		.clk(clk),
@@ -657,9 +657,9 @@ module vga_display(
 		.is_alien(is_alien[13]),
 		//.current_xCoord(alien_xCoord[153:143]),
 		//.current_yCoord(alien_yCoord[153:143]),
-		.is_edge(is_edge[13])
+		.is_edge(is_edge[13]),
 		//.is_bottom(is_bottom[13])
-//		.is_hit(is_hit[13])
+		.is_hit(is_hit[13])
 		);
 		
 	// Alien 14
@@ -682,9 +682,9 @@ module vga_display(
 		.is_alien(is_alien[14]),
 		//.current_xCoord(alien_xCoord[164:154]),
 		//.current_yCoord(alien_yCoord[164:154]),
-		.is_edge(is_edge[14])
+		.is_edge(is_edge[14]),
 		//.is_bottom(is_bottom[14])
-//		.is_hit(is_hit[14])
+		.is_hit(is_hit[14])
 		);
 		
 	// Alien 15
@@ -707,9 +707,9 @@ module vga_display(
 		.is_alien(is_alien[15]),
 		//.current_xCoord(alien_xCoord[175:165]),
 		//.current_yCoord(alien_yCoord[175:165]),
-		.is_edge(is_edge[15])
+		.is_edge(is_edge[15]),
 		//.is_bottom(is_bottom[15])
-//		.is_hit(is_hit[15])
+		.is_hit(is_hit[15])
 		);
 		
 	// Alien 16
@@ -732,9 +732,9 @@ module vga_display(
 		.is_alien(is_alien[16]),
 		//.current_xCoord(alien_xCoord[186:176]),
 		//.current_yCoord(alien_yCoord[186:176]),
-		.is_edge(is_edge[16])
+		.is_edge(is_edge[16]),
 		//.is_bottom(is_bottom[16])
-//		.is_hit(is_hit[16])
+		.is_hit(is_hit[16])
 		);
 		// Alien 17
 	aliens update_alien_17(
@@ -756,9 +756,9 @@ module vga_display(
 		.is_alien(is_alien[17]),
 		//.current_xCoord(alien_xCoord[197:187]),
 		//.current_yCoord(alien_yCoord[197:187]),
-		.is_edge(is_edge[17])
+		.is_edge(is_edge[17]),
 		//.is_bottom(is_bottom[17])
-//		.is_hit(is_hit[17])
+		.is_hit(is_hit[17])
 		);
 		
 	// Alien 18
@@ -781,9 +781,9 @@ module vga_display(
 		.is_alien(is_alien[18]),
 		//.current_xCoord(alien_xCoord[208:198]),
 		//.current_yCoord(alien_yCoord[208:198]),
-		.is_edge(is_edge[18])
+		.is_edge(is_edge[18]),
 		//.is_bottom(is_bottom[18])
-//		.is_hit(is_hit[18])
+		.is_hit(is_hit[18])
 		);
 		
 	// Alien 19
@@ -806,9 +806,9 @@ module vga_display(
 		.is_alien(is_alien[19]),
 		//.current_xCoord(alien_xCoord[219:209]),
 		//.current_yCoord(alien_yCoord[219:209]),
-		.is_edge(is_edge[19])
+		.is_edge(is_edge[19]),
 		//.is_bottom(is_bottom[19])
-//		.is_hit(is_hit[19])
+		.is_hit(is_hit[19])
 		);
 		
 	// Alien 20
@@ -831,9 +831,9 @@ module vga_display(
 		.is_alien(is_alien[20]),
 		//.current_xCoord(alien_xCoord[230:220]),
 		//.current_yCoord(alien_yCoord[230:220]),
-		.is_edge(is_edge[20])
+		.is_edge(is_edge[20]),
 		//.is_bottom(is_bottom[20])
-//		.is_hit(is_hit[20])
+		.is_hit(is_hit[20])
 		);
 		
 	// Alien 21
@@ -856,9 +856,9 @@ module vga_display(
 		.is_alien(is_alien[21]),
 		//.current_xCoord(alien_xCoord[241:231]),
 		//.current_yCoord(alien_yCoord[241:231]),
-		.is_edge(is_edge[21])
+		.is_edge(is_edge[21]),
 		//.is_bottom(is_bottom[21])
-//		.is_hit(is_hit[21])
+   	.is_hit(is_hit[21])
 		);
 */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
