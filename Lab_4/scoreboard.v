@@ -30,21 +30,21 @@ module scoreboard(
     );
 
 	// Scoreboard Parameters
-   parameter D6_X_START = 11'd2;
-   parameter D6_X_END = 11'd14;
-   parameter D_Y_START = 11'd23;
-   parameter D_Y_MID = 11'd30;
-   parameter D_Y_END = 11'd38;
-   parameter D5_X_START = 11'd16;
-   parameter D5_X_END = 11'd28;
-   parameter D4_X_START = 11'd30;
-   parameter D4_X_END = 11'd42;
-   parameter D3_X_START = 11'd44;
-   parameter D3_X_END = 11'd56;
-   parameter D2_X_START = 11'd58;
-   parameter D2_X_END = 11'd70;
-   parameter D1_X_START = 11'd72;
-   parameter D1_X_END = 11'd84;
+   parameter D6_X_START = 10'd2;
+   parameter D6_X_END = 10'd14;
+   parameter D_Y_START = 10'd23;
+   parameter D_Y_MID = 10'd30;
+   parameter D_Y_END = 10'd38;
+   parameter D5_X_START = 10'd16;
+   parameter D5_X_END = 10'd28;
+   parameter D4_X_START = 10'd30;
+   parameter D4_X_END = 10'd42;
+   parameter D3_X_START = 10'd44;
+   parameter D3_X_END = 10'd56;
+   parameter D2_X_START = 10'd58;
+   parameter D2_X_END = 10'd70;
+   parameter D1_X_START = 10'd72;
+   parameter D1_X_END = 10'd84;
    parameter COLOR_BLACK = 8'b00000000;
    parameter COLOR_WHITE = 8'b11111111;
 
