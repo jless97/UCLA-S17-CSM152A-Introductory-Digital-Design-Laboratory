@@ -275,7 +275,7 @@ endmodule
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 // TAP TO PLAY (15 by 20)
-		else if (xCoord > 234 && xCoord < 423 && yCoord > 450 && yCoord < 470) begin
+		else if (xCoord > 234 && xCoord < 449 && yCoord > 450 && yCoord < 470) begin
 			// Letter T
 			if ( 
 				(xCoord > 234 && xCoord < 249 && yCoord > 450 && yCoord < 470) ||
