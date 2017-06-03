@@ -26,22 +26,22 @@ module flying_saucer(
 	input wire rst,
 	input wire restart,
 	input wire [1:0] mode,
-	input wire [9:0] xCoord,
-	input wire [9:0] yCoord,
-	input wire [9:0] spaceship_laser_xCoord,
-	input wire [9:0] spaceship_laser_yCoord,
+	input wire [10:0] xCoord,
+	input wire [10:0] yCoord,
+	input wire [10:0] spaceship_laser_xCoord,
+	input wire [10:0] spaceship_laser_yCoord,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_flying_saucer,
-	output wire [9:0] current_xCoord,
-	output wire [9:0] current_yCoord
+	output wire [10:0] current_xCoord,
+	output wire [10:0] current_yCoord
     );
 	  	  
 	// Display screen boundaries
-   parameter LEFT_EDGE = 10'd0;
-   parameter RIGHT_EDGE = 10'd640;
-   parameter TOP_EDGE = 10'd0;
-   parameter BOTTOM_EDGE = 10'd480;
+   parameter LEFT_EDGE = 11'd0;
+   parameter RIGHT_EDGE = 11'd640;
+   parameter TOP_EDGE = 11'd0;
+   parameter BOTTOM_EDGE = 11'd480;
 	
 	// RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
@@ -49,12 +49,12 @@ module flying_saucer(
 	parameter COLOR_FLYING_SAUCER_BLACK = 8'b00000000;
 	
 	// Flying Saucer Parameters
-	parameter FLYING_SAUCER_HEIGHT = 10'd15;
-	parameter FLYING_SAUCER_LENGTH = 10'd40;
-	parameter FLYING_SAUCER_TOP = 10'd50;
-	parameter FLYING_SAUCER_BOTTOM = 10'd66;
-	parameter FLYING_SAUCER_INITIAL_X = -10'd50;
-	parameter FLYING_SAUCER_Y = 10'd58;
+	parameter FLYING_SAUCER_HEIGHT = 11'd15;
+	parameter FLYING_SAUCER_LENGTH = 11'd40;
+	parameter FLYING_SAUCER_TOP = 11'd50;
+	parameter FLYING_SAUCER_BOTTOM = 11'd66;
+	parameter FLYING_SAUCER_INITIAL_X = -11'd50;
+	parameter FLYING_SAUCER_Y = 11'd58;
 	
 	// Laser Parameters
 	parameter LASER_HEIGHT = 11'd10;
@@ -66,15 +66,15 @@ module flying_saucer(
 	parameter MOVE_UP = 11'd1;
 	
 	// Counter variables
-	reg [9:0] flying_saucer_wait_timer;
-	reg [9:0] flying_saucer_counter;
+	reg [10:0] flying_saucer_wait_timer;
+	reg [10:0] flying_saucer_counter;
 	reg flying_saucer_move_left;
-	reg [9:0] flying_saucer_coord;
+	reg [10:0] flying_saucer_coord;
 	
 	// Initialize flying saucer
 	initial begin
 		flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
-		flying_saucer_wait_timer = 10'd0;
+		flying_saucer_wait_timer = 11'd0;
 		flying_saucer_move_left = 1;
 		flying_saucer_counter = 0;
 	end
@@ -85,7 +85,7 @@ module flying_saucer(
 	// Flying Saucer Controls
 		if (rst || mode == 0 || mode == 1 || restart) begin
 			flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
-			flying_saucer_wait_timer = 10'd0;
+			flying_saucer_wait_timer = 11'd0;
 			flying_saucer_move_left = 1;
 			flying_saucer_counter = 0;
 		end
@@ -111,17 +111,17 @@ module flying_saucer(
 			    ) begin
 				 flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
 				 flying_saucer_move_left = 1;
-				 flying_saucer_wait_timer = 10'd0;
+				 flying_saucer_wait_timer = 11'd0;
 			end
 			// Begin wait timer, until next appearance (
 			if (!flying_saucer_move_left) begin
 				// Increment the wait timer until the next appearance
-				flying_saucer_wait_timer = flying_saucer_wait_timer + 10'b1;
+				flying_saucer_wait_timer = flying_saucer_wait_timer + 11'b1;
 				// If waited long enough, then restart flying saucer behavior
-				if (flying_saucer_wait_timer == 10'd25) begin
+				if (flying_saucer_wait_timer == 11'd25) begin
 					flying_saucer_move_left = 1;
 					flying_saucer_coord = FLYING_SAUCER_INITIAL_X;
-					flying_saucer_wait_timer = 10'd0;
+					flying_saucer_wait_timer = 11'd0;
 				end
 			end
 			// Color in flying saucer
