@@ -62,13 +62,13 @@ module set_barriers(
     end
 	 
     //shifted x and y values for calculation of which barrier block we're "in" - values for display
-    reg [10:0] shiftedYCoord;
+    reg [9:0] shiftedYCoord;
     wire [1:0] currBarrier;
     wire [1:0] currXblk;
     wire [1:0] currYblk;
     wire inBarrier;
     //x and y values for keeping track of damage
-    reg [10:0] shifted_damage_y;
+    reg [9:0] shifted_damage_y;
     wire [1:0] damage_barrier;
     wire [1:0] damage_x_blk;
     wire [1:0] damage_y_blk;
