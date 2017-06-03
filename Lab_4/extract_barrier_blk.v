@@ -8,18 +8,9 @@ module extract_barrier_blk(
    output reg [1:0] yVal,
    output reg inBarrier
 	);
-
+	`include "barrier_params.vh"
 	// Barrier Parameters
    reg [9:0] shiftedXCoord;
-   parameter BARR_WIDTH = 76;
-   parameter BARR0_XSTART = 54;
-   parameter BARR1_XSTART = BARR0_XSTART+(2*BARR_WIDTH);
-   parameter BARR2_XSTART = BARR0_XSTART+(4*BARR_WIDTH);
-   parameter BARR3_XSTART = BARR0_XSTART+(6*BARR_WIDTH);
-   parameter BARR_BLK_SZ = 19;
-   parameter BARR_YSTART = 340;
-   
-	reg [9:0] shiftedXCoord_temp;
    isInBarrier findBarrier(
     //Inputs
     .xCoord(xCoord), .yCoord(yCoord),
