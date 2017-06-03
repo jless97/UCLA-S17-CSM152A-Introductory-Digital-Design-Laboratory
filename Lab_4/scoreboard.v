@@ -22,8 +22,8 @@ module scoreboard(
 	// Inputs
 	input wire clk,
 	input wire rst,
-	input wire [10:0] xCoord,
-	input wire [10:0] yCoord,
+	input wire [9:0] xCoord,
+	input wire [9:0] yCoord,
 	input wire [20:0] score,
 	// Outputs
 	output wire [7:0] rgb
