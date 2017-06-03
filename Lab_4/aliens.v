@@ -98,9 +98,11 @@ module aliens(
 			alien_yCoord <= initial_yCoord;
 			alien_counter <= 0;
 			can_move <= 1;
+			is_hit_temp <= 0;
 		end
 		if (clk_frame && mode == 2) begin
 			// Alien Controls
+			is_hit_temp <= 0;
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
 			if ((spaceship_laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
 				  spaceship_laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && spaceship_laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)
