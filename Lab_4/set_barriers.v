@@ -24,13 +24,15 @@ module set_barriers(
     input wire rst,
 	 input wire restart,
     //Current X and Y of the screen
-    input wire [9:0] xCoord,
-    input wire [9:0] yCoord,
+    input wire [10:0] xCoord,
+    input wire [10:0] yCoord,
     // Damage input
-    input wire [9:0] spaceshipLaserXcoord,
-    input wire [9:0] spaceshipLaserYcoord,
-    input wire [239:0] alienLaserXcoord,
-    input wire [239:0] alienLaserYcoord,
+    input wire [10:0] spaceshipLaserXcoord,
+    input wire [10:0] spaceshipLaserYcoord,
+    /*
+    input wire [253:0] alienLaserXcoord,
+    input wire [253:0] alienLaserYcoord,
+    */
     //Output that states whether the current position is a barrier
     output wire [7:0] rgb,
     output wire is_barrier
@@ -59,7 +61,7 @@ module set_barriers(
     end
 	 
     //shifted x and y values for calculation of which barrier block we're "in" - values for display
-    reg [9:0] shiftedYCoord;
+    reg [10:0] shiftedYCoord;
     wire [1:0] currBarrier;
     wire [1:0] currXblk;
     wire [1:0] currYblk;
@@ -84,6 +86,7 @@ module set_barriers(
         //Outputs
         .currBarrier(spaceshipDamageBarrier), .xVal(spaceshipDamageXblk), .yVal(spaceshipDamageYblk), .inBarrier(isSpaceshipDamage)
         );
+/*
     //variables to keep track of damage from aliens
     //Damage from bullet 1
     reg [9:0] alienDamageXcoord1;
@@ -125,7 +128,9 @@ module set_barriers(
         //Outputs
         .currBarrier(alienDamageBarrier3), .xVal(alienDamageXblk3), .yVal(alienDamageYblk3), .inBarrier(isAlienDamage3)
         );
-/*
+    */
+
+    /*
  	//Modules used to check if lasers from aliens are hitting barriers
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 0
@@ -349,6 +354,7 @@ module set_barriers(
        .currBarrier(alien19_ignoreBarr), .inBarrier(alien19_inBarrier), .shiftedXCoord(alien19_ignoreX)
         );
 */
+/*
     wire [1:0] alienIgnoreBarr;
     wire [9:0] alienIgnoreX;
     wire [23:0] alienInBarrier; 
@@ -364,6 +370,7 @@ module set_barriers(
                 );
             end
     endgenerate
+*/
     reg is_barrier_temp;
     reg [7:0] rgb_temp;
     reg [4:0] index;
@@ -384,7 +391,7 @@ module set_barriers(
                 end
             end
         end
-        if(inBarrier && barrierInfo[currBarrier][currXblk][currYblk] != 3'b000) begin
+        if(displayInBarrier && barrierInfo[currBarrier][currXblk][currYblk] != 3'b000) begin
             is_barrier_temp = 1;
             rgb_temp = {2'b00, barrierInfo[currBarrier][currXblk][currYblk], 4'b1000};
         end
@@ -392,7 +399,7 @@ module set_barriers(
             is_barrier_temp = 0;
             rgb_temp = 7'd0;
         end
-
+/*
         numAlienBullets = 0;
         for(index = 0; index < 24; index = index+1) begin
             if(alienInBarrier[i]) begin
@@ -413,9 +420,11 @@ module set_barriers(
                 end
             end
         end
+*/
         if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
         end
+/*
         if(numAlienBullets >= 1 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] = barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] - 1;
         end
@@ -425,6 +434,7 @@ module set_barriers(
         if(numAlienBullets == 3 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] = barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] - 1;
         end
+*/
     end
 	 
     assign rgb = rgb_temp;
