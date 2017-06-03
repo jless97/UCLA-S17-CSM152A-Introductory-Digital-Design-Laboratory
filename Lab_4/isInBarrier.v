@@ -7,8 +7,7 @@ module isInBarrier(
    output reg inBarrier,
    output reg [9:0] shiftedXCoord
 );
-parameter BARR_YSTART = 340;
-parameter BARR_HEIGHT = 57;
+`include "barrier_params.vh"
 always @ (*) begin
     //logic to find which barrier we are currently in
     if(yCoord >= BARR_YSTART && yCoord <= BARR_YSTART + BARR_HEIGHT) begin
