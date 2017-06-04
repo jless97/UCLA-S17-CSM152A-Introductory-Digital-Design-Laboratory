@@ -237,4 +237,4 @@ module scoreboard_top(
 
 	assign rgb = set_color;
 	assign is_scoreboard_top = (xCoord > 20 && xCoord < 425 && yCoord > 5 && yCoord < 25);
-endmodule
+endmodule 
