@@ -24,8 +24,8 @@ module set_barriers(
     input wire rst,
 	 input wire restart,
     //Current X and Y of the screen
-    input wire [10:0] xCoord,
-    input wire [10:0] yCoord,
+    input wire [9:0] xCoord,
+    input wire [9:0] yCoord,
     // Damage input
     input wire [10:0] damage_x,
     input wire [10:0] damage_y,
