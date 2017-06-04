@@ -26,8 +26,8 @@ module flying_saucer(
 	input wire rst,
 	input wire restart,
 	input wire [1:0] mode,
-	input wire [10:0] xCoord,
-	input wire [10:0] yCoord,
+	input wire [9:0] xCoord,
+	input wire [9:0] yCoord,
 	input wire [10:0] spaceship_laser_xCoord,
 	input wire [10:0] spaceship_laser_yCoord,
 	// Outputs
@@ -49,12 +49,12 @@ module flying_saucer(
 	parameter COLOR_FLYING_SAUCER_BLACK = 8'b00000000;
 	
 	// Flying Saucer Parameters
-	parameter FLYING_SAUCER_HEIGHT = 11'd15;
+	parameter FLYING_SAUCER_HEIGHT = 11'd16;
 	parameter FLYING_SAUCER_LENGTH = 11'd40;
-	parameter FLYING_SAUCER_TOP = 11'd50;
-	parameter FLYING_SAUCER_BOTTOM = 11'd66;
+	parameter FLYING_SAUCER_TOP = 11'd74;
+	parameter FLYING_SAUCER_BOTTOM = 11'd88;
 	parameter FLYING_SAUCER_INITIAL_X = -11'd50;
-	parameter FLYING_SAUCER_Y = 11'd58;
+	parameter FLYING_SAUCER_Y = 11'd80;
 	
 	// Laser Parameters
 	parameter LASER_HEIGHT = 11'd10;
