@@ -23,8 +23,8 @@ module aliens(
 	input wire clk,
 	input wire rst,
 	input wire [1:0] mode,
-	input wire [10:0] xCoord,
-	input wire [10:0] yCoord,
+	input wire [9:0] xCoord,
+	input wire [9:0] yCoord,
 	input wire aliens,
 	// Trying to add aliens top
 	input wire [10:0] initial_xCoord,
@@ -76,6 +76,7 @@ module aliens(
 	
 	// Border (separation of objects) Parameters
 	parameter BARRIER_TOP = 11'd340;
+	parameter BARRIER_BOTTOM = 11'd400;
 	
 	// Initialize alien ships
 	initial begin
@@ -101,8 +102,14 @@ module aliens(
 			// Alien Controls
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
 			if ((spaceship_laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
-				  spaceship_laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && spaceship_laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2)
+				  spaceship_laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && spaceship_laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2) 
 				) begin
+				// Solving weird edge case (where alien is at the edge gets hit by laser, is_edge never gets set)
+//				if	((alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2 + 2*ALIEN_MOVE_LEFT) ||
+//				    (alien_xCoord >= RIGHT_EDGE + ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT)
+//					) begin
+//					is_edge_temp <= 0;
+//				end
 				alien_xCoord <= ALIEN_DEAD;
 				can_move <= 0;
 			end
@@ -113,7 +120,7 @@ module aliens(
 					// Moving down
 					if (move_down) begin
 						// If at the bottom edge of the barriers, then game over
-						if (alien_yCoord >= BARRIER_TOP - ALIEN_HEIGHT / 2 - ALIEN_MOVE_DOWN) begin
+						if (alien_yCoord >= BARRIER_BOTTOM - ALIEN_HEIGHT / 2 - ALIEN_MOVE_DOWN) begin
 							// gameover or remove a life
 
 						end
