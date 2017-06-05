@@ -117,7 +117,7 @@ module vga_display(
 	//Outputs
 		.rgb(rgb_start_screen)
 		);
-
+/*
 	// Instantiate gameover screen display
 	wire [7:0] rgb_gameover_screen;
 	gameover_screen gameover_screen_display(
@@ -154,7 +154,7 @@ module vga_display(
 //		.rgb(rgb_scoreboard_bottom),
 //		.is_scoreboard_bottom(is_scoreboard_bottom)
 //		);
-		
+*/		
 	// Instantiate space ship
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
@@ -202,7 +202,7 @@ module vga_display(
 		.current_laser_xCoord(spaceship_laser_xCoord),
 		.current_laser_yCoord(spaceship_laser_yCoord)
 		);
-	
+/*
 	// Instantiate flying saucer 
 	wire [10:0] rgb_flying_saucer;
 	wire is_flying_saucer;
@@ -222,7 +222,7 @@ module vga_display(
 		.current_xCoord(flying_saucer_xCoord),
 		.current_yCoord(flying_saucer_yCoord)
 		);
-		
+*/		
 			// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
@@ -686,19 +686,23 @@ module vga_display(
 			// Switch screen
 			// Game mode
 			else if (mode == 2) begin
+			/*
 				if (gameover) begin
 					set_color <= rgb_gameover_screen;
 				end
-				else begin
+				else begin*/
 					// Color in borders (temporary to show how much space is available)
 						// Scoreboard border
+						/*
 					if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
+					*/
 						// Barrier border
-					else if (yCoord == BARRIER_BOTTOM) begin
+					if (yCoord == BARRIER_BOTTOM) begin
 						set_color <= COLOR_BLUE;
 					end
+					/*
 						// Extra lives border 
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
@@ -708,7 +712,7 @@ module vga_display(
 						set_color <= rgb_flying_saucer;
 					end
 					// Color in scoreboard
-					
+					*/
 					// Color in barriers
 					else if(is_barrier) begin
 						set_color <= rgb_barrier;
@@ -725,10 +729,12 @@ module vga_display(
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
+/*
 					// Top scoreboard (SCORE and HI-SCORE)
 					else if (is_scoreboard_top) begin
 						set_color <= rgb_scoreboard_top;
 					end
+*/
 					// Bottom scoreboard (CREDIT 00)
 //					else if (is_scoreboard_bottom) begin
 //						set_color <= rgb_scoreboard_bottom;
@@ -835,7 +841,7 @@ module vga_display(
 					else begin
 						set_color <= COLOR_SPACE;
 					end
-				end 
+				//end 
 			end
 		end
 	end
