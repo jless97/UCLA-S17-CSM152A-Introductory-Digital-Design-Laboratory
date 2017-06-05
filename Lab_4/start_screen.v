@@ -40,10 +40,7 @@ module start_screen(
 		if (yCoord >= 0 && yCoord < 480) begin
 			// SPACE (40 by 50)
 			// Letter S (revised)
-			if ((xCoord > 0 && xCoord < 10) || (xCoord > 640-10 && xCoord < 640)) begin
-				set_color <= COLOR_WHITE;
-			end
-			else if (xCoord > 200 && xCoord < 240 && yCoord > 100 && yCoord < 150) begin
+			if (xCoord > 200 && xCoord < 240 && yCoord > 100 && yCoord < 150) begin
 				if (
 					(xCoord > 200 && xCoord < 210 && yCoord > 100 && yCoord < 105) ||
 					(xCoord > 230 && xCoord < 240 && yCoord > 100 && yCoord < 105) ||
@@ -275,20 +272,16 @@ endmodule
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 // TAP TO PLAY (15 by 20)
-		else if (xCoord > 234 && xCoord < 449 && yCoord > 450 && yCoord < 470) begin
+		else if (xCoord > 234 && xCoord < 249 && yCoord > 450 && yCoord < 470) begin
 			// Letter T
 			if ( 
 				(xCoord > 234 && xCoord < 249 && yCoord > 450 && yCoord < 470) ||
 				(xCoord > 244 && xCoord < 249 && yCoord > 455 && yCoord < 470)
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
-				red = 3'b111;
-				green = 3'b111;
-				blue = 2'b00;
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Letter A
@@ -299,14 +292,10 @@ endmodule
 				(xCoord > 256 && xCoord < 261 && yCoord > 453 && yCoord < 457) ||
 				(xCoord > 256 && xCoord < 261 && yCoord > 456 && yCoord < 470)
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
-			red = 3'b111;
-			green = 3'b111;
-			blue = 2'b11;
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Letter P
@@ -314,17 +303,13 @@ endmodule
 			if (
 				(xCoord > 280 && xCoord < 283 && yCoord > 450 && yCoord < 453) ||
 				(xCoord > 280 && xCoord < 283 && yCoord > 457 && yCoord < 460) ||
-				(xCoord > 455 && xCoord < 465 && yCoord > 453 && yCoord < 457) ||
+				(xCoord > 273 && xCoord < 283 && yCoord > 453 && yCoord < 457) ||
 				(xCoord > 273 && xCoord < 283 && yCoord > 460 && yCoord < 470)
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
-				red = 3'b111;
-				green = 3'b111;
-				blue = 2'b11;
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Letter T
@@ -333,14 +318,10 @@ endmodule
 				(xCoord > 303 && xCoord < 308 && yCoord > 455 && yCoord < 470) ||
 				(xCoord > 313 && xCoord < 318 && yCoord > 455 && yCoord < 470)
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
-				red = 3'b111;
-				green = 3'b111;
-				blue = 2'b11;
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Letter O
@@ -348,14 +329,10 @@ endmodule
 			if (
 			
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
-			red = 3'b111;
-			green = 3'b111;
-			blue = 2'b11;
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Letter P
@@ -363,14 +340,10 @@ endmodule
 			if (
 			
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
-			red = 3'b111;
-			green = 3'b111;
-			blue = 2'b11;
+				set_color <= COLOR_YELLOW;
 			end
 		end
 		// Letter L
@@ -378,9 +351,7 @@ endmodule
 			if (
 			
 				) begin
-				red = 3'b000;
-				green = 3'b000;
-				blue = 2'b00;
+				set_color <= COLOR_BLACK;
 			end
 			else begin
 			red = 3'b111;

@@ -22,7 +22,8 @@ module set_barriers(
     // Inputs
     input wire clk,
     input wire rst,
-	 input wire restart,
+	input wire restart,
+    input wire [1:0] mode,
     //Current X and Y of the screen
     input wire [10:0] xCoord,
     input wire [10:0] yCoord,
@@ -42,7 +43,9 @@ module set_barriers(
 `include "barrier_params.vh"
 
     //format (from top left) [which_barrier] [xVal] [yVal] [health]
-    reg [2:0] barrierInfo[2:0] [2:0] [2:0];
+
+    reg [2:0] barrierInfo [3:0] [3:0] [3:0];
+
     reg [2:0] i;
     reg [2:0] k;
     reg [2:0] m;
@@ -50,11 +53,11 @@ module set_barriers(
         for(i = 3'b000; i <= 3'b011; i = i+1) begin
             for(k = 3'b000; k <= 3'b011; k = k+1) begin
                 for(m = 3'b000; m <= 3'b011; m = m+1) begin
-                    if(((k == 2'b00 || k == 2'b11) && m == 2'b11) || ((k == 2'b01 || k == 2'b10) && m > 2'b01)) begin
-                        barrierInfo [i] [k] [m] = 3'b000;
+                    if(((k == 3'b000 || k == 3'b011) && m == 3'b011) || ((k == 3'b001 || k == 3'b010) && m > 3'b001)) begin
+                        barrierInfo [i] [k] [m] = 2'b00;
                     end
                     else begin
-                        barrierInfo [i] [k] [m] = 3'b011;
+                        barrierInfo [i] [k] [m] = 2'b11;
                     end
                 end
             end
@@ -378,15 +381,15 @@ module set_barriers(
     reg [1:0] index1;
     reg [1:0] numAlienBullets; 
     always @ (posedge clk) begin
-        if(rst || restart) begin
+        if(rst || mode == 0 || mode == 1) begin
             for(i = 3'b000; i <= 3'b011; i = i+1) begin
                 for(k = 3'b000; k <= 3'b011; k = k+1) begin
                     for(m = 3'b000; m <= 3'b011; m = m+1) begin
-                        if(((k == 2'b00 || k == 2'b11) && m == 2'b11) || ((k == 2'b01 || k == 2'b10) && m > 2'b01)) begin
-                            barrierInfo [i] [k] [m] = 3'b000;
+                        if(((k == 3'b000 || k == 3'b011) && m == 3'b011) || ((k == 3'b001 || k == 3'b010) && m > 3'b001)) begin
+                            barrierInfo [i] [k] [m] = 2'b00;
                         end
                         else begin
-                            barrierInfo [i] [k] [m] = 3'b011;
+                            barrierInfo [i] [k] [m] = 2'b11;
                         end
                     end
                 end
@@ -424,7 +427,9 @@ module set_barriers(
 */
         if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
-            spaceShipLaserHit <= 1;
+
+            spaceshipLaserHit <= 1;
+
         end
         else begin
             spaceshipLaserHit <= 0;

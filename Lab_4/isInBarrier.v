@@ -31,6 +31,12 @@ always @ (*) begin
             shiftedXCoord = xCoord - BARR3_XSTART;
             inBarrier = 1;
         end
+        else begin
+            currBarrier = 2'b00;
+            shiftedXCoord = BARR0_XSTART + 8*BARR_WIDTH;
+            inBarrier = 0;
+        end
+
     end
     else begin
         currBarrier = 2'b00;

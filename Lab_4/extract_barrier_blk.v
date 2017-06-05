@@ -3,14 +3,16 @@ module extract_barrier_blk(
    input wire [10:0] xCoord,
    input wire [10:0] yCoord,
    //output
-   output reg [1:0] currBarrier,
+   output wire [1:0] currBarrier,
    output reg [1:0] xVal,
    output reg [1:0] yVal,
-   output reg inBarrier
+   output wire inBarrier
 	);
 	`include "barrier_params.vh"
 	// Barrier Parameters
-   reg [10:0] shiftedXCoord;
+
+   wire [10:0] shiftedXCoord;
+
    isInBarrier findBarrier(
     //Inputs
     .xCoord(xCoord), .yCoord(yCoord),

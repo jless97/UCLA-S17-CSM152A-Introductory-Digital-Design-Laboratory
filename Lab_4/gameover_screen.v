@@ -40,10 +40,7 @@ module gameover_screen(
 		if (yCoord >= 0 && yCoord < 480) begin
 			// SPACE (40 by 50)
 			// Letter S (revised)
-			if ((xCoord > 0 && xCoord < 10) || (xCoord > 640-10 && xCoord < 640)) begin
-				set_color <= COLOR_WHITE;
-			end
-			else if (xCoord > 200 && xCoord < 240 && yCoord > 100 && yCoord < 150) begin
+			if (xCoord > 200 && xCoord < 240 && yCoord > 100 && yCoord < 150) begin
 				if (
 					(xCoord > 200 && xCoord < 210 && yCoord > 100 && yCoord < 105) ||
 					(xCoord > 230 && xCoord < 240 && yCoord > 100 && yCoord < 105) ||

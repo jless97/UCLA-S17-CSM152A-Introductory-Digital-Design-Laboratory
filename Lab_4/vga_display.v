@@ -31,8 +31,8 @@ module vga_display(
 	input wire button_display,
 	input wire start_screen,
 	input wire switch_screen,
-   input wire [10:0] xCoord, 
-	input wire [10:0] yCoord,
+   input wire [9:0] xCoord, 
+	input wire [9:0] yCoord,
 	// Outputs
    output wire [7:0] rgb
 	);
@@ -64,15 +64,17 @@ module vga_display(
 	///////////////////////////////////////////////////////
 	// Border (separation of objects) Parameters
 	parameter SCOREBOARD_TOP = 11'd0;
-	parameter SCOREBOARD_BOTTOM = 11'd40;
+	parameter SCOREBOARD_BOTTOM = 11'd60;
 	parameter BARRIER_TOP = 11'd340;
 	parameter BARRIER_BOTTOM = 11'd400;
-	parameter EXTRA_LIVES_TOP = 11'd460;
+	parameter EXTRA_LIVES_TOP = 11'd445;
 	parameter EXTRA_LIVES_BOTTOM = 11'd480;
 	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
-	// Scoreboard Parameters
+	// laser Parameters
+	parameter LASER_HEIGHT = 11'd10;
+	parameter LASER_LENGTH = 11'd3;
 
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
@@ -106,7 +108,7 @@ module vga_display(
 	// Instantiate modules
 	
 	// Instantiate start screen display
-	wire [10:0] rgb_start_screen;
+	wire [7:0] rgb_start_screen;
 	start_screen start_screen_display(
 	//Inputs
 		.clk(clk),
@@ -115,9 +117,9 @@ module vga_display(
 	//Outputs
 		.rgb(rgb_start_screen)
 		);
-
+/*
 	// Instantiate gameover screen display
-	wire [10:0] rgb_gameover_screen;
+	wire [7:0] rgb_gameover_screen;
 	gameover_screen gameover_screen_display(
 	//Inputs
 		.clk(clk),
@@ -127,14 +129,38 @@ module vga_display(
 		.rgb(rgb_gameover_screen)
 		);
 	
+	// Instantiate top scoreboard display
+	wire [7:0] rgb_scoreboard_top;
+	wire is_scoreboard_top;
+	scoreboard_top scoreboard_top_display(
+	//Inputs
+		.clk(clk),
+		.xCoord(xCoord),
+		.yCoord(yCoord),
+	//Outputs
+		.rgb(rgb_scoreboard_top),
+		.is_scoreboard_top(is_scoreboard_top)
+		);
+	
+	// Instantiate bottom scoreboard display
+//	wire [10:0] rgb_scoreboard_bottom;
+//	wire is_scoreboard_bottom;
+//	scoreboard_bottom scoreboard_bottom_display(
+//	//Inputs
+//		.clk(clk),
+//		.xCoord(xCoord),
+//		.yCoord(yCoord),
+//	//Outputs
+//		.rgb(rgb_scoreboard_bottom),
+//		.is_scoreboard_bottom(is_scoreboard_bottom)
+//		);
+*/		
 	// Instantiate space ship
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
-		// Eventually it will be (604:0) as there are 55 alien modules, so spaceship needs to check to see if hits any of the 55 aliens	
 		// Coordinates of alien modules
-	//wire [604:0] alien_xCoord;
-	//wire [604:0] alien_yCoord;
-	wire [21:0] is_hit;
+	wire [131:0] alien_xCoord;
+	wire [131:0] alien_yCoord;
 		// Coordinates of the flying saucer
 	wire [10:0] flying_saucer_xCoord;
 	wire [10:0] flying_saucer_yCoord;
@@ -143,10 +169,13 @@ module vga_display(
 		// Coordinates of spaceship laser
 	wire [10:0] spaceship_laser_xCoord;
 	wire [10:0] spaceship_laser_yCoord;
+	wire [131:0] alien_laser_xCoord;
+	wire [131:0] alien_laser_yCoord;
 	wire [7:0] rgb_spaceship_laser;
 	wire is_spaceship_laser;
 	wire restart;
 	reg restart_temp;
+	wire barrSpaceshipLaserHit;
 	spaceship update_spaceship(
 	//Inputs
 		.clk(clk),
@@ -158,11 +187,13 @@ module vga_display(
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
-		//.alien_xCoord(alien_xCoord),
-		//.alien_yCoord(alien_yCoord),
+		.alien_xCoord(alien_xCoord),
+		.alien_yCoord(alien_yCoord),
+		.alien_laser_xCoord(alien_laser_xCoord),
+		.alien_laser_yCoord(alien_laser_yCoord),
 		.flying_saucer_xCoord(flying_saucer_xCoord),
 		.flying_saucer_yCoord(flying_saucer_yCoord),
-		.laser_hit_alien(is_hit[21:0]),
+		.barrSpaceshipLaserHit(barrSpaceshipLaserHit),
 	//Outputs
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship),
@@ -171,7 +202,7 @@ module vga_display(
 		.current_laser_xCoord(spaceship_laser_xCoord),
 		.current_laser_yCoord(spaceship_laser_yCoord)
 		);
-	
+/*
 	// Instantiate flying saucer 
 	wire [10:0] rgb_flying_saucer;
 	wire is_flying_saucer;
@@ -191,24 +222,25 @@ module vga_display(
 		.current_xCoord(flying_saucer_xCoord),
 		.current_yCoord(flying_saucer_yCoord)
 		);
-		
+*/		
 			// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
-    wire barr_spaceShipLaserHit;
 	set_barriers update_barriers(
 	//Inputs
 		.clk(clk),
 	   .rst(rst),
+	   .mode(mode),
 		.restart(restart),
 	   .xCoord(xCoord),
 	   .yCoord(yCoord),
-	   .spaceshipLaserXcoord(spaceship_laser_xCoord),
-	   .spaceshipLaserYcoord(spaceship_laser_yCoord),
+
+		.spaceshipLaserXcoord(spaceship_laser_xCoord),
+		.spaceshipLaserYcoord(spaceship_laser_yCoord-LASER_HEIGHT),
 	//Outputs
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier),
-       .spaceShipLaserHit(barr_spaceShipLaserHit)
+	   .spaceshipLaserHit(barrSpaceshipLaserHit)
 		);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,37 +248,39 @@ module vga_display(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // ALIEN IMPLEMENTATION
 		// Instantiate aliens
-	wire [21:0] aliens;
-	wire [175:0] rgb_aliens;
+	wire [11:0] aliens;
+	wire [95:0] rgb_aliens;
+	wire [95:0] rgb_alien_laser;
 		// Player Lives
 	wire [2:0] lives;
 	reg [2:0] lives_temp;
 	wire gameover;
 	reg gameover_temp;
 		// Controls
-	wire [21:0] is_alien;
-	wire [21:0] is_edge;
-	wire [21:0] is_bottom;
+	wire [11:0] is_alien;
+	wire [11:0] is_alien_laser;
+		// Timer before certain alien can shoot
+	wire [143:0] shoot_timer;
+	assign shoot_timer[11:0] = 12'd986;
+	assign shoot_timer[23:12] = 12'd1532;
+	assign shoot_timer[35:24] = 12'd668;
+	assign shoot_timer[47:36] = 12'd843;
+	assign shoot_timer[59:48] = 12'd4001;
+	assign shoot_timer[71:60] = 12'd1823;
+	assign shoot_timer[83:72] = 12'd4495;
+	assign shoot_timer[95:84] = 12'd3643;
+	assign shoot_timer[107:96] = 12'd1493;
+	assign shoot_timer[119:108] = 12'd3908;
+	assign shoot_timer[131:120] = 12'd2929;
+	assign shoot_timer[143:132] = 12'd4231;
+	wire [11:0] is_edge;
+	wire [11:0] is_bottom;
 		// Directions
 	wire move_left;
 	wire move_right;
 	wire move_down;
 		// Color scheme
 	wire color;
-	
-//		// Instantiate bottom scoreboard
-//	wire [7:0] rgb_scoreboard_bottom;
-//	wire is_scoreboard_bottom;
-//	scoreboard_bottom scoreboard_bottom_display(
-//		.clk(clk),
-//		.rst(rst),
-//		.mode(mode),
-//		.lives(lives),
-//		.xCoord(xCoord),
-//		.yCoord(yCoord),
-//		.rgb(rgb_scoreboard_bottom),
-//		.is_scoreboard_bottom(is_scoreboard_bottom)
-//		);
 
 	reg move_left_temp;
 	reg move_right_temp;
@@ -292,8 +326,8 @@ module vga_display(
 	assign restart = restart_temp;
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
 // First row
+/*
 	// Alien 0
 	aliens update_alien_0(
 	// Inputs
@@ -303,24 +337,26 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd195),
+		.initial_yCoord(11'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[0]),
 		//.color(0),
 	// Outputs
 		.rgb(rgb_aliens[7:0]),
 		.is_alien(is_alien[0]),
-		//.current_xCoord(alienxCoord[10:0]),
-		//.current_yCoord(alienyCoord[10:0]),
-		.is_edge(is_edge[0]),
-		//.is_bottom(is_bottom[0])
-		.is_hit(is_hit[0])
+		.rgb_alien_laser(rgb_alien_laser[7:0]),
+		.is_alien_laser(is_alien_laser[0]),
+		.current_xCoord(alien_xCoord[10:0]),
+		.current_yCoord(alien_yCoord[10:0]),
+		.is_edge(is_edge[0])
+//		.is_hit(is_hit[0])
 		);
-	
+
 	// Alien 1
 	aliens update_alien_1(
 		.clk(clk),
@@ -329,22 +365,25 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[1]),
-		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd245),
+		.initial_yCoord(11'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[1]),
 		//.color(0),
 		.rgb(rgb_aliens[15:8]),
 		.is_alien(is_alien[1]),
-		//.current_xCoord(alienxCoord[21:11]),
-		//.current_yCoord(alienyCoord[21:11]),
-		.is_edge(is_edge[1]),
-		//.is_bottom(is_bottom[1])
-		.is_hit(is_hit[1])
+		.rgb_alien_laser(rgb_alien_laser[15:8]),
+		.is_alien_laser(is_alien_laser[1]),
+		.current_xCoord(alien_xCoord[21:11]),
+		.current_yCoord(alien_yCoord[21:11]),
+		.is_edge(is_edge[1])
+//		.is_hit(is_hit[1])
 		);
+
 		// Alien 2
 	aliens update_alien_2(
 		.clk(clk),
@@ -353,21 +392,23 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[2]),
-		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd295),
+		.initial_yCoord(11'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[2]),
 //		.color(0),
 		.rgb(rgb_aliens[23:16]),
 		.is_alien(is_alien[2]),
-		//.current_xCoord(alienxCoord[32:22]),
-		//.current_yCoord(alienyCoord[32:22]),
-		.is_edge(is_edge[2]),
-		//.is_bottom(is_bottom[2])
-		.is_hit(is_hit[2])
+		.rgb_alien_laser(rgb_alien_laser[23:16]),
+		.is_alien_laser(is_alien_laser[2]),
+		.current_xCoord(alien_xCoord[32:22]),
+		.current_yCoord(alien_yCoord[32:22]),
+		.is_edge(is_edge[2])
+//		.is_hit(is_hit[2])
 		);
 		
 	// Alien 3
@@ -378,21 +419,23 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[3]),
-		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd345),
+		.initial_yCoord(11'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[3]),
 //		.color(0),
 		.rgb(rgb_aliens[31:24]),
 		.is_alien(is_alien[3]),
-		//.current_xCoord(alienxCoord[43:33]),
-		//.current_yCoord(alienyCoord[43:33]),
-		.is_edge(is_edge[3]),
-		//.is_bottom(is_bottom[3])
-		.is_hit(is_hit[3])
+		.rgb_alien_laser(rgb_alien_laser[31:24]),
+		.is_alien_laser(is_alien_laser[3]),
+		.current_xCoord(alien_xCoord[43:33]),
+		.current_yCoord(alien_yCoord[43:33]),
+		.is_edge(is_edge[3])
+//		.is_hit(is_hit[3])
 		);
 		
 	// Alien 4
@@ -403,21 +446,23 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[4]),
-		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd395),
+		.initial_yCoord(11'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[4]),
 //		.color(0),
 		.rgb(rgb_aliens[39:32]),
 		.is_alien(is_alien[4]),
-		//.current_xCoord(alienxCoord[54:44]),
-		//.current_yCoord(alienyCoord[54:44]),
-		.is_edge(is_edge[4]),
-		//.is_bottom(is_bottom[4])
-		.is_hit(is_hit[4])
+		.rgb_alien_laser(rgb_alien_laser[39:32]),
+		.is_alien_laser(is_alien_laser[4]),
+		.current_xCoord(alien_xCoord[54:44]),
+		.current_yCoord(alien_yCoord[54:44]),
+		.is_edge(is_edge[4])
+//		.is_hit(is_hit[4])
 		);
 	// Alien 5
 	aliens update_alien_5(
@@ -427,23 +472,28 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[5]),
-		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd445),
+		.initial_yCoord(11'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[5]),
 //		.color(0),
 		.rgb(rgb_aliens[47:40]),
 		.is_alien(is_alien[5]),
-		//.current_xCoord(alienxCoord[65:55]),
-		//.current_yCoord(alienyCoord[65:55]),
-		.is_edge(is_edge[5]),
-		//.is_bottom(is_bottom[5])
-		.is_hit(is_hit[5])
+		.rgb_alien_laser(rgb_alien_laser[47:40]),
+		.is_alien_laser(is_alien_laser[5]),
+		.current_xCoord(alien_xCoord[65:55]),
+		.current_yCoord(alien_yCoord[65:55]),
+		.is_edge(is_edge[5])
+//		.is_hit(is_hit[5])
 		);
-		
+		*/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+// Second row		
+
 	// Alien 6
 	aliens update_alien_6(
 		.clk(clk),
@@ -452,22 +502,27 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[6]),
-		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd445),
+		.initial_yCoord(11'd180),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[83:72]),
 //		.color(0),
 		.rgb(rgb_aliens[55:48]),
 		.is_alien(is_alien[6]),
-		//.current_xCoord(alienxCoord[76:66]),
-		//.current_yCoord(alienyCoord[76:66]),
-		.is_edge(is_edge[6]),
-		//.is_bottom(is_bottom[6])
-		.is_hit(is_hit[6])
+		.rgb_alien_laser(rgb_alien_laser[55:48]),
+		.is_alien_laser(is_alien_laser[6]),
+		.current_xCoord(alien_xCoord[76:66]),
+		.current_yCoord(alien_yCoord[76:66]),
+		.current_laser_xCoord(alien_laser_xCoord[76:66]),
+		.current_laser_yCoord(alien_laser_yCoord[76:66]),
+		.is_edge(is_edge[6])
+//		.is_hit(is_hit[6])
 		);
+		
 		// Alien 7
 	aliens update_alien_7(
 		.clk(clk),
@@ -476,21 +531,25 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[7]),
-		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd395),
+		.initial_yCoord(11'd180),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[95:84]),
 //		.color(0),
 		.rgb(rgb_aliens[63:56]),
 		.is_alien(is_alien[7]),
-		//.current_xCoord(alienxCoord[87:77]),
-		//.current_yCoord(alienyCoord[87:77]),
-		.is_edge(is_edge[7]),
-		//.is_bottom(is_bottom[7])
-		.is_hit(is_hit[7])
+		.rgb_alien_laser(rgb_alien_laser[63:56]),
+		.is_alien_laser(is_alien_laser[7]),
+		.current_xCoord(alien_xCoord[87:77]),
+		.current_yCoord(alien_yCoord[87:77]),
+		.current_laser_xCoord(alien_laser_xCoord[87:77]),
+		.current_laser_yCoord(alien_laser_yCoord[87:77]),
+		.is_edge(is_edge[7])
+//		.is_hit(is_hit[7])
 		);
 		
 	// Alien 8
@@ -501,21 +560,25 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[8]),
-		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd345),
+		.initial_yCoord(11'd180),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[107:96]),
 //		.color(0),
 		.rgb(rgb_aliens[71:64]),
 		.is_alien(is_alien[8]),
-		//.current_xCoord(alienxCoord[98:88]),
-		//.current_yCoord(alienyCoord[98:88]),
-		.is_edge(is_edge[8]),
-		//.is_bottom(is_bottom[8])
-		.is_hit(is_hit[8])
+		.rgb_alien_laser(rgb_alien_laser[71:64]),
+		.is_alien_laser(is_alien_laser[8]),
+		.current_xCoord(alien_xCoord[98:88]),
+		.current_yCoord(alien_yCoord[98:88]),
+		.current_laser_xCoord(alien_laser_xCoord[98:88]),
+		.current_laser_yCoord(alien_laser_yCoord[98:88]),
+		.is_edge(is_edge[8])
+//		.is_hit(is_hit[8])
 		);
 		
 	// Alien 9
@@ -526,21 +589,25 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[9]),
-		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd295),
+		.initial_yCoord(11'd180),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[119:108]),
 //		.color(0),
 		.rgb(rgb_aliens[79:72]),
 		.is_alien(is_alien[9]),
-		//.current_xCoord(alienxCoord[109:99]),
-		//.current_yCoord(alienyCoord[109:99]),
-		.is_edge(is_edge[9]),
-		//.is_bottom(is_bottom[9])
-		.is_hit(is_hit[9])
+		.rgb_alien_laser(rgb_alien_laser[79:72]),
+		.is_alien_laser(is_alien_laser[9]),
+		.current_xCoord(alien_xCoord[109:99]),
+		.current_yCoord(alien_yCoord[109:99]),
+		.current_laser_xCoord(alien_laser_xCoord[109:99]),
+		.current_laser_yCoord(alien_laser_yCoord[109:99]),
+		.is_edge(is_edge[9])
+//		.is_hit(is_hit[9])
 		);
 		
 	// Alien 10
@@ -551,25 +618,27 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[0]),
-		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd90),
+		.initial_xCoord(11'd245),
+		.initial_yCoord(11'd180),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[131:120]),
 //		.color(0),
 		.rgb(rgb_aliens[87:80]),
 		.is_alien(is_alien[10]),
-		//.current_xCoord(alienxCoord[120:110]),
-		//.current_yCoord(alienyCoord[120:110]),
-		.is_edge(is_edge[10]),
-		//.is_bottom(is_bottom[10])
-		.is_hit(is_hit[10])
+		.rgb_alien_laser(rgb_alien_laser[87:80]),
+		.is_alien_laser(is_alien_laser[10]),
+		.current_xCoord(alien_xCoord[120:110]),
+		.current_yCoord(alien_yCoord[120:110]),
+		.current_laser_xCoord(alien_laser_xCoord[120:110]),
+		.current_laser_yCoord(alien_laser_yCoord[120:110]),
+		.is_edge(is_edge[10])
+//		.is_hit(is_hit[10])
 		);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-
-// Second row	
+	
 	// Alien 11
 	aliens update_alien_11(
 		.clk(clk),
@@ -578,326 +647,27 @@ module vga_display(
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 		.aliens(aliens[11]),
-		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd120),
+		.initial_xCoord(11'd195),
+		.initial_yCoord(11'd180),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
 		.spaceship_laser_yCoord(spaceship_laser_yCoord),
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
+		.shoot_timer(shoot_timer[143:132]),
 //		.color(1),
 		.rgb(rgb_aliens[95:88]),
 		.is_alien(is_alien[11]),
-		//.current_xCoord(alienxCoord[131:121]),
-		//.current_yCoord(alienyCoord[131:121]),
-		.is_edge(is_edge[11]),
-		//.is_bottom(is_bottom[11])
-		.is_hit(is_hit[11])
+		.rgb_alien_laser(rgb_alien_laser[95:88]),
+		.is_alien_laser(is_alien_laser[11]),
+		.current_xCoord(alien_xCoord[131:121]),
+		.current_yCoord(alien_yCoord[131:121]),
+		.current_laser_xCoord(alien_laser_xCoord[131:121]),
+		.current_laser_yCoord(alien_laser_yCoord[131:121]),
+		.is_edge(is_edge[11])
+//		.is_hit(is_hit[11])
 		);
-		
-		// Alien 12
-	aliens update_alien_12(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[12]),
-		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[103:96]),
-		.is_alien(is_alien[12]),
-		//.current_xCoord(alienxCoord[142:132]),
-		//.current_yCoord(alienyCoord[142:132]),
-		.is_edge(is_edge[12]),
-		//.is_bottom(is_bottom[12])
-		.is_hit(is_hit[12])
-		);
-		
-	// Alien 13
-	aliens update_alien_13(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[13]),
-		.initial_xCoord(11'd170),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[111:104]),
-		.is_alien(is_alien[13]),
-		//.current_xCoord(alienxCoord[153:143]),
-		//.current_yCoord(alienyCoord[153:143]),
-		.is_edge(is_edge[13]),
-		//.is_bottom(is_bottom[13])
-		.is_hit(is_hit[13])
-		);
-		
-	// Alien 14
-	aliens update_alien_14(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[14]),
-		.initial_xCoord(11'd220),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[119:112]),
-		.is_alien(is_alien[14]),
-		//.current_xCoord(alienxCoord[164:154]),
-		//.current_yCoord(alienyCoord[164:154]),
-		.is_edge(is_edge[14]),
-		//.is_bottom(is_bottom[14])
-		.is_hit(is_hit[14])
-		);
-		
-	// Alien 15
-	aliens update_alien_15(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[15]),
-		.initial_xCoord(11'd270),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[127:120]),
-		.is_alien(is_alien[15]),
-		//.current_xCoord(alienxCoord[175:165]),
-		//.current_yCoord(alienyCoord[175:165]),
-		.is_edge(is_edge[15]),
-		//.is_bottom(is_bottom[15])
-		.is_hit(is_hit[15])
-		);
-		
-	// Alien 16
-	aliens update_alien_16(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[16]),
-		.initial_xCoord(11'd320),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[135:128]),
-		.is_alien(is_alien[16]),
-		//.current_xCoord(alienxCoord[186:176]),
-		//.current_yCoord(alienyCoord[186:176]),
-		.is_edge(is_edge[16]),
-		//.is_bottom(is_bottom[16])
-		.is_hit(is_hit[16])
-		);
-		// Alien 17
-	aliens update_alien_17(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[17]),
-		.initial_xCoord(11'd370),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[143:136]),
-		.is_alien(is_alien[17]),
-		//.current_xCoord(alienxCoord[197:187]),
-		//.current_yCoord(alienyCoord[197:187]),
-		.is_edge(is_edge[17]),
-		//.is_bottom(is_bottom[17])
-		.is_hit(is_hit[17])
-		);
-		
-	// Alien 18
-	aliens update_alien_18(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[18]),
-		.initial_xCoord(11'd420),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[151:144]),
-		.is_alien(is_alien[18]),
-		//.current_xCoord(alienxCoord[208:198]),
-		//.current_yCoord(alienyCoord[208:198]),
-		.is_edge(is_edge[18]),
-		//.is_bottom(is_bottom[18])
-		.is_hit(is_hit[18])
-		);
-		
-	// Alien 19
-	aliens update_alien_19(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[19]),
-		.initial_xCoord(11'd470),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[159:152]),
-		.is_alien(is_alien[19]),
-		//.current_xCoord(alienxCoord[219:209]),
-		//.current_yCoord(alienyCoord[219:209]),
-		.is_edge(is_edge[19]),
-		//.is_bottom(is_bottom[19])
-		.is_hit(is_hit[19])
-		);
-		
-	// Alien 20
-	aliens update_alien_20(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[20]),
-		.initial_xCoord(11'd520),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[167:160]),
-		.is_alien(is_alien[20]),
-		//.current_xCoord(alienxCoord[230:220]),
-		//.current_yCoord(alienyCoord[230:220]),
-		.is_edge(is_edge[20]),
-		//.is_bottom(is_bottom[20])
-		.is_hit(is_hit[20])
-		);
-		
-	// Alien 21
-	aliens update_alien_21(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[21]),
-		.initial_xCoord(11'd570),
-		.initial_yCoord(11'd120),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(1),
-		.rgb(rgb_aliens[175:168]),
-		.is_alien(is_alien[21]),
-		//.current_xCoord(alienxCoord[241:231]),
-		//.current_yCoord(alienyCoord[241:231]),
-		.is_edge(is_edge[21]),
-		//.is_bottom(is_bottom[21])
-		.is_hit(is_hit[21])
-		);
-		
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-/*
-// Third row
-	// Alien 22
-	aliens update_alien_22(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[22]),
-		.initial_xCoord(11'd70),
-		.initial_yCoord(11'd150),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(2),
-		.rgb(rgb_aliens[183:176]),
-		.is_alien(is_alien[22]),
-		//.current_xCoord(alienxCoord[252:242]),
-		//.current_yCoord(alienyCoord[252:242]),
-		.is_edge(is_edge[22])
-		//.is_bottom(is_bottom[22])
-//		.is_hit(is_hit[22])
-		);
-		
-	// Alien 23
-	aliens update_alien_23(
-		.clk(clk),
-		.rst(rst),
-		.mode(mode),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.aliens(aliens[23]),
-		.initial_xCoord(11'd120),
-		.initial_yCoord(11'd150),
-		.spaceship_laser_xCoord(spaceship_laser_xCoord),
-		.spaceship_laser_yCoord(spaceship_laser_yCoord),
-		.move_left(move_left),
-		.move_right(move_right),
-		.move_down(move_down),
-//		.color(2),
-		.rgb(rgb_aliens[191:184]),
-		.is_alien(is_alien[23]),
-		//.current_xCoord(alienxCoord[263:253]),
-		//.current_yCoord(alienyCoord[263:253]),
-		.is_edge(is_edge[23])
-		//.is_bottom(is_bottom[23])
-//		.is_hit(is_hit[23])
-		);
-		
-*/
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -917,19 +687,23 @@ module vga_display(
 			// Switch screen
 			// Game mode
 			else if (mode == 2) begin
+			/*
 				if (gameover) begin
 					set_color <= rgb_gameover_screen;
 				end
-				else begin
+				else begin*/
 					// Color in borders (temporary to show how much space is available)
 						// Scoreboard border
+						/*
 					if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
-						set_color <= COLOR_RED;
+						set_color <= COLOR_GREEN;
 					end
+					*/
 						// Barrier border
-					else if (yCoord == BARRIER_TOP || yCoord == BARRIER_BOTTOM) begin
+					if (yCoord == BARRIER_BOTTOM) begin
 						set_color <= COLOR_BLUE;
 					end
+					/*
 						// Extra lives border 
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
@@ -939,7 +713,7 @@ module vga_display(
 						set_color <= rgb_flying_saucer;
 					end
 					// Color in scoreboard
-					
+					*/
 					// Color in barriers
 					else if(is_barrier) begin
 						set_color <= rgb_barrier;
@@ -956,10 +730,17 @@ module vga_display(
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
-					// Extra lives scoreboard
+/*
+					// Top scoreboard (SCORE and HI-SCORE)
+					else if (is_scoreboard_top) begin
+						set_color <= rgb_scoreboard_top;
+					end
+*/
+					// Bottom scoreboard (CREDIT 00)
 //					else if (is_scoreboard_bottom) begin
 //						set_color <= rgb_scoreboard_bottom;
 //					end
+					// Extra lives scoreboard
 						// Life 2
 //					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 50 && xCoord <= 90 && lives > 0) begin
 //						set_color <= COLOR_SPACESHIP;
@@ -980,11 +761,11 @@ module vga_display(
 //					else if (yCoord >= EXTRA_LIVES_TOP + 5 && yCoord <= EXTRA_LIVES_BOTTOM - 5 && xCoord >= 250 && xCoord <= 290 && lives > 4) begin
 //						set_color <= COLOR_SPACESHIP;
 //					end
-					// Color in aliens				
+					// Color in aliens
+/*					
 					else if (is_alien[0]) begin
 						set_color <= rgb_aliens[7:0];
 					end
-					
 					else if (is_alien[1]) begin
 						set_color <= rgb_aliens[15:8];
 					end
@@ -1000,6 +781,7 @@ module vga_display(
 					else if (is_alien[5]) begin
 						set_color <= rgb_aliens[47:40];
 					end
+					*/
 					else if (is_alien[6]) begin
 						set_color <= rgb_aliens[55:48];
 					end
@@ -1018,47 +800,49 @@ module vga_display(
 					else if (is_alien[11]) begin
 						set_color <= rgb_aliens[95:88];
 					end
-					else if (is_alien[12]) begin
-						set_color <= rgb_aliens[103:96];
+					// Color in alien laser
+					/*
+					else if (is_alien_laser[0]) begin
+						set_color <= rgb_alien_laser[7:0];
 					end
-					else if (is_alien[13]) begin
-						set_color <= rgb_aliens[111:104];
+					else if (is_alien_laser[1]) begin
+						set_color <= rgb_alien_laser[15:8];
 					end
-					else if (is_alien[14]) begin
-						set_color <= rgb_aliens[119:112];
+					else if (is_alien_laser[2]) begin
+						set_color <= rgb_alien_laser[23:16];
 					end
-					else if (is_alien[15]) begin
-						set_color <= rgb_aliens[127:120];
+					else if (is_alien_laser[3]) begin
+						set_color <= rgb_alien_laser[31:24];
 					end
-					else if (is_alien[16]) begin
-						set_color <= rgb_aliens[135:128];
+					else if (is_alien_laser[4]) begin
+						set_color <= rgb_alien_laser[39:32];
 					end
-					else if (is_alien[17]) begin
-						set_color <= rgb_aliens[143:136];
+					else if (is_alien_laser[5]) begin
+						set_color <= rgb_alien_laser[47:40];
 					end
-					else if (is_alien[18]) begin
-						set_color <= rgb_aliens[151:144];
+					*/
+					else if (is_alien_laser[6]) begin
+						set_color <= rgb_aliens[55:48];
 					end
-					else if (is_alien[19]) begin
-						set_color <= rgb_aliens[159:152];
+					else if (is_alien_laser[7]) begin
+						set_color <= rgb_alien_laser[63:56];
 					end
-					else if (is_alien[20]) begin
-						set_color <= rgb_aliens[167:160];
+					else if (is_alien_laser[8]) begin
+						set_color <= rgb_alien_laser[71:64];
 					end
-					else if (is_alien[21]) begin
-						set_color <= rgb_aliens[175:168];
+					else if (is_alien_laser[9]) begin
+						set_color <= rgb_alien_laser[79:72];
 					end
-/*					else if (is_alien[22]) begin
-						set_color <= rgb_aliens[183:176];
+					else if (is_alien_laser[10]) begin
+						set_color <= rgb_alien_laser[87:80];
 					end
-					else if (is_alien[23]) begin
-						set_color <= rgb_aliens[191:184];
+					else if (is_alien_laser[11]) begin
+						set_color <= rgb_alien_laser[95:88];
 					end
-*/
 					else begin
 						set_color <= COLOR_SPACE;
 					end
-				end 
+				//end 
 			end
 		end
 	end
