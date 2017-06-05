@@ -10,7 +10,9 @@ module extract_barrier_blk(
 	);
 	`include "barrier_params.vh"
 	// Barrier Parameters
+
    wire [10:0] shiftedXCoord;
+
    isInBarrier findBarrier(
     //Inputs
     .xCoord(xCoord), .yCoord(yCoord),

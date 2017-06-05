@@ -234,6 +234,7 @@ module vga_display(
 		.restart(restart),
 	   .xCoord(xCoord),
 	   .yCoord(yCoord),
+
 		.spaceshipLaserXcoord(spaceship_laser_xCoord),
 		.spaceshipLaserYcoord(spaceship_laser_yCoord-LASER_HEIGHT),
 	//Outputs

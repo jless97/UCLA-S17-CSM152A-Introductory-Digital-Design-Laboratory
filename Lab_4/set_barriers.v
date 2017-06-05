@@ -43,7 +43,9 @@ module set_barriers(
 `include "barrier_params.vh"
 
     //format (from top left) [which_barrier] [xVal] [yVal] [health]
+
     reg [2:0] barrierInfo [3:0] [3:0] [3:0];
+
     reg [2:0] i;
     reg [2:0] k;
     reg [2:0] m;
@@ -391,7 +393,7 @@ module set_barriers(
                         end
                     end
                 end
-        end
+            end
         end
         if(displayInBarrier && barrierInfo[currBarrier][currXblk][currYblk] != 3'b000) begin
             is_barrier_temp = 1;
@@ -425,7 +427,9 @@ module set_barriers(
 */
         if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
+
             spaceshipLaserHit <= 1;
+
         end
         else begin
             spaceshipLaserHit <= 0;

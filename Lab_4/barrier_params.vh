@@ -7,3 +7,4 @@
 	parameter BARR3_XSTART = BARR0_XSTART+(6*BARR_WIDTH);
 	parameter BARR_BLK_SZ = 11'd19;
 	parameter BARR_YSTART = 11'd340;
+
