@@ -72,7 +72,9 @@ module vga_display(
 	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
-	// Scoreboard Parameters
+	// laser Parameters
+	parameter LASER_HEIGHT = 11'd10;
+	parameter LASER_LENGTH = 11'd3;
 
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
@@ -106,7 +108,7 @@ module vga_display(
 	// Instantiate modules
 	
 	// Instantiate start screen display
-	wire [10:0] rgb_start_screen;
+	wire [7:0] rgb_start_screen;
 	start_screen start_screen_display(
 	//Inputs
 		.clk(clk),
@@ -117,7 +119,7 @@ module vga_display(
 		);
 
 	// Instantiate gameover screen display
-	wire [10:0] rgb_gameover_screen;
+	wire [7:0] rgb_gameover_screen;
 	gameover_screen gameover_screen_display(
 	//Inputs
 		.clk(clk),
@@ -128,7 +130,7 @@ module vga_display(
 		);
 	
 	// Instantiate top scoreboard display
-	wire [10:0] rgb_scoreboard_top;
+	wire [7:0] rgb_scoreboard_top;
 	wire is_scoreboard_top;
 	scoreboard_top scoreboard_top_display(
 	//Inputs
@@ -173,6 +175,7 @@ module vga_display(
 	wire is_spaceship_laser;
 	wire restart;
 	reg restart_temp;
+	wire barrSpaceshipLaserHit;
 	spaceship update_spaceship(
 	//Inputs
 		.clk(clk),
@@ -190,6 +193,7 @@ module vga_display(
 		.alien_laser_yCoord(alien_laser_yCoord),
 		.flying_saucer_xCoord(flying_saucer_xCoord),
 		.flying_saucer_yCoord(flying_saucer_yCoord),
+		.barrSpaceshipLaserHit(barrSpaceshipLaserHit),
 	//Outputs
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship),
@@ -222,25 +226,20 @@ module vga_display(
 			// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
-	wire [10:0] damage_x;
-	wire [10:0] damage_y;
-	wire is_damage;
-	assign damage_x = 0;
-	assign damage_y = 0;
-	assign is_damage = 0;
 	set_barriers update_barriers(
 	//Inputs
 		.clk(clk),
 	   .rst(rst),
+	   .mode(mode),
 		.restart(restart),
 	   .xCoord(xCoord),
 	   .yCoord(yCoord),
-	   .damage_x(damage_x),
-	   .damage_y(damage_y),
-	   .new_damage(new_damage),
+		.spaceshipLaserXcoord(spaceship_laser_xCoord),
+		.spaceshipLaserYcoord(spaceship_laser_yCoord-LASER_HEIGHT),
 	//Outputs
 	   .rgb(rgb_barrier),
-	   .is_barrier(is_barrier)
+	   .is_barrier(is_barrier),
+	   .spaceshipLaserHit(barrSpaceshipLaserHit)
 		);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

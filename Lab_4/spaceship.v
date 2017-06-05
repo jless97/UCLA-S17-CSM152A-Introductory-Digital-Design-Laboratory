@@ -35,6 +35,7 @@ module spaceship(
 	input wire [131:0] alien_yCoord,
 	input wire [131:0] alien_laser_xCoord,
 	input wire [131:0] alien_laser_yCoord,
+	input wire barrSpaceshipLaserHit,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
@@ -208,7 +209,8 @@ module spaceship(
 						  laser_xCoord >= alien_xCoord[120:110] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[120:110] + ALIEN_LENGTH / 2) ||
 						  // Alien 11
 						 (laser_yCoord <= alien_yCoord[131:121] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[131:121] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[131:121] + ALIEN_LENGTH / 2) 
+						  laser_xCoord >= alien_xCoord[131:121] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[131:121] + ALIEN_LENGTH / 2)  ||
+						 barrSpaceshipLaserHit
 						  ) begin
 						laser_xCoord <= spaceship_coord;
 						laser_yCoord <= LASER_INITIAL_Y;
