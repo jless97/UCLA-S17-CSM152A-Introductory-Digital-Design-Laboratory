@@ -59,6 +59,10 @@ module aliens(
 	parameter COLOR_LASER = 8'b11111111;
 	parameter COLOR_LASER_BLACK = 8'b00000000;
 	
+		// Spaceship Parameters
+	parameter SPACESHIP_HEIGHT = 11'd10;
+	parameter SPACESHIP_LENGTH = 11'd40;
+	
 		// Alien Parameters
 	parameter ALIEN_HEIGHT = 11'd16;
 	parameter ALIEN_LENGTH = 11'd30;
@@ -128,12 +132,6 @@ module aliens(
 			if ((spaceship_laser_yCoord <= alien_yCoord + ALIEN_HEIGHT / 2 + MOVE_UP &&
 				  spaceship_laser_xCoord >= alien_xCoord - ALIEN_LENGTH / 2 && spaceship_laser_xCoord <= alien_xCoord + ALIEN_LENGTH / 2) 
 				) begin
-				// Solving weird edge case (where alien is at the edge gets hit by laser, is_edge never gets set)
-//				if	((alien_xCoord <= LEFT_EDGE + ALIEN_LENGTH / 2 + 2*ALIEN_MOVE_LEFT) ||
-//				    (alien_xCoord >= RIGHT_EDGE + ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT)
-//					) begin
-//					is_edge_temp <= 0;
-//				end
 				alien_xCoord <= ALIEN_DEAD;
 				laser_xCoord <= ALIEN_DEAD;
 				set_color_laser <= COLOR_LASER_BLACK;
@@ -156,10 +154,18 @@ module aliens(
 					//laser_yCoord <= alien_yCoord;
 				end
 				if (is_active_laser) begin
-					if (laser_yCoord >= EXTRA_LIVES_TOP + LASER_HEIGHT / 2 + MOVE_UP) begin
+					// If hits bottom of screen, reset
+					// If hits spaceship laser, reset
+					if (
+						// If hits bottom of screen
+						(laser_yCoord >= EXTRA_LIVES_TOP + LASER_HEIGHT / 2 + MOVE_UP) ||
+						// If hits spaceship laser
+						(laser_yCoord >= spaceship_laser_yCoord + LASER_HEIGHT / 2 &&//+ MOVE_UP &&
+						 laser_xCoord >= spaceship_laser_xCoord - LASER_LENGTH / 2 && laser_xCoord <= spaceship_laser_xCoord + LASER_HEIGHT / 2)
+						) begin
 						laser_xCoord <= alien_xCoord;
 						laser_yCoord <= alien_yCoord;
-						set_color_laser <= COLOR_ALIEN;
+						set_color_laser <= COLOR_LASER_BLACK;
 						is_active_laser <= 0;
 					end
 					else begin
@@ -169,7 +175,7 @@ module aliens(
 					end
 				end
 				else begin
-					set_color_laser <= COLOR_ALIEN;
+					set_color_laser <= COLOR_LASER_BLACK;
 				end
 				
 				// Update alien
