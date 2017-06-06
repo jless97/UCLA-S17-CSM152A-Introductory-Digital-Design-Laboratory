@@ -51,25 +51,28 @@ module vga_display(
 	reg [7:0] set_color;
 	parameter COLOR_SPACESHIP = 8'b01111000;
 	parameter COLOR_ALIEN = 8'b10101010;
-	parameter COLOR_FLYING_SAUCER = 8'b10100111;
+	//parameter COLOR_FLYING_SAUCER = 8'b10100111;
 	parameter COLOR_SPACE = 8'b00000000;
 	parameter COLOR_BLACK = 8'b00000000;
-	parameter COLOR_WHITE = 8'b11111111;
+	/*parameter COLOR_WHITE = 8'b11111111;
 	parameter COLOR_GREEN = 8'b00111000;
 	parameter COLOR_RED = 8'b00000111;
 	parameter COLOR_BLUE = 8'b11000000;
 	parameter COLOR_YELLOW = 8'b00111111;
-	
+	*/
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Border (separation of objects) Parameters
+	/*
 	parameter SCOREBOARD_TOP = 11'd0;
 	parameter SCOREBOARD_BOTTOM = 11'd60;
+	*/
 	parameter BARRIER_TOP = 11'd340;
 	parameter BARRIER_BOTTOM = 11'd400;
+	/*
 	parameter EXTRA_LIVES_TOP = 11'd445;
 	parameter EXTRA_LIVES_BOTTOM = 11'd480;
-	
+	*/
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// laser Parameters
@@ -160,18 +163,18 @@ module vga_display(
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
 		// Coordinates of alien modules
-	wire [131:0] alien_xCoord;
-	wire [131:0] alien_yCoord;
+	wire [32:0] alien_xCoord;
+	wire [32:0] alien_yCoord;
 		// Coordinates of the flying saucer
-	wire [10:0] flying_saucer_xCoord;
-	wire [10:0] flying_saucer_yCoord;
+	//wire [10:0] flying_saucer_xCoord;
+	//wire [10:0] flying_saucer_yCoord;
 		// Coordinates of barrier(pieces)
 		
 		// Coordinates of spaceship laser
 	wire [10:0] spaceship_laser_xCoord;
 	wire [10:0] spaceship_laser_yCoord;
-	wire [131:0] alien_laser_xCoord;
-	wire [131:0] alien_laser_yCoord;
+	wire [32:0] alien_laser_xCoord;
+	wire [32:0] alien_laser_yCoord;
 	wire [7:0] rgb_spaceship_laser;
 	wire is_spaceship_laser;
 	wire restart;
@@ -192,8 +195,8 @@ module vga_display(
 		.alien_yCoord(alien_yCoord),
 		.alien_laser_xCoord(alien_laser_xCoord),
 		.alien_laser_yCoord(alien_laser_yCoord),
-		.flying_saucer_xCoord(flying_saucer_xCoord),
-		.flying_saucer_yCoord(flying_saucer_yCoord),
+		//.flying_saucer_xCoord(flying_saucer_xCoord),
+		//.flying_saucer_yCoord(flying_saucer_yCoord),
 		.barrSpaceshipLaserHit(barrSpaceshipLaserHit),
 	//Outputs
 		.rgb(rgb_spaceship),
@@ -238,9 +241,9 @@ module vga_display(
 	   .yCoord(yCoord),
 	   //Laser coordinates for interaction
 		.spaceshipLaserXcoord(spaceship_laser_xCoord),
-		.spaceshipLaserYcoord(spaceship_laser_yCoord-LASER_HEIGHT),
-		.alienLaserXcoord(alien_laser_xCoord[98:66]),
-		.alienLaserYcoord(alien_laser_yCoord[98:66]),
+		.spaceshipLaserYcoord(spaceship_laser_yCoord),
+		.alienLaserXcoord(alien_laser_xCoord),
+		.alienLaserYcoord(alien_laser_yCoord),
 	//Outputs
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier),
@@ -253,23 +256,27 @@ module vga_display(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // ALIEN IMPLEMENTATION
 		// Instantiate aliens
-	wire [11:0] aliens;
-	wire [95:0] rgb_aliens;
-	wire [95:0] rgb_alien_laser;
+	reg [9:0] alien_speed;
+	reg [2:0] dead_alien_counter;
+	wire [2:0] aliens;
+	wire [23:0] rgb_aliens;
+	wire [23:0] rgb_alien_laser;
+	wire [2:0] is_hit;
+	reg new_level;
 		// Player Lives
 	wire [2:0] lives;
 	reg [2:0] lives_temp;
 	wire gameover;
 	reg gameover_temp;
 		// Controls
-	wire [11:0] is_alien;
-	wire [11:0] is_alien_laser;
+	wire [2:0] is_alien;
+	wire [2:0] is_alien_laser;
 		// Timer before certain alien can shoot
-	wire [143:0] shoot_timer;
+	wire [35:0] shoot_timer;
 	assign shoot_timer[11:0] = 12'd986;
 	assign shoot_timer[23:12] = 12'd1532;
 	assign shoot_timer[35:24] = 12'd668;
-	assign shoot_timer[47:36] = 12'd843;
+/*	assign shoot_timer[47:36] = 12'd843;
 	assign shoot_timer[59:48] = 12'd4001;
 	assign shoot_timer[71:60] = 12'd1823;
 	assign shoot_timer[83:72] = 12'd4495;
@@ -278,14 +285,15 @@ module vga_display(
 	assign shoot_timer[119:108] = 12'd3908;
 	assign shoot_timer[131:120] = 12'd2929;
 	assign shoot_timer[143:132] = 12'd4231;
-	wire [11:0] is_edge;
-	wire [11:0] is_bottom;
+*/
+	wire [2:0] is_edge;
+	//wire [11:0] is_bottom;
 		// Directions
 	wire move_left;
 	wire move_right;
 	wire move_down;
 		// Color scheme
-	wire color;
+	//wire color;
 
 	reg move_left_temp;
 	reg move_right_temp;
@@ -294,6 +302,8 @@ module vga_display(
 		move_left_temp = 0;
 		move_right_temp = 1;
 		move_down_temp = 0;
+		alien_speed = 200;
+		dead_alien_counter <= 0;
 	end
 
 	always @ (posedge clk) begin
@@ -303,6 +313,17 @@ module vga_display(
 			move_down_temp <= 0;
 		end
 		else begin
+			if(is_hit[0] || is_hit[1] || is_hit[2]) begin
+				if(dead_alien_counter == 3) begin
+					dead_alien_counter <= 0;
+					alien_speed <= alien_speed + 100;
+					new_level <= 1;
+				end
+				else begin
+					dead_alien_counter <= dead_alien_counter + 1;
+					new_level <= 0;
+				end
+			end
 			if (is_edge && move_left) begin
 				move_down_temp <= 1;
 				move_right_temp <= 1;
@@ -332,7 +353,7 @@ module vga_display(
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // First row
-/*
+
 	// Alien 0
 	aliens update_alien_0(
 	// Inputs
@@ -349,17 +370,22 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
-		.shoot_timer(shoot_timer[0]),
+		.shoot_timer(shoot_timer[11:0]),
+		.barrAlienLaserHit(barrAlienLaserHit[0]),
+		.alien_speed(alien_speed),
+		.new_level(new_level),
 		//.color(0),
 	// Outputs
 		.rgb(rgb_aliens[7:0]),
 		.is_alien(is_alien[0]),
 		.rgb_alien_laser(rgb_alien_laser[7:0]),
 		.is_alien_laser(is_alien_laser[0]),
+		.current_laser_xCoord(alien_laser_xCoord[10:0]),
+		.current_laser_yCoord(alien_laser_yCoord[10:0]),
 		.current_xCoord(alien_xCoord[10:0]),
 		.current_yCoord(alien_yCoord[10:0]),
-		.is_edge(is_edge[0])
-//		.is_hit(is_hit[0])
+		.is_edge(is_edge[0]),
+		.is_hit(is_hit[0])
 		);
 
 	// Alien 1
@@ -377,16 +403,21 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
-		.shoot_timer(shoot_timer[1]),
+		.shoot_timer(shoot_timer[23:12]),
+		.barrAlienLaserHit(barrAlienLaserHit[1]),
+		.alien_speed(alien_speed),
+		.new_level(new_level),
 		//.color(0),
 		.rgb(rgb_aliens[15:8]),
 		.is_alien(is_alien[1]),
 		.rgb_alien_laser(rgb_alien_laser[15:8]),
 		.is_alien_laser(is_alien_laser[1]),
+		.current_laser_xCoord(alien_laser_xCoord[21:11]),
+		.current_laser_yCoord(alien_laser_yCoord[21:11]),
 		.current_xCoord(alien_xCoord[21:11]),
 		.current_yCoord(alien_yCoord[21:11]),
-		.is_edge(is_edge[1])
-//		.is_hit(is_hit[1])
+		.is_edge(is_edge[1]),
+		.is_hit(is_hit[1])
 		);
 
 		// Alien 2
@@ -404,18 +435,23 @@ module vga_display(
 		.move_left(move_left),
 		.move_right(move_right),
 		.move_down(move_down),
-		.shoot_timer(shoot_timer[2]),
+		.shoot_timer(shoot_timer[35:24]),
+		.barrAlienLaserHit(barrAlienLaserHit[2]),
+		.alien_speed(alien_speed),
+		.new_level(new_level),
 //		.color(0),
 		.rgb(rgb_aliens[23:16]),
 		.is_alien(is_alien[2]),
 		.rgb_alien_laser(rgb_alien_laser[23:16]),
 		.is_alien_laser(is_alien_laser[2]),
+		.current_laser_xCoord(alien_laser_xCoord[32:22]),
+		.current_laser_yCoord(alien_laser_yCoord[32:22]),
 		.current_xCoord(alien_xCoord[32:22]),
 		.current_yCoord(alien_yCoord[32:22]),
-		.is_edge(is_edge[2])
-//		.is_hit(is_hit[2])
+		.is_edge(is_edge[2]),
+		.is_hit(is_hit[2])
 		);
-		
+/*		
 	// Alien 3
 	aliens update_alien_3(
 		.clk(clk),
@@ -495,7 +531,7 @@ module vga_display(
 		.is_edge(is_edge[5])
 //		.is_hit(is_hit[5])
 		);
-		*/
+		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // Second row		
 
@@ -588,7 +624,7 @@ module vga_display(
 		.is_edge(is_edge[8])
 //		.is_hit(is_hit[8])
 		);
-/*		
+		
 	// Alien 9
 	aliens update_alien_9(
 		.clk(clk),
@@ -713,9 +749,11 @@ module vga_display(
 					end
 					*/
 						// Barrier border
+					/*
 					if (yCoord == BARRIER_BOTTOM) begin
 						set_color <= COLOR_BLUE;
 					end
+					*/
 					/*
 						// Extra lives border 
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
@@ -728,7 +766,7 @@ module vga_display(
 					// Color in scoreboard
 					*/
 					// Color in barriers
-					else if(is_barrier) begin
+					if(is_barrier) begin
 						set_color <= rgb_barrier;
 					end
 					// Color in spaceship
@@ -740,9 +778,11 @@ module vga_display(
 						set_color <= rgb_spaceship_laser;
 					end
 					// Extra lives border 
+					/*
 					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
+					*/
 /*
 					// Top scoreboard (SCORE and HI-SCORE)
 					else if (is_scoreboard_top) begin
@@ -775,7 +815,7 @@ module vga_display(
 //						set_color <= COLOR_SPACESHIP;
 //					end
 					// Color in aliens
-/*					
+			
 					else if (is_alien[0]) begin
 						set_color <= rgb_aliens[7:0];
 					end
@@ -785,6 +825,7 @@ module vga_display(
 					else if (is_alien[2]) begin
 						set_color <= rgb_aliens[23:16];
 					end
+/*
 					else if (is_alien[3]) begin
 						set_color <= rgb_aliens[31:24];
 					end
@@ -794,7 +835,7 @@ module vga_display(
 					else if (is_alien[5]) begin
 						set_color <= rgb_aliens[47:40];
 					end
-					*/
+					
 					else if (is_alien[6]) begin
 						set_color <= rgb_aliens[55:48];
 					end
@@ -804,7 +845,7 @@ module vga_display(
 					else if (is_alien[8]) begin
 						set_color <= rgb_aliens[71:64];
 					end
-					/*
+					
 					else if (is_alien[9]) begin
 						set_color <= rgb_aliens[79:72];
 					end
@@ -816,7 +857,7 @@ module vga_display(
 					end
 					*/
 					// Color in alien laser
-					/*
+				
 					else if (is_alien_laser[0]) begin
 						set_color <= rgb_alien_laser[7:0];
 					end
@@ -826,6 +867,7 @@ module vga_display(
 					else if (is_alien_laser[2]) begin
 						set_color <= rgb_alien_laser[23:16];
 					end
+						/*
 					else if (is_alien_laser[3]) begin
 						set_color <= rgb_alien_laser[31:24];
 					end
@@ -835,7 +877,7 @@ module vga_display(
 					else if (is_alien_laser[5]) begin
 						set_color <= rgb_alien_laser[47:40];
 					end
-					*/
+					
 					else if (is_alien_laser[6]) begin
 						set_color <= rgb_aliens[55:48];
 					end
@@ -845,7 +887,7 @@ module vga_display(
 					else if (is_alien_laser[8]) begin
 						set_color <= rgb_alien_laser[71:64];
 					end
-					/*
+					
 					else if (is_alien_laser[9]) begin
 						set_color <= rgb_alien_laser[79:72];
 					end

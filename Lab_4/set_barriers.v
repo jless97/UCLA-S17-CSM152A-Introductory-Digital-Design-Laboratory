@@ -493,24 +493,24 @@ parameter LASER_HEIGHT = 11'd10;
         end
         if(isAlienDamage0 && barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] != 3'b000) begin
             barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] <= barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] - 1;
-            alienLaserHit[6] <= 1;
+            alienLaserHit[0] <= 1;
         end
         else begin
-            alienLaserHit[6] <= 0;
+            alienLaserHit[0] <= 0;
         end
         if(isAlienDamage1 && barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] != 3'b000) begin
             barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] <= barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] - 1;
-            alienLaserHit[7] <= 1;
+            alienLaserHit[1] <= 1;
         end
         else begin
-            alienLaserHit[7] <= 0;
+            alienLaserHit[1] <= 0;
         end
         if(isAlienDamage2 && barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] != 3'b000) begin
             barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] <= barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] - 1;
-            alienLaserHit[8] <= 1;
+            alienLaserHit[2] <= 1;
         end
         else begin
-            alienLaserHit[8] <= 0;
+            alienLaserHit[2] <= 0;
         end
         /*
         if(isAlienDamage3 && barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] != 3'b000) begin
