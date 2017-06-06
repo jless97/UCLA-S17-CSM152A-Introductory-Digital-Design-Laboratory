@@ -256,12 +256,13 @@ module vga_display(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // ALIEN IMPLEMENTATION
 		// Instantiate aliens
-	reg [9:0] alien_speed;
+	/*reg [9:0] alien_speed;
 	reg [2:0] dead_alien_counter;
+	*/
 	wire [2:0] aliens;
 	wire [23:0] rgb_aliens;
 	wire [23:0] rgb_alien_laser;
-	wire [2:0] is_hit;
+//	wire [2:0] is_hit;
 	reg new_level;
 		// Player Lives
 	wire [2:0] lives;
@@ -302,8 +303,8 @@ module vga_display(
 		move_left_temp = 0;
 		move_right_temp = 1;
 		move_down_temp = 0;
-		alien_speed = 200;
-		dead_alien_counter <= 0;
+		//alien_speed = 200;
+		//dead_alien_counter <= 0;
 	end
 
 	always @ (posedge clk) begin
@@ -313,7 +314,7 @@ module vga_display(
 			move_down_temp <= 0;
 		end
 		else begin
-			if(is_hit[0] || is_hit[1] || is_hit[2]) begin
+/*			if(is_hit[0] || is_hit[1] || is_hit[2]) begin
 				if(dead_alien_counter == 3) begin
 					dead_alien_counter <= 0;
 					alien_speed <= alien_speed + 100;
@@ -324,6 +325,7 @@ module vga_display(
 					new_level <= 0;
 				end
 			end
+*/		
 			if (is_edge && move_left) begin
 				move_down_temp <= 1;
 				move_right_temp <= 1;
@@ -372,8 +374,8 @@ module vga_display(
 		.move_down(move_down),
 		.shoot_timer(shoot_timer[11:0]),
 		.barrAlienLaserHit(barrAlienLaserHit[0]),
-		.alien_speed(alien_speed),
-		.new_level(new_level),
+		//.alien_speed(alien_speed),
+		//.new_level(new_level),
 		//.color(0),
 	// Outputs
 		.rgb(rgb_aliens[7:0]),
@@ -384,8 +386,8 @@ module vga_display(
 		.current_laser_yCoord(alien_laser_yCoord[10:0]),
 		.current_xCoord(alien_xCoord[10:0]),
 		.current_yCoord(alien_yCoord[10:0]),
-		.is_edge(is_edge[0]),
-		.is_hit(is_hit[0])
+		.is_edge(is_edge[0])
+//		.is_hit(is_hit[0])
 		);
 
 	// Alien 1
@@ -405,8 +407,8 @@ module vga_display(
 		.move_down(move_down),
 		.shoot_timer(shoot_timer[23:12]),
 		.barrAlienLaserHit(barrAlienLaserHit[1]),
-		.alien_speed(alien_speed),
-		.new_level(new_level),
+		//.alien_speed(alien_speed),
+		//.new_level(new_level),
 		//.color(0),
 		.rgb(rgb_aliens[15:8]),
 		.is_alien(is_alien[1]),
@@ -416,8 +418,8 @@ module vga_display(
 		.current_laser_yCoord(alien_laser_yCoord[21:11]),
 		.current_xCoord(alien_xCoord[21:11]),
 		.current_yCoord(alien_yCoord[21:11]),
-		.is_edge(is_edge[1]),
-		.is_hit(is_hit[1])
+		.is_edge(is_edge[1])
+//		.is_hit(is_hit[1])
 		);
 
 		// Alien 2
@@ -437,8 +439,8 @@ module vga_display(
 		.move_down(move_down),
 		.shoot_timer(shoot_timer[35:24]),
 		.barrAlienLaserHit(barrAlienLaserHit[2]),
-		.alien_speed(alien_speed),
-		.new_level(new_level),
+		//.alien_speed(alien_speed),
+		//.new_level(new_level),
 //		.color(0),
 		.rgb(rgb_aliens[23:16]),
 		.is_alien(is_alien[2]),
@@ -448,8 +450,8 @@ module vga_display(
 		.current_laser_yCoord(alien_laser_yCoord[32:22]),
 		.current_xCoord(alien_xCoord[32:22]),
 		.current_yCoord(alien_yCoord[32:22]),
-		.is_edge(is_edge[2]),
-		.is_hit(is_hit[2])
+		.is_edge(is_edge[2])
+//		.is_hit(is_hit[2])
 		);
 /*		
 	// Alien 3
