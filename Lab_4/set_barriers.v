@@ -30,18 +30,21 @@ module set_barriers(
     // Damage input
     input wire [10:0] spaceshipLaserXcoord,
     input wire [10:0] spaceshipLaserYcoord,
-
+/*
     input wire [65:0] alienLaserXcoord,
     input wire [65:0] alienLaserYcoord,
-
+*/
+    input wire [32:0] alienLaserXcoord,
+    input wire [32:0] alienLaserYcoord,
     //Output that states whether the current position is a barrier
     output wire [7:0] rgb,
     output wire is_barrier,
-    output reg spaceshipLaserHit
+    output reg spaceshipLaserHit,
+    output reg [11:0] alienLaserHit
     );
      
 `include "barrier_params.vh"
-
+parameter LASER_HEIGHT = 11'd10;
     //format (from top left) [which_barrier] [xVal] [yVal] [health]
     reg [2:0] barrierInfo [3:0] [3:0] [3:0];
     reg [2:0] i;
@@ -52,10 +55,10 @@ module set_barriers(
             for(k = 3'b000; k <= 3'b011; k = k+1) begin
                 for(m = 3'b000; m <= 3'b011; m = m+1) begin
                     if(((k == 3'b000 || k == 3'b011) && m == 3'b011) || ((k == 3'b001 || k == 3'b010) && m > 3'b001)) begin
-                        barrierInfo [i] [k] [m] = 2'b00;
+                        barrierInfo [i] [k] [m] <= 2'b00;
                     end
                     else begin
-                        barrierInfo [i] [k] [m] = 2'b11;
+                        barrierInfo [i] [k] [m] <= 2'b11;
                     end
                 end
             end
@@ -102,6 +105,7 @@ module set_barriers(
     wire [1:0] alienDamageXblk2;
     wire [1:0] alienDamageYblk2;
     wire isAlienDamage2;
+    /*
     //Damage from bullet 3
     wire [1:0] alienDamageBarrier3;
     wire [1:0] alienDamageXblk3;
@@ -117,37 +121,40 @@ module set_barriers(
     wire [1:0] alienDamageXblk5;
     wire [1:0] alienDamageYblk5;
     wire isAlienDamage5;
+    */
     extract_barrier_blk getAlienDamageVals0(
-        .xCoord(alienLaserXcoord[0 +: 11]), .yCoord(alienLaserYcoord[0 +: 11]),
+        .xCoord(alienLaserXcoord[10:0]), .yCoord(alienLaserYcoord[10:0]+LASER_HEIGHT),
         //Outputs
         .currBarrier(alienDamageBarrier0), .xVal(alienDamageXblk0), .yVal(alienDamageYblk0), .inBarrier(isAlienDamage0)
         );
     extract_barrier_blk getAlienDamageVals1(
-        .xCoord(alienLaserXcoord[11 +: 11]), .yCoord(alienLaserYcoord[11 +: 11]),
+        .xCoord(alienLaserXcoord[21:11]), .yCoord(alienLaserYcoord[21:11]+LASER_HEIGHT),
         //Outputs
         .currBarrier(alienDamageBarrier1), .xVal(alienDamageXblk1), .yVal(alienDamageYblk1), .inBarrier(isAlienDamage1)
         );
     extract_barrier_blk getAlienDamageVals2(
-        .xCoord(alienLaserXcoord[22 +: 11]), .yCoord(alienLaserYcoord[22 +: 11]),
+        .xCoord(alienLaserXcoord[32:22]), .yCoord(alienLaserYcoord[32:22]+LASER_HEIGHT),
         //Outputs
         .currBarrier(alienDamageBarrier2), .xVal(alienDamageXblk2), .yVal(alienDamageYblk2), .inBarrier(isAlienDamage2)
         );
+    /*
     extract_barrier_blk getAlienDamageVals3(
-        .xCoord(alienLaserXcoord[33 +: 11]), .yCoord(alienLaserYcoord[33 +: 11]),
+        .xCoord(alienLaserXcoord[43:33]), .yCoord(alienLaserYcoord[43:33]+LASER_HEIGHT),
         //Outputs
         .currBarrier(alienDamageBarrier3), .xVal(alienDamageXblk3), .yVal(alienDamageYblk3), .inBarrier(isAlienDamage3)
         );
     extract_barrier_blk getAlienDamageVals4(
-        .xCoord(alienLaserXcoord[44 +: 11]), .yCoord(alienLaserYcoord[44 +: 11]),
+        .xCoord(alienLaserXcoord[54:44]), .yCoord(alienLaserYcoord[54:44]+LASER_HEIGHT),
         //Outputs
         .currBarrier(alienDamageBarrier4), .xVal(alienDamageXblk4), .yVal(alienDamageYblk4), .inBarrier(isAlienDamage4)
         );
     extract_barrier_blk getAlienDamageVals5(
-        .xCoord(alienLaserXcoord[55 +: 11]), .yCoord(alienLaserYcoord[55 +: 11]),
+        .xCoord(alienLaserXcoord[65:55]), .yCoord(alienLaserYcoord[65:55]+LASER_HEIGHT),
         //Outputs
         .currBarrier(alienDamageBarrier5), .xVal(alienDamageXblk5), .yVal(alienDamageYblk5), .inBarrier(isAlienDamage5)
         );
-   /*
+        */
+/*
     //variables to keep track of damage from aliens
     wire [5:0] alienInBarrier;
     //Damage from bullet 1
@@ -438,22 +445,22 @@ module set_barriers(
                 for(k = 3'b000; k <= 3'b011; k = k+1) begin
                     for(m = 3'b000; m <= 3'b011; m = m+1) begin
                         if(((k == 3'b000 || k == 3'b011) && m == 3'b011) || ((k == 3'b001 || k == 3'b010) && m > 3'b001)) begin
-                            barrierInfo [i] [k] [m] = 2'b00;
+                            barrierInfo [i] [k] [m] <= 2'b00;
                         end
                         else begin
-                            barrierInfo [i] [k] [m] = 2'b11;
+                            barrierInfo [i] [k] [m] <= 2'b11;
                         end
                     end
                 end
         end
         end
         if(displayInBarrier && barrierInfo[currBarrier][currXblk][currYblk] != 3'b000) begin
-            is_barrier_temp = 1;
-            rgb_temp = {2'b00, barrierInfo[currBarrier][currXblk][currYblk], 4'b1000};
+            is_barrier_temp <= 1;
+            rgb_temp <= {2'b00, barrierInfo[currBarrier][currXblk][currYblk], 4'b1000};
         end
         else begin
-            is_barrier_temp = 0;
-            rgb_temp = 7'd0;
+            is_barrier_temp <= 0;
+            rgb_temp <= 7'd0;
         end
 
 /*        numAlienBullets = 0;
@@ -478,28 +485,56 @@ module set_barriers(
         end
 */
         if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
-            barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
+            barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] <= barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
             spaceshipLaserHit <= 1;
         end
         else begin
             spaceshipLaserHit <= 0;
         end
-
+        if(isAlienDamage0 && barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] != 3'b000) begin
+            barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] <= barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] - 1;
+            alienLaserHit[6] <= 1;
+        end
+        else begin
+            alienLaserHit[6] <= 0;
+        end
         if(isAlienDamage1 && barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] != 3'b000) begin
-            barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] = barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] - 1;
+            barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] <= barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] - 1;
+            alienLaserHit[7] <= 1;
+        end
+        else begin
+            alienLaserHit[7] <= 0;
         end
         if(isAlienDamage2 && barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] != 3'b000) begin
-            barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] = barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] - 1;
+            barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] <= barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] - 1;
+            alienLaserHit[8] <= 1;
         end
+        else begin
+            alienLaserHit[8] <= 0;
+        end
+        /*
         if(isAlienDamage3 && barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] != 3'b000) begin
-            barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] = barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] - 1;
+            barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] <= barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] - 1;
+            alienLaserHit[9] <= 1;
+        end
+        else begin
+            alienLaserHit[9] <= 0;
         end
         if(isAlienDamage4 && barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] != 3'b000) begin
-            barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] = barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] - 1;
+            barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] <= barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] - 1;
+            alienLaserHit[10] <= 1;
+        end
+        else begin
+            alienLaserHit[10] <= 0;
         end
         if(isAlienDamage5 && barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] != 3'b000) begin
-            barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] = barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] - 1;
+            barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] <= barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] - 1;
+            alienLaserHit[11] <= 1;
         end
+        else begin
+            alienLaserHit[11] <= 0;
+        end
+        */
     end
   
     assign rgb = rgb_temp;

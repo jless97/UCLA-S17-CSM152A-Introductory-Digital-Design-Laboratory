@@ -35,6 +35,7 @@ module aliens(
 	input wire move_right,
 	input wire move_down,
 	input wire [143:0] shoot_timer,
+	input wire barrAlienLaserHit,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_alien,
@@ -156,7 +157,7 @@ module aliens(
 					//laser_yCoord <= alien_yCoord;
 				end
 				if (is_active_laser) begin
-					if (laser_yCoord >= EXTRA_LIVES_TOP + LASER_HEIGHT / 2 + MOVE_UP) begin
+					if ((laser_yCoord >= EXTRA_LIVES_TOP + LASER_HEIGHT / 2 + MOVE_UP) || barrAlienLaserHit) begin
 						laser_xCoord <= alien_xCoord;
 						laser_yCoord <= alien_yCoord;
 						set_color_laser <= COLOR_ALIEN;
@@ -169,6 +170,8 @@ module aliens(
 					end
 				end
 				else begin
+					laser_xCoord <= alien_xCoord;
+					laser_yCoord <= alien_yCoord;
 					set_color_laser <= COLOR_ALIEN;
 				end
 				
