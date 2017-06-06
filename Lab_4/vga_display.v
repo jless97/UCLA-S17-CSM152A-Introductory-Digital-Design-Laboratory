@@ -75,7 +75,10 @@ module vga_display(
 	// laser Parameters
 	parameter LASER_HEIGHT = 11'd10;
 	parameter LASER_LENGTH = 11'd3;
-
+	parameter SPACESHIP_HEIGHT = 11'd10;
+	parameter SPACESHIP_LENGTH = 11'd40;
+	parameter SPACESHIP_TOP = 11'd420;
+	parameter SPACESHIP_BOTTOM = 11'd430;
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Screen display mode
@@ -165,7 +168,6 @@ module vga_display(
 	wire [10:0] flying_saucer_xCoord;
 	wire [10:0] flying_saucer_yCoord;
 		// Coordinates of barrier(pieces)
-		
 		// Coordinates of spaceship laser
 	wire [10:0] spaceship_laser_xCoord;
 	wire [10:0] spaceship_laser_yCoord;
@@ -682,7 +684,10 @@ module vga_display(
 			// Start screen
 			else if (mode == 1) begin
 				// Read in pixels from the start_screen module
-				set_color <= rgb_start_screen;
+				//set_color <= rgb_start_screen;
+				if (xCoord >= 10 && xCoord <= 630 && yCoord >= 10 && yCoord <= 470) begin
+					set_color <= COLOR_GREEN;
+				end
 			end
 			// Switch screen
 			// Game mode
@@ -692,27 +697,25 @@ module vga_display(
 					set_color <= rgb_gameover_screen;
 				end
 				else begin*/
+				
 					// Color in borders (temporary to show how much space is available)
-						// Scoreboard border
-						/*
-					if (yCoord == SCOREBOARD_TOP || yCoord == SCOREBOARD_BOTTOM) begin
+					// Scoreboard border
+					if (yCoord == SCOREBOARD_BOTTOM) begin
 						set_color <= COLOR_GREEN;
 					end
-					*/
-						// Barrier border
-					if (yCoord == BARRIER_BOTTOM) begin
+					// Barrier border
+					else if (yCoord == BARRIER_BOTTOM) begin
 						set_color <= COLOR_BLUE;
 					end
-					/*
-						// Extra lives border 
-					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
+					// Extra lives border 
+					else if (yCoord == EXTRA_LIVES_TOP) begin
 						set_color <= COLOR_GREEN;
 					end
+					/*
 					// Color in flying saucer
 					else if (is_flying_saucer) begin
 						set_color <= rgb_flying_saucer;
 					end
-					// Color in scoreboard
 					*/
 					// Color in barriers
 					else if(is_barrier) begin
@@ -727,7 +730,7 @@ module vga_display(
 						set_color <= rgb_spaceship_laser;
 					end
 					// Extra lives border 
-					else if (yCoord == EXTRA_LIVES_TOP || yCoord == EXTRA_LIVES_BOTTOM) begin
+					else if (yCoord == EXTRA_LIVES_TOP) begin
 						set_color <= COLOR_GREEN;
 					end
 /*
