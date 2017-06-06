@@ -234,9 +234,11 @@ module vga_display(
 		.restart(restart),
 	   .xCoord(xCoord),
 	   .yCoord(yCoord),
-
+	   //Laser coordinates for interaction
 		.spaceshipLaserXcoord(spaceship_laser_xCoord),
 		.spaceshipLaserYcoord(spaceship_laser_yCoord-LASER_HEIGHT),
+		.alienLaserXcoord(alien_laser_xCoord[131:65]),
+		.alienLaserYcoord(alien_laser_yCoord[131:65]),
 	//Outputs
 	   .rgb(rgb_barrier),
 	   .is_barrier(is_barrier),

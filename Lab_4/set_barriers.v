@@ -22,7 +22,7 @@ module set_barriers(
     // Inputs
     input wire clk,
     input wire rst,
-	input wire restart,
+    input wire restart,
     input wire [1:0] mode,
     //Current X and Y of the screen
     input wire [10:0] xCoord,
@@ -30,22 +30,20 @@ module set_barriers(
     // Damage input
     input wire [10:0] spaceshipLaserXcoord,
     input wire [10:0] spaceshipLaserYcoord,
-    /*
-    input wire [253:0] alienLaserXcoord,
-    input wire [253:0] alienLaserYcoord,
-    */
+
+    input wire [65:0] alienLaserXcoord,
+    input wire [65:0] alienLaserYcoord,
+
     //Output that states whether the current position is a barrier
     output wire [7:0] rgb,
     output wire is_barrier,
     output reg spaceshipLaserHit
     );
-	 
+     
 `include "barrier_params.vh"
 
     //format (from top left) [which_barrier] [xVal] [yVal] [health]
-
     reg [2:0] barrierInfo [3:0] [3:0] [3:0];
-
     reg [2:0] i;
     reg [2:0] k;
     reg [2:0] m;
@@ -63,14 +61,13 @@ module set_barriers(
             end
         end
     end
-	 
+     
     //shifted x and y values for calculation of which barrier block we're "in" - values for display
-    reg [10:0] shiftedYCoord;
     wire [1:0] currBarrier;
     wire [1:0] currXblk;
     wire [1:0] currYblk;
     wire inBarrier;
-	 
+     
     //Get location of barrier for display
     extract_barrier_blk getDisplayVals(
         //Inputs
@@ -78,11 +75,11 @@ module set_barriers(
         //Outputs
         .currBarrier(currBarrier), .xVal(currXblk), .yVal(currYblk), .inBarrier(displayInBarrier)
         );
-	//variables to keep track of damage from spaceship
+    //variables to keep track of damage from spaceship
     wire [1:0] spaceshipDamageBarrier;
     wire [1:0] spaceshipDamageXblk;
     wire [1:0] spaceshipDamageYblk;
-    wire isSpaceshipDamage;	  
+    wire isSpaceshipDamage;   
     //Check if the spaceship laser is in the barrier, and extract which barrier it's in
     extract_barrier_blk getSpaceshipDamageVals(
         //Inputs
@@ -90,25 +87,86 @@ module set_barriers(
         //Outputs
         .currBarrier(spaceshipDamageBarrier), .xVal(spaceshipDamageXblk), .yVal(spaceshipDamageYblk), .inBarrier(isSpaceshipDamage)
         );
-/*
-    //variables to keep track of damage from aliens
+    //Damage from bullet 0
+    wire [1:0] alienDamageBarrier0;
+    wire [1:0] alienDamageXblk0;
+    wire [1:0] alienDamageYblk0;
+    wire isAlienDamage0;
     //Damage from bullet 1
-    reg [9:0] alienDamageXcoord1;
-    reg [9:0] alienDamageYcoord1;
     wire [1:0] alienDamageBarrier1;
     wire [1:0] alienDamageXblk1;
     wire [1:0] alienDamageYblk1;
     wire isAlienDamage1;
     //Damage from bullet 2
-    reg [9:0] alienDamageXcoord2;
-    reg [9:0] alienDamageYcoord2;
     wire [1:0] alienDamageBarrier2;
     wire [1:0] alienDamageXblk2;
     wire [1:0] alienDamageYblk2;
     wire isAlienDamage2;
     //Damage from bullet 3
-    reg [9:0] alienDamageXcoord3;
-    reg [9:0] alienDamageYcoord3;
+    wire [1:0] alienDamageBarrier3;
+    wire [1:0] alienDamageXblk3;
+    wire [1:0] alienDamageYblk3;
+    wire isAlienDamage3;
+    //Damage from bullet 4
+    wire [1:0] alienDamageBarrier4;
+    wire [1:0] alienDamageXblk4;
+    wire [1:0] alienDamageYblk4;
+    wire isAlienDamage4;
+    //Damage from bullet 5
+    wire [1:0] alienDamageBarrier5;
+    wire [1:0] alienDamageXblk5;
+    wire [1:0] alienDamageYblk5;
+    wire isAlienDamage5;
+    extract_barrier_blk getAlienDamageVals0(
+        .xCoord(alienLaserXcoord[0 +: 11]), .yCoord(alienLaserYcoord[0 +: 11]),
+        //Outputs
+        .currBarrier(alienDamageBarrier0), .xVal(alienDamageXblk0), .yVal(alienDamageYblk0), .inBarrier(isAlienDamage0)
+        );
+    extract_barrier_blk getAlienDamageVals1(
+        .xCoord(alienLaserXcoord[11 +: 11]), .yCoord(alienLaserYcoord[11 +: 11]),
+        //Outputs
+        .currBarrier(alienDamageBarrier1), .xVal(alienDamageXblk1), .yVal(alienDamageYblk1), .inBarrier(isAlienDamage1)
+        );
+    extract_barrier_blk getAlienDamageVals2(
+        .xCoord(alienLaserXcoord[22 +: 11]), .yCoord(alienLaserYcoord[22 +: 11]),
+        //Outputs
+        .currBarrier(alienDamageBarrier2), .xVal(alienDamageXblk2), .yVal(alienDamageYblk2), .inBarrier(isAlienDamage2)
+        );
+    extract_barrier_blk getAlienDamageVals3(
+        .xCoord(alienLaserXcoord[33 +: 11]), .yCoord(alienLaserYcoord[33 +: 11]),
+        //Outputs
+        .currBarrier(alienDamageBarrier3), .xVal(alienDamageXblk3), .yVal(alienDamageYblk3), .inBarrier(isAlienDamage3)
+        );
+    extract_barrier_blk getAlienDamageVals4(
+        .xCoord(alienLaserXcoord[44 +: 11]), .yCoord(alienLaserYcoord[44 +: 11]),
+        //Outputs
+        .currBarrier(alienDamageBarrier4), .xVal(alienDamageXblk4), .yVal(alienDamageYblk4), .inBarrier(isAlienDamage4)
+        );
+    extract_barrier_blk getAlienDamageVals5(
+        .xCoord(alienLaserXcoord[55 +: 11]), .yCoord(alienLaserYcoord[55 +: 11]),
+        //Outputs
+        .currBarrier(alienDamageBarrier5), .xVal(alienDamageXblk5), .yVal(alienDamageYblk5), .inBarrier(isAlienDamage5)
+        );
+   /*
+    //variables to keep track of damage from aliens
+    wire [5:0] alienInBarrier;
+    //Damage from bullet 1
+    reg [10:0] alienDamageXcoord1;
+    reg [10:0] alienDamageYcoord1;
+    wire [1:0] alienDamageBarrier1;
+    wire [1:0] alienDamageXblk1;
+    wire [1:0] alienDamageYblk1;
+    wire isAlienDamage1;
+    //Damage from bullet 2
+    reg [10:0] alienDamageXcoord2;
+    reg [10:0] alienDamageYcoord2;
+    wire [1:0] alienDamageBarrier2;
+    wire [1:0] alienDamageXblk2;
+    wire [1:0] alienDamageYblk2;
+    wire isAlienDamage2;
+    //Damage from bullet 3
+    reg [10:0] alienDamageXcoord3;
+    reg [10:0] alienDamageYcoord3;
     wire [1:0] alienDamageBarrier3;
     wire [1:0] alienDamageXblk3;
     wire [1:0] alienDamageYblk3;
@@ -116,92 +174,86 @@ module set_barriers(
     //If we receive damage from an alien, see which barrier we damage
     extract_barrier_blk getAlienDamageVals1(
         //Inputs
-        .xCoord(alienDamageXCoord1), .yCoord(alienDamageYcoord1), 
+        .xCoord(alienDamageXCoord1), .yCoord(alienDamageYcoord1+LASER_HEIGHT), 
         //Outputs
         .currBarrier(alienDamageBarrier1), .xVal(alienDamageXblk1), .yVal(alienDamageYblk1), .inBarrier(isAlienDamage1)
         );
     extract_barrier_blk getAlienDamageVals2(
         //Inputs
-        .xCoord(alienDamageXCoord2), .yCoord(alienDamageYcoord2), 
+        .xCoord(alienDamageXCoord2), .yCoord(alienDamageYcoord2+LASER_HEIGHT), 
         //Outputs
         .currBarrier(alienDamageBarrier2), .xVal(alienDamageXblk2), .yVal(alienDamageYblk2), .inBarrier(isAlienDamage2)
         );
     extract_barrier_blk getAlienDamageVals3(
         //Inputs
-        .xCoord(alienDamageXCoord3), .yCoord(alienDamageYcoord3), 
+        .xCoord(alienDamageXCoord3), .yCoord(alienDamageYcoord3+LASER_HEIGHT), 
         //Outputs
         .currBarrier(alienDamageBarrier3), .xVal(alienDamageXblk3), .yVal(alienDamageYblk3), .inBarrier(isAlienDamage3)
         );
-    */
 
-    /*
- 	//Modules used to check if lasers from aliens are hitting barriers
+ 
+    //Modules used to check if lasers from aliens are hitting barriers
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 0
     wire [1:0] alien0_ignoreBarr;
-    wire alien0_inBarrier;
-    wire [9:0] alien0_ignoreX;
+    wire [10:0] alien0_ignoreX;
     isInBarrier alien0_laser(
         //Inputs
-        .xCoord(alienLaserXcoord[9:0]), .yCoord(alienLaserYcoord[9:0]),
+        .xCoord(alienLaserXcoord[10:0]), .yCoord(alienLaserYcoord[10:0]),
        //Outputs
-       .currBarrier(alien0_ignoreBarr), .inBarrier(alien0_inBarrier), .shiftedXCoord(alien0_ignoreX)
+       .currBarrier(alien0_ignoreBarr), .inBarrier(alienInBarrier[0]), .shiftedXCoord(alien0_ignoreX)
         );
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 1
     wire [1:0] alien1_ignoreBarr;
-    wire alien1_inBarrier;
-    wire [9:0] alien1_ignoreX;
+    wire [10:0] alien1_ignoreX;
     isInBarrier alien1_laser(
         //Inputs
-        .xCoord(alienLaserXcoord[19:10]), .yCoord(alienLaserYcoord[19:10]),
+        .xCoord(alienLaserXcoord[21:11]), .yCoord(alienLaserYcoord[21:11]),
        //Outputs
-       .currBarrier(alien1_ignoreBarr), .inBarrier(alien1_inBarrier), .shiftedXCoord(alien1_ignoreX)
+       .currBarrier(alien1_ignoreBarr), .inBarrier(alienInBarrier[1]), .shiftedXCoord(alien1_ignoreX)
         );
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 2
     wire [1:0] alien2_ignoreBarr;
-    wire alien2_inBarrier;
-    wire [9:0] alien2_ignoreX;
+    wire [10:0] alien2_ignoreX;
     isInBarrier alien2_laser(
         //Inputs
-        .xCoord(alienLaserXcoord[29:20]), .yCoord(alienLaserYcoord[29:20]),
+        .xCoord(alienLaserXcoord[32:22]), .yCoord(alienLaserYcoord[32:22]),
        //Outputs
-       .currBarrier(alien2_ignoreBarr), .inBarrier(alien2_inBarrier), .shiftedXCoord(alien2_ignoreX)
+       .currBarrier(alien2_ignoreBarr), .inBarrier(alienInBarrier[2]), .shiftedXCoord(alien2_ignoreX)
         );
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 3
     wire [1:0] alien3_ignoreBarr;
-    wire alien3_inBarrier;
-    wire [9:0] alien3_ignoreX;
+    wire [10:0] alien3_ignoreX;
     isInBarrier alien3_laser(
         //Inputs
-        .xCoord(alienLaserXcoord[39:30]), .yCoord(alienLaserYcoord[39:30]),
+        .xCoord(alienLaserXcoord[43:33]), .yCoord(alienLaserYcoord[43:33]),
        //Outputs
-       .currBarrier(alien3_ignoreBarr), .inBarrier(alien3_inBarrier), .shiftedXCoord(alien3_ignoreX)
+       .currBarrier(alien3_ignoreBarr), .inBarrier(alienInBarrier[3]), .shiftedXCoord(alien3_ignoreX)
         );
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 4
     wire [1:0] alien4_ignoreBarr;
-    wire alien4_inBarrier;
-    wire [9:0] alien4_ignoreX;
+    wire [10:0] alien4_ignoreX;
     isInBarrier alien4_laser(
         //Inputs
-        .xCoord(alienLaserXcoord[49:40]), .yCoord(alienLaserYcoord[49:40]),
+        .xCoord(alienLaserXcoord[54:44]), .yCoord(alienLaserYcoord[54:44]),
        //Outputs
-       .currBarrier(alien4_ignoreBarr), .inBarrier(alien4_inBarrier), .shiftedXCoord(alien4_ignoreX)
+       .currBarrier(alien4_ignoreBarr), .inBarrier(alienInBarrier[4]), .shiftedXCoord(alien4_ignoreX)
         );
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 5
     wire [1:0] alien5_ignoreBarr;
-    wire alien5_inBarrier;
-    wire [9:0] alien5_ignoreX;
+    wire [10:0] alien5_ignoreX;
     isInBarrier alien5_laser(
         //Inputs
-        .xCoord(alienLaserXcoord[59:50]), .yCoord(alienLaserYcoord[59:50]),
+        .xCoord(alienLaserXcoord[65:55]), .yCoord(alienLaserYcoord[65:55]),
        //Outputs
-       .currBarrier(alien5_ignoreBarr), .inBarrier(alien5_inBarrier), .shiftedXCoord(alien5_ignoreX)
+       .currBarrier(alien5_ignoreBarr), .inBarrier(alienInBarrier[5]), .shiftedXCoord(alien5_ignoreX)
         );
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Alien 6
     wire [1:0] alien6_ignoreBarr;
@@ -360,15 +412,15 @@ module set_barriers(
 */
 /*
     wire [1:0] alienIgnoreBarr;
-    wire [9:0] alienIgnoreX;
-    wire [23:0] alienInBarrier; 
+    wire [10:0] alienIgnoreX;
+    wire [5:0] alienInBarrier; 
     generate
         genvar n;
-        for(n = 0; n < 24; n = n+1) 
+        for(n = 0; n < 6; n = n+1) 
             begin: check_aliens
                 isInBarrier alien_laser(
                 //Inputs
-                .xCoord(alienLaserXcoord[10*n +: 10]), .yCoord(alienLaserYcoord[(10*n) +: 10]),
+                .xCoord(alienLaserXcoord[10*n +: 11]), .yCoord(alienLaserYcoord[(10*n) +: 11]),
                //Outputs
                .currBarrier(alienIgnoreBarr), .inBarrier(alienInBarrier[n]), .shiftedXCoord(alien_ignoreX)
                 );
@@ -393,7 +445,7 @@ module set_barriers(
                         end
                     end
                 end
-            end
+        end
         end
         if(displayInBarrier && barrierInfo[currBarrier][currXblk][currYblk] != 3'b000) begin
             is_barrier_temp = 1;
@@ -403,50 +455,53 @@ module set_barriers(
             is_barrier_temp = 0;
             rgb_temp = 7'd0;
         end
-/*
-        numAlienBullets = 0;
-        for(index = 0; index < 24; index = index+1) begin
-            if(alienInBarrier[i]) begin
+
+/*        numAlienBullets = 0;
+        for(index = 0; index < 6; index = index+1) begin
+            if(alienInBarrier[index]) begin
                 if(numAlienBullets == 0) begin
                     numAlienBullets = 1;
-                    alienDamageXcoord1 = alienLaserXcoord[(index*10) +: 10];
-                    alienDamageYcoord1 = alienLaserYcoord[(index*10) +: 10];
+                    alienDamageXcoord1 = alienLaserXcoord[(index*11) +: 11];
+                    alienDamageYcoord1 = alienLaserYcoord[(index*11) +: 11];
                 end
                 else if(numAlienBullets == 1) begin
                     numAlienBullets = 2;
-                    alienDamageXcoord2 = alienLaserXcoord[(index*10) +: 10];
-                    alienDamageYcoord2 = alienLaserYcoord[(index*10) +: 10];
+                    alienDamageXcoord2 = alienLaserXcoord[(index*11) +: 11];
+                    alienDamageYcoord2 = alienLaserYcoord[(index*11) +: 11];
                 end
                 else if (numAlienBullets == 2) begin
                     numAlienBullets = 3;
-                    alienDamageXcoord3 = alienLaserXcoord[(index*10) +: 10];
-                    alienDamageYcoord3 = alienLaserYcoord[(index*10) +: 10];
+                    alienDamageXcoord3 = alienLaserXcoord[(index*11) +: 11];
+                    alienDamageYcoord3 = alienLaserYcoord[(index*11) +: 11];
                 end
             end
         end
 */
         if(isSpaceshipDamage && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
             barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] = barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 1;
-
             spaceshipLaserHit <= 1;
-
         end
         else begin
             spaceshipLaserHit <= 0;
         end
-/*
-        if(numAlienBullets >= 1 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
+
+        if(isAlienDamage1 && barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] != 3'b000) begin
             barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] = barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] - 1;
         end
-        if(numAlienBullets >= 2 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
+        if(isAlienDamage2 && barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] != 3'b000) begin
             barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] = barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] - 1;
         end
-        if(numAlienBullets == 3 && barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
+        if(isAlienDamage3 && barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] != 3'b000) begin
             barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] = barrierInfo [alienDamageBarrier3][alienDamageXblk3][alienDamageYblk3] - 1;
         end
-*/
+        if(isAlienDamage4 && barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] != 3'b000) begin
+            barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] = barrierInfo [alienDamageBarrier4][alienDamageXblk4][alienDamageYblk4] - 1;
+        end
+        if(isAlienDamage5 && barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] != 3'b000) begin
+            barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] = barrierInfo [alienDamageBarrier5][alienDamageXblk5][alienDamageYblk5] - 1;
+        end
     end
-	 
+  
     assign rgb = rgb_temp;
     assign is_barrier = is_barrier_temp;
 
