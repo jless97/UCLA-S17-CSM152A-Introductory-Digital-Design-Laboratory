@@ -125,7 +125,7 @@ module spaceship(
 		if (clk_frame && mode == 1) begin
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
 			if ((alien_laser_yCoord[9:0] >= SPACESHIP_Y - HALF_SPACESHIP_HEIGHT &&
-				  alien_laser_xCoord[9:0] >= spaceship_coord - HALF_SPACESHIP_LENGTH && alien_laser_xCoord[10:0] <= spaceship_coord + HALF_SPACESHIP_LENGTH) ||
+				  alien_laser_xCoord[9:0] >= spaceship_coord - HALF_SPACESHIP_LENGTH && alien_laser_xCoord[9:0] <= spaceship_coord + HALF_SPACESHIP_LENGTH) ||
 				 (alien_laser_yCoord[19:10] >= SPACESHIP_Y - HALF_SPACESHIP_HEIGHT &&
 				  alien_laser_xCoord[19:10] >= spaceship_coord - HALF_SPACESHIP_LENGTH && alien_laser_xCoord[19:10] <= spaceship_coord + HALF_SPACESHIP_LENGTH) ||	
 				 (alien_laser_yCoord[29:20] >= SPACESHIP_Y - HALF_SPACESHIP_HEIGHT &&
