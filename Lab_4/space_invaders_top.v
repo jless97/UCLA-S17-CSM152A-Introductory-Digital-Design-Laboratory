@@ -37,8 +37,8 @@ module space_invaders_top(
     );
 
 	// Wires for horizontal and vertical counters
-	wire [10:0] xCoord;
-	wire [10:0] yCoord;
+	wire [9:0] xCoord;
+	wire [9:0] yCoord;
 	
 	// Wires for clocks
 	wire dclk;
