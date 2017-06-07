@@ -127,7 +127,7 @@ module aliens(
 			is_active_laser <= 0;
 			laser_counter <= 0;
 		end
-		else if(barrAlienLaserHit) begin
+		else if(mode == 1 && barrAlienLaserHit) begin
 			laser_xCoord <= alien_xCoord;
 			laser_yCoord <= alien_yCoord;
 			set_color_laser <= COLOR_ALIEN;

@@ -36,7 +36,7 @@ module set_barriers(
 	output wire [7:0] rgb,
 	output wire is_barrier,
 	output wire spaceshipLaserHit,
-	output wire [11:0] alienLaserHit
+	output wire [2:0] alienLaserHit
 	);
 	 
 `include "barrier_params.vh"
@@ -154,7 +154,7 @@ parameter HALF_LASER_HEIGHT = 10'd5;
 	reg [7:0] rgb_temp;
 	reg is_barrier_temp;
 	reg spaceshipLaserHit_temp;
-	reg [11:0] alienLaserHit_temp;
+	reg [2:0] alienLaserHit_temp;
 	always @ (posedge clk) begin
 		if(rst || mode == 0) begin
 			for(i = 3'b000; i <= 3'b011; i = i+1) begin
