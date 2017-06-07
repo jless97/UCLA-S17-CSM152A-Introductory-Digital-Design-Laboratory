@@ -21,18 +21,18 @@
 module spaceship(
 	// Inputs
 	input wire clk,
+//	input wire restart,
 	input wire button_left,
 	input wire button_right,
 	input wire button_shoot,
 	input wire mode,
 	input wire [9:0] xCoord,
 	input wire [9:0] yCoord,
-//	input wire [29:0] alien_xCoord,
-//	input wire [29:0] alien_yCoord,
+	input wire [29:0] alien_xCoord,
+	input wire [29:0] alien_yCoord,
 	input wire [29:0] alien_laser_xCoord,
 	input wire [29:0] alien_laser_yCoord,
 	input wire barrSpaceshipLaserHit,
-	input wire [2:0] alien_is_hit,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
@@ -116,10 +116,10 @@ module spaceship(
 			can_move <= 1;
 			set_color <= COLOR_SPACESHIP;
 		end
-		else if(mode == 1 && (barrSpaceshipLaserHit || alien_is_hit[0] || alien_is_hit [1] || alien_is_hit[2])) begin
+		if(mode == 1 && barrSpaceshipLaserHit) begin
 			laser_xCoord <= spaceship_coord;
 			laser_yCoord <= LASER_INITIAL_Y;
-			set_color_laser <= COLOR_LASER_BLACK;
+			set_color_laser <= COLOR_SPACESHIP;
 			is_active_laser <= 0;
 		end
 		if (clk_frame && mode == 1) begin
@@ -161,7 +161,7 @@ module spaceship(
 				if (is_active_laser) begin
 					// If hit any objects, then reset laser back to the spaceship
 					// Top of the display (the bottom of the scoreboard)
-					/*if ((laser_yCoord <= SCOREBOARD_BOTTOM + HALF_LASER_HEIGHT + MOVE_UP) ||
+					if ((laser_yCoord <= SCOREBOARD_BOTTOM + HALF_LASER_HEIGHT + MOVE_UP) ||
 						  //ALIENS!
 	 					  //Alien 0
 		   				 (laser_yCoord <= alien_yCoord[9:0] + HALF_ALIEN_HEIGHT + MOVE_UP &&
@@ -175,23 +175,23 @@ module spaceship(
 						  ) begin
 						laser_xCoord <= spaceship_coord;
 						laser_yCoord <= LASER_INITIAL_Y;
-						set_color_laser <= COLOR_LASER_BLACK;
+						set_color_laser <= COLOR_SPACESHIP;
 						is_active_laser <= 0;
 					end
-					else begin*/
+					else begin
 						laser_yCoord <= laser_yCoord - MOVE_UP;
 						laser_xCoord <= laser_xCoord;
 						set_color_laser <= COLOR_LASER;
-					//end
+					end
 				end
 				else begin
 					laser_yCoord <= LASER_INITIAL_Y;
 					laser_xCoord <= spaceship_coord;
-					set_color_laser <= COLOR_LASER_BLACK;
+					set_color_laser <= COLOR_SPACESHIP;
 				end
 			end
 			else begin
-				set_color_laser <= COLOR_LASER_BLACK;
+				set_color_laser <= COLOR_BLACK;
 			end
 		end
 	end

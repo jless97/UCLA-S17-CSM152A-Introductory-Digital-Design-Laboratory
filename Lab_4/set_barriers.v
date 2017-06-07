@@ -58,6 +58,7 @@ parameter HALF_LASER_HEIGHT = 10'd5;
 				end
 			end
 		end
+		alienLaserHit_temp <= 3'b000;
 	end
 	 
 	//shifted x and y values for calculation of which barrier block we're "in" - values for display
