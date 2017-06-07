@@ -23,7 +23,6 @@ module set_barriers(
 	input wire clk,
 	input wire rst,
 	input wire mode,
-	input wire restart,
 	//Current X and Y of the screen
 	input wire [9:0] xCoord,
 	input wire [9:0] yCoord,

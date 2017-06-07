@@ -22,7 +22,7 @@ module spaceship(
 	// Inputs
 	input wire clk,
 	input wire rst,
-	input wire restart,
+//	input wire restart,
 	input wire button_left,
 	input wire button_right,
 	input wire button_shoot,
@@ -93,7 +93,6 @@ module spaceship(
 	// Laser implementation
 	reg [9:0] laser_xCoord;
 	reg [9:0] laser_yCoord;
-	reg [10:0] laser_counter;
 	reg is_active_laser;
 	reg can_move;
 	
@@ -103,19 +102,17 @@ module spaceship(
 		spaceship_coord = SPACESHIP_INITIAL;
 		laser_xCoord = LASER_INITIAL_X;
 		laser_yCoord = LASER_INITIAL_Y;
-		laser_counter = 10'd0;
 		is_active_laser = 0;
 		can_move = 1;
 	end
 	
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst || mode == 0 || restart) begin
+		if (rst || mode == 0) begin
 			// Reset position of the spaceship
 			spaceship_coord <= SPACESHIP_INITIAL;
 			laser_xCoord <= LASER_INITIAL_X;
 			laser_yCoord <= LASER_INITIAL_Y;
-			laser_counter <= 10'd0;
 			is_active_laser <= 0;
 			can_move <= 1;
 			set_color <= COLOR_SPACESHIP;

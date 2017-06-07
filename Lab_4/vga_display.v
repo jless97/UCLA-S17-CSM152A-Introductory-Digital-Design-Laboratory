@@ -22,15 +22,12 @@
 module vga_display(
 	// Inputs
 	input wire clk, 
-	input wire flying_saucer_clk,
 	input wire alien_clk,
 	input wire rst,
 	input wire button_left, 
 	input wire button_right, 
 	input wire button_shoot,
 	input wire button_display,
-	input wire start_screen,
-	input wire switch_screen,
 	input wire [9:0] xCoord, 
 	input wire [9:0] yCoord,
 	// Outputs
@@ -103,14 +100,14 @@ module vga_display(
 	wire [29:0] alien_laser_yCoord;
 	wire [7:0] rgb_spaceship_laser;
 	wire is_spaceship_laser;
-	wire restart;
-	reg restart_temp;
+	//wire restart;
+	//reg restart_temp;
 	wire barrSpaceshipLaserHit;
 	spaceship update_spaceship(
 	//Inputs
 		.clk(clk),
 		.rst(rst),
-		.restart(restart),
+//		.restart(restart),
 		.button_left(button_left),
 		.button_right(button_right),
 		.button_shoot(button_shoot),
@@ -134,13 +131,13 @@ module vga_display(
 	// Instantiate barriers
 	wire [7:0] rgb_barrier;
 	wire is_barrier;
-	wire [11:0] barrAlienLaserHit;
+	wire [2:0] barrAlienLaserHit;
 	set_barriers update_barriers(
 	//Inputs
 		.clk(clk),
 		.rst(rst),
 		.mode(mode),
-		.restart(restart),
+//		.restart(restart),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 	//Laser coordinates for interaction
@@ -224,7 +221,7 @@ module vga_display(
 	// Assign Player Lives
 	assign lives = lives_temp;
 	assign gameover = gameover_temp;
-	assign restart = restart_temp;
+//	assign restart = restart_temp;
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 // First row

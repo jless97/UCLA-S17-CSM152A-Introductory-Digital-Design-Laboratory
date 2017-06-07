@@ -28,7 +28,6 @@ module space_invaders_top(
 	input wire button_shoot,
 	input wire button_display,
 		// Switches
-	input wire start_screen,
 	input wire switch_screen,
 	// Outputs
 	output [7:0] rgb,
@@ -106,7 +105,6 @@ module space_invaders_top(
 	// VGA display
 	vga_display display(
 		.clk(clk),
-		.flying_saucer_clk(flying_saucer_clk),
 		.alien_clk(alien_clk),
 		.rst(rst_db),
 		.button_left(button_left_db),
