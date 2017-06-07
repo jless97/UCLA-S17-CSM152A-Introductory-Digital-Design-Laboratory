@@ -28,33 +28,33 @@ module extract_barrier_blk(
 			if(xCoord >= BARR0_XSTART && xCoord <= BARR0_XSTART+BARR_WIDTH) begin
 				currBarrier <= 2'b00;
 				shiftedXCoord <= xCoord - BARR0_XSTART;
-				inBarrier <= 1;
+				inBarrier <= 1'b1;
 			end
 			else if(xCoord > BARR1_XSTART && xCoord <= BARR1_XSTART+BARR_WIDTH) begin
 				currBarrier <= 2'b01;
 				shiftedXCoord <= xCoord - BARR1_XSTART;
-				inBarrier <= 1;
+				inBarrier <= 1'b1;
 			end
 			else if(xCoord > BARR2_XSTART && xCoord <= BARR2_XSTART+BARR_WIDTH) begin
 				currBarrier <= 2'b10;
 				shiftedXCoord <= xCoord - BARR2_XSTART;
-				inBarrier <= 1;
+				inBarrier <= 1'b1;
 			end
 			else if(xCoord > BARR3_XSTART && xCoord <= BARR3_XSTART+BARR_WIDTH) begin
 				currBarrier <= 2'b11;
 				shiftedXCoord <= xCoord - BARR3_XSTART;
-				inBarrier <= 1;
+				inBarrier <= 1'b1;
 			end
 			else begin
 				currBarrier <= 2'b00;
 				shiftedXCoord <= BARR0_XSTART + 8*BARR_WIDTH;
-				inBarrier <= 0;
+				inBarrier <= 1'b0;
 			end
 		end
 		else begin
 			currBarrier <= 2'b00;
 			shiftedXCoord <= BARR0_XSTART + 8*BARR_WIDTH;
-			inBarrier <= 0;
+			inBarrier <= 1'b0;
 		end
 	//logic to find out where within the barrier we are
 		if(shiftedXCoord >= 0 && shiftedXCoord <= 1*BARR_BLK_SZ) begin

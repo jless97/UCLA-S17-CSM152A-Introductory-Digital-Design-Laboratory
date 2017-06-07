@@ -22,7 +22,6 @@
 module vga_display(
 	// Inputs
 	input wire clk, 
-	input wire alien_clk,
 	input wire rst,
 	input wire button_left, 
 	input wire button_right, 
@@ -158,14 +157,17 @@ module vga_display(
 // ALIEN IMPLEMENTATION
 	// Instantiate aliens
 
-	wire [2:0] aliens;
 	wire [23:0] rgb_aliens;
 	wire [23:0] rgb_alien_laser;
 	// Player Lives
+	/*
 	wire [2:0] lives;
 	reg [2:0] lives_temp;
+	*/
+	/*
 	wire gameover;
 	reg gameover_temp;
+	*/
 	// Controls
 	wire [2:0] is_alien;
 	wire [2:0] is_alien_laser;
@@ -219,8 +221,10 @@ module vga_display(
 	assign move_down = move_down_temp;
 	
 	// Assign Player Lives
+	/*
 	assign lives = lives_temp;
 	assign gameover = gameover_temp;
+	*/
 //	assign restart = restart_temp;
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -234,7 +238,6 @@ module vga_display(
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
-		.aliens(aliens[0]),
 		.initial_xCoord(10'd195),
 		.initial_yCoord(10'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
@@ -264,7 +267,6 @@ module vga_display(
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
-		.aliens(aliens[1]),
 		.initial_xCoord(10'd245),
 		.initial_yCoord(10'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),
@@ -294,7 +296,6 @@ module vga_display(
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
-		.aliens(aliens[2]),
 		.initial_xCoord(10'd295),
 		.initial_yCoord(10'd150),
 		.spaceship_laser_xCoord(spaceship_laser_xCoord),

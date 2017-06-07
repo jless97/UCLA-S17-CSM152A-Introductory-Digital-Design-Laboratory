@@ -27,8 +27,6 @@ module space_invaders_top(
 	input wire button_right,
 	input wire button_shoot,
 	input wire button_display,
-		// Switches
-	input wire switch_screen,
 	// Outputs
 	output [7:0] rgb,
 	output wire hsync,
@@ -41,8 +39,6 @@ module space_invaders_top(
 	
 	// Wires for clocks
 	wire dclk;
-	wire flying_saucer_clk;
-	wire alien_clk;
 	
 	// Wires for signals
 	wire rst_db;
@@ -87,9 +83,9 @@ module space_invaders_top(
 	clk_div clk_div(
 		.clk(clk),
 		.rst(rst_db),
-		.dclk(dclk),
-		.flying_saucer_clk(flying_saucer_clk),
-		.alien_clk(alien_clk)
+		.dclk(dclk)//,
+		//.flying_saucer_clk(flying_saucer_clk),
+		//.alien_clk(alien_clk)
 	);
 	
 	// VGA controller
@@ -105,7 +101,6 @@ module space_invaders_top(
 	// VGA display
 	vga_display display(
 		.clk(clk),
-		.alien_clk(alien_clk),
 		.rst(rst_db),
 		.button_left(button_left_db),
 		.button_right(button_right_db),

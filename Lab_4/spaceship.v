@@ -117,7 +117,7 @@ module spaceship(
 			can_move <= 1;
 			set_color <= COLOR_SPACESHIP;
 		end
-		if(barrSpaceshipLaserHit && is_active_laser) begin
+		if(mode == 1 && barrSpaceshipLaserHit) begin
 			laser_xCoord <= spaceship_coord;
 			laser_yCoord <= LASER_INITIAL_Y;
 			set_color_laser <= COLOR_LASER_BLACK;

@@ -25,7 +25,6 @@ module aliens(
 	input wire mode,
 	input wire [9:0] xCoord,
 	input wire [9:0] yCoord,
-	input wire aliens,
 	// Trying to add aliens top
 	input wire [9:0] initial_xCoord,
 	input wire [9:0] initial_yCoord,
