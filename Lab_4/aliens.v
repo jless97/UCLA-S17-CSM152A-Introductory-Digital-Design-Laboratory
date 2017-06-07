@@ -34,14 +34,17 @@ module aliens(
 	input wire move_left,
 	input wire move_right,
 	input wire move_down,
-	input wire [143:0] shoot_timer,
+	input wire [11:0] shoot_timer,
+	input wire barrAlienLaserHit,
+	//input wire [9:0] alien_speed,
+	//input wire new_level,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_alien,
 	output wire [10:0] current_xCoord,
 	output wire [10:0] current_yCoord,
 	output wire is_edge,
-//	output wire is_hit
+	//output reg is_hit,
 	output wire [7:0] rgb_alien_laser,
 	output wire is_alien_laser,
 	output wire [10:0] current_laser_xCoord,
@@ -109,7 +112,7 @@ module aliens(
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst || mode == 0 || mode == 1) begin
+		if (rst || mode == 0 || mode == 1 ) begin
 			// TODO: When new objects added, reset their properties
 			// TODO: Reset screens (right now, just resets game level)
 			// Reset alien spaceship
@@ -121,7 +124,9 @@ module aliens(
 			can_move <= 1;
 			is_active_laser <= 0;
 			laser_counter <= 0;
+			//is_hit <= 0;
 		end
+		//is_hit <= 0;
 		if (clk_frame && mode == 2) begin
 			// Alien Controls
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
@@ -138,6 +143,7 @@ module aliens(
 				laser_xCoord <= ALIEN_DEAD;
 				set_color_laser <= COLOR_LASER_BLACK;
 				can_move <= 0;
+				//is_hit <= 1;
 			end
 			// Check to see that alien is not destroyed
 			if (can_move) begin
@@ -156,7 +162,7 @@ module aliens(
 					//laser_yCoord <= alien_yCoord;
 				end
 				if (is_active_laser) begin
-					if (laser_yCoord >= EXTRA_LIVES_TOP + LASER_HEIGHT / 2 + MOVE_UP) begin
+					if ((laser_yCoord >= EXTRA_LIVES_TOP + LASER_HEIGHT / 2 + MOVE_UP) || barrAlienLaserHit) begin
 						laser_xCoord <= alien_xCoord;
 						laser_yCoord <= alien_yCoord;
 						set_color_laser <= COLOR_ALIEN;
@@ -169,6 +175,8 @@ module aliens(
 					end
 				end
 				else begin
+					laser_xCoord <= alien_xCoord;
+					laser_yCoord <= alien_yCoord;
 					set_color_laser <= COLOR_ALIEN;
 				end
 				
@@ -205,7 +213,7 @@ module aliens(
 						// If at right edge of the display, bounce back
 						if (alien_xCoord >= RIGHT_EDGE - ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT) begin
 							is_edge_temp <= 1;
-									alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
+							alien_xCoord <= alien_xCoord + ALIEN_MOVE_RIGHT;
 						end
 						// Normal right move
 						else begin
