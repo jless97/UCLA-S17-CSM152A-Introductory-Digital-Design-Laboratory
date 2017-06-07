@@ -21,8 +21,7 @@
 // TODO: When not game screen, freeze objects (or kill them)
 module vga_display(
 	// Inputs
-	input wire clk, 
-	input wire rst,
+	input wire clk,
 	input wire button_left, 
 	input wire button_right, 
 	input wire button_shoot,
@@ -35,26 +34,12 @@ module vga_display(
 	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
-	// Display screen boundaries
-   parameter LEFT_EDGE = 10'd0;
-   parameter RIGHT_EDGE = 10'd640;
-   parameter TOP_EDGE = 10'd0;
-   parameter BOTTOM_EDGE = 10'd480;
-
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
    // RGB Parameters [ BLUE | GREEN | RED ]
 	reg [7:0] set_color;
 	parameter COLOR_SPACESHIP = 8'b01111000;
 	parameter COLOR_ALIEN = 8'b10101010;
 	parameter COLOR_SPACE = 8'b00000000;
 	parameter COLOR_BLACK = 8'b00000000;
-
-	///////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////
-	// Border (separation of objects) Parameters
-	parameter BARRIER_TOP = 10'd340;
-	parameter BARRIER_BOTTOM = 10'd397;
 
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
@@ -71,11 +56,8 @@ module vga_display(
 	initial begin
 		mode = 0;
 	end
-	always @ (posedge button_display or posedge rst) begin
-		if (rst) begin
-			mode <= 0;
-		end
-		else if (mode == 0) begin
+	always @ (posedge button_display) begin
+		if (mode == 0) begin
 			mode <= 1;
 		end
 		else if (mode == 1) begin
@@ -105,7 +87,6 @@ module vga_display(
 	spaceship update_spaceship(
 	//Inputs
 		.clk(clk),
-		.rst(rst),
 //		.restart(restart),
 		.button_left(button_left),
 		.button_right(button_right),
@@ -134,9 +115,7 @@ module vga_display(
 	set_barriers update_barriers(
 	//Inputs
 		.clk(clk),
-		.rst(rst),
 		.mode(mode),
-//		.restart(restart),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
 	//Laser coordinates for interaction
@@ -192,7 +171,7 @@ module vga_display(
 	end
 
 	always @ (posedge clk) begin
-		if (rst || button_display) begin
+		if (button_display) begin
 			move_left_temp <= 0;
 			move_right_temp <= 1;
 			move_down_temp <= 0;
@@ -234,7 +213,6 @@ module vga_display(
 	aliens update_alien_0(
 	// Inputs
 		.clk(clk),
-		.rst(rst),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -263,7 +241,6 @@ module vga_display(
 	aliens update_alien_1(
 	//Inputs
 		.clk(clk),
-		.rst(rst),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
@@ -292,7 +269,6 @@ module vga_display(
 	aliens update_alien_2(
 	//Inputs
 		.clk(clk),
-		.rst(rst),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),

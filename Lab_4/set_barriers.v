@@ -21,7 +21,6 @@
 module set_barriers(
 	// Inputs
 	input wire clk,
-	input wire rst,
 	input wire mode,
 	//Current X and Y of the screen
 	input wire [9:0] xCoord,
@@ -155,7 +154,7 @@ parameter HALF_LASER_HEIGHT = 10'd5;
 	reg spaceshipLaserHit_temp;
 	reg [2:0] alienLaserHit_temp;
 	always @ (posedge clk) begin
-		if(rst || mode == 0) begin
+		if(mode == 0) begin
 			for(i = 3'b000; i <= 3'b011; i = i+1) begin
 				for(k = 3'b000; k <= 3'b011; k = k+1) begin
 					for(m = 3'b000; m <= 3'b011; m = m+1) begin
@@ -179,28 +178,28 @@ parameter HALF_LASER_HEIGHT = 10'd5;
 				rgb_temp <= 7'd0;
 			end
 
-			if(isSpaceshipDamage && barrierInfo[spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000) begin
+			if(isSpaceshipDamage && barrierInfo[spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] != 3'b000 && spaceshipLaserHit == 1'b0) begin
 				barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] <= barrierInfo [spaceshipDamageBarrier][spaceshipDamageXblk][spaceshipDamageYblk] - 2'b01;
 				spaceshipLaserHit_temp <= 1'b1;
 			end
 			else begin
 				spaceshipLaserHit_temp <= 1'b0;
 			end
-			if(isAlienDamage0 && barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] != 3'b000) begin
+			if(isAlienDamage0 && barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] != 3'b000 && alienLaserHit[0] == 1'b0) begin
 				barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] <= barrierInfo [alienDamageBarrier0][alienDamageXblk0][alienDamageYblk0] - 2'b01;
 				alienLaserHit_temp[0] <= 1'b1;
 			end
 			else begin
 				alienLaserHit_temp[0] <= 1'b0;
 			end
-			if(isAlienDamage1 && barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] != 3'b000) begin
+			if(isAlienDamage1 && barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] != 3'b000 && alienLaserHit[1] == 1'b0) begin
 				barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] <= barrierInfo [alienDamageBarrier1][alienDamageXblk1][alienDamageYblk1] - 2'b01;
 				alienLaserHit_temp[1] <= 1'b1;
 			end
 			else begin
 				alienLaserHit_temp[1] <= 1'b0;
 			end
-			if(isAlienDamage2 && barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] != 3'b000) begin
+			if(isAlienDamage2 && barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] != 3'b000 && alienLaserHit[2] == 1'b0) begin
 				barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] <= barrierInfo [alienDamageBarrier2][alienDamageXblk2][alienDamageYblk2] - 2'b01;
 				alienLaserHit_temp[2] <= 1'b1;
 			end

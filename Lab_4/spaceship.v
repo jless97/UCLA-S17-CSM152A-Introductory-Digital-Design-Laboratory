@@ -21,7 +21,6 @@
 module spaceship(
 	// Inputs
 	input wire clk,
-	input wire rst,
 //	input wire restart,
 	input wire button_left,
 	input wire button_right,
@@ -108,7 +107,7 @@ module spaceship(
 	
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst || mode == 0) begin
+		if (mode == 0) begin
 			// Reset position of the spaceship
 			spaceship_coord <= SPACESHIP_INITIAL;
 			laser_xCoord <= LASER_INITIAL_X;

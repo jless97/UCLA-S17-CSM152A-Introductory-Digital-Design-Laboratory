@@ -21,7 +21,6 @@
 module aliens(
 	// Inputs
 	input wire clk,
-	input wire rst,
 	input wire mode,
 	input wire [9:0] xCoord,
 	input wire [9:0] yCoord,
@@ -113,7 +112,7 @@ module aliens(
 
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst || mode == 0 ) begin
+		if ( mode == 0 ) begin
 			// TODO: When new objects added, reset their properties
 			// TODO: Reset screens (right now, just resets game level)
 			// Reset alien spaceship
