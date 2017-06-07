@@ -71,8 +71,8 @@ module vga_display(
 	wire [7:0] rgb_spaceship;
 	wire is_spaceship;
 	// Coordinates of alien modules
-	wire [29:0] alien_xCoord;
-	wire [29:0] alien_yCoord;
+	//wire [29:0] alien_xCoord;
+	//wire [29:0] alien_yCoord;
 		
 	// Coordinates of spaceship laser
 	wire [9:0] spaceship_laser_xCoord;
@@ -81,24 +81,23 @@ module vga_display(
 	wire [29:0] alien_laser_yCoord;
 	wire [7:0] rgb_spaceship_laser;
 	wire is_spaceship_laser;
-	//wire restart;
-	//reg restart_temp;
+	wire [2:0] alien_is_hit;
 	wire barrSpaceshipLaserHit;
 	spaceship update_spaceship(
 	//Inputs
 		.clk(clk),
-//		.restart(restart),
 		.button_left(button_left),
 		.button_right(button_right),
 		.button_shoot(button_shoot),
 		.mode(mode),
 		.xCoord(xCoord),
 		.yCoord(yCoord),
-		.alien_xCoord(alien_xCoord),
-		.alien_yCoord(alien_yCoord),
+		//.alien_xCoord(alien_xCoord),
+		//.alien_yCoord(alien_yCoord),
 		.alien_laser_xCoord(alien_laser_xCoord),
 		.alien_laser_yCoord(alien_laser_yCoord),
 		.barrSpaceshipLaserHit(barrSpaceshipLaserHit),
+		.alien_is_hit(alien_is_hit),
 	//Outputs
 		.rgb(rgb_spaceship),
 		.is_spaceship(is_spaceship),
@@ -232,9 +231,10 @@ module vga_display(
 		.is_alien_laser(is_alien_laser[0]),
 		.current_laser_xCoord(alien_laser_xCoord[9:0]),
 		.current_laser_yCoord(alien_laser_yCoord[9:0]),
-		.current_xCoord(alien_xCoord[9:0]),
-		.current_yCoord(alien_yCoord[9:0]),
-		.is_edge(is_edge[0])
+		//.current_xCoord(alien_xCoord[9:0]),
+		//.current_yCoord(alien_yCoord[9:0]),
+		.is_edge(is_edge[0]),
+		.is_hit(alien_is_hit[0])
 		);
 
 	// Alien 1
@@ -260,9 +260,10 @@ module vga_display(
 		.is_alien_laser(is_alien_laser[1]),
 		.current_laser_xCoord(alien_laser_xCoord[19:10]),
 		.current_laser_yCoord(alien_laser_yCoord[19:10]),
-		.current_xCoord(alien_xCoord[19:10]),
-		.current_yCoord(alien_yCoord[19:10]),
-		.is_edge(is_edge[1])
+		//.current_xCoord(alien_xCoord[19:10]),
+		//.current_yCoord(alien_yCoord[19:10]),
+		.is_edge(is_edge[1]),
+		.is_hit(alien_is_hit[1])
 		);
 
 		// Alien 2
@@ -288,9 +289,10 @@ module vga_display(
 		.is_alien_laser(is_alien_laser[2]),
 		.current_laser_xCoord(alien_laser_xCoord[29:20]),
 		.current_laser_yCoord(alien_laser_yCoord[29:20]),
-		.current_xCoord(alien_xCoord[29:20]),
-		.current_yCoord(alien_yCoord[29:20]),
-		.is_edge(is_edge[2])
+		//.current_xCoord(alien_xCoord[29:20]),
+		//.current_yCoord(alien_yCoord[29:20]),
+		.is_edge(is_edge[2]),
+		.is_hit(alien_is_hit[2])
 		);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
