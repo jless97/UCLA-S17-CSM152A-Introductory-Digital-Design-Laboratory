@@ -47,7 +47,8 @@ module aliens(
 	output wire is_alien_laser,
 	output wire [9:0] current_laser_xCoord,
 	output wire [9:0] current_laser_yCoord,
-	output reg can_move
+	output reg can_move,
+	output reg could_move
     );
 
 	// Display screen boundaries
@@ -107,6 +108,7 @@ module aliens(
 		alien_yCoord = initial_yCoord;
 		alien_counter = 0;
 		can_move = 1;
+		could_move = 1;
 		is_edge_temp = 0;
 		is_active_laser <= 0;
 		laser_counter <= 0;
@@ -124,6 +126,7 @@ module aliens(
 			laser_yCoord <= initial_yCoord;
 			alien_counter <= 0;
 			can_move <= 1;
+			could_move <= 1;
 			is_active_laser <= 0;
 			laser_counter <= 0;
 		end
@@ -136,7 +139,7 @@ module aliens(
 		if (clk_frame && mode == 1) begin
 			// Alien Controls
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
-			if ((spaceship_laser_yCoord <= alien_yCoord + HALF_ALIEN_HEIGHT + MOVE_UP &&
+			if ((spaceship_laser_yCoord <= alien_yCoord + HALF_ALIEN_HEIGHT + MOVE_UP && /*spaceship_laser_yCoord >= alien_yCoord - HALF_ALIEN_HEIGHT + MOVE_UP &&*/
 				  spaceship_laser_xCoord >= alien_xCoord - HALF_ALIEN_LENGTH && spaceship_laser_xCoord <= alien_xCoord + HALF_ALIEN_LENGTH) 
 				) begin
 				// Solving weird edge case (where alien is at the edge gets hit by laser, is_edge never gets set)
@@ -144,7 +147,6 @@ module aliens(
 //				    (alien_xCoord >= RIGHT_EDGE + ALIEN_LENGTH / 2 - ALIEN_MOVE_RIGHT)
 //					) begin
 //					is_edge_temp <= 0;
-//				end
 				alien_xCoord <= ALIEN_DEAD;
 				laser_xCoord <= ALIEN_DEAD;
 				set_color_laser <= COLOR_LASER_BLACK;
@@ -228,6 +230,9 @@ module aliens(
 				else begin
 					alien_counter <= alien_counter + 1;
 				end
+			end
+			else if (could_move) begin
+				could_move <= 0;
 			end
 			else begin
 				set_color_laser <= COLOR_LASER_BLACK;
