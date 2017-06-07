@@ -39,7 +39,8 @@ module spaceship(
 	output wire [7:0] rgb_spaceship_laser,
 	output wire is_spaceship_laser,
 	output wire [9:0] current_laser_xCoord,
-	output wire [9:0] current_laser_yCoord
+	output wire [9:0] current_laser_yCoord,
+	output reg can_move
     );
 
 	///////////////////////////////////////////////////////
@@ -93,7 +94,6 @@ module spaceship(
 	reg [9:0] laser_xCoord;
 	reg [9:0] laser_yCoord;
 	reg is_active_laser;
-	reg can_move;
 	
 	// Initialize spaceship
 	initial begin

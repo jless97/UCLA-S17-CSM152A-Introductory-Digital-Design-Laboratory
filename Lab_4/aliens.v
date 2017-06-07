@@ -47,8 +47,7 @@ module aliens(
 	output wire is_alien_laser,
 	output wire [9:0] current_laser_xCoord,
 	output wire [9:0] current_laser_yCoord,
-	output reg can_move,
-	output reg could_move
+	output reg can_move
     );
 
 	// Display screen boundaries
@@ -108,7 +107,6 @@ module aliens(
 		alien_yCoord = initial_yCoord;
 		alien_counter = 0;
 		can_move = 1;
-		could_move = 1;
 		is_edge_temp = 0;
 		is_active_laser <= 0;
 		laser_counter <= 0;
@@ -126,7 +124,6 @@ module aliens(
 			laser_yCoord <= initial_yCoord;
 			alien_counter <= 0;
 			can_move <= 1;
-			could_move <= 1;
 			is_active_laser <= 0;
 			laser_counter <= 0;
 		end
@@ -230,9 +227,6 @@ module aliens(
 				else begin
 					alien_counter <= alien_counter + 1;
 				end
-			end
-			else if (could_move) begin
-				could_move <= 0;
 			end
 			else begin
 				set_color_laser <= COLOR_LASER_BLACK;

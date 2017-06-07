@@ -108,6 +108,7 @@ module vga_display(
 	//wire restart;
 	//reg restart_temp;
 	wire barrSpaceshipLaserHit;
+	wire spaceshipIsAlive;
 	spaceship update_spaceship(
 	//Inputs
 		.clk(clk),
@@ -129,7 +130,8 @@ module vga_display(
 		.rgb_spaceship_laser(rgb_spaceship_laser),
 		.is_spaceship_laser(is_spaceship_laser),
 		.current_laser_xCoord(spaceship_laser_xCoord),
-		.current_laser_yCoord(spaceship_laser_yCoord)
+		.current_laser_yCoord(spaceship_laser_yCoord),
+		.can_move(spaceshipIsAlive)
 		);
 	
 	// Instantiate barriers
@@ -368,40 +370,45 @@ module vga_display(
 				if(yCoord == SCORE_Y && xCoord >= 5 && xCoord <= score*SCORE_BLK+5) begin
 				   	set_color <= 8'b11000000;
 				end
-				// Color in barriers
-				else if(is_barrier) begin
-					set_color <= rgb_barrier;
+				if(spaceshipIsAlive) begin
+					// Color in barriers
+					if(is_barrier) begin
+						set_color <= rgb_barrier;
+					end
+					// Color in spaceship
+					else if (is_spaceship) begin
+						set_color <= rgb_spaceship;
+					end
+					// Color in spaceship laser
+					else if (is_spaceship_laser) begin
+						set_color <= rgb_spaceship_laser;
+					end
+					else if (is_alien[0]) begin
+						set_color <= rgb_aliens[7:0];
+					end
+					else if (is_alien[1]) begin
+						set_color <= rgb_aliens[15:8];
+					end
+					else if (is_alien[2]) begin
+						set_color <= rgb_aliens[23:16];
+					end
+					// Color in alien laser
+				
+					else if (is_alien_laser[0]) begin
+						set_color <= rgb_alien_laser[7:0];
+					end
+					else if (is_alien_laser[1]) begin
+						set_color <= rgb_alien_laser[15:8];
+					end
+					else if (is_alien_laser[2]) begin
+						set_color <= rgb_alien_laser[23:16];
+					end
+					else begin
+						set_color <= COLOR_SPACE;
+					end
 				end
-				// Color in spaceship
-				else if (is_spaceship) begin
-					set_color <= rgb_spaceship;
-				end
-				// Color in spaceship laser
-				else if (is_spaceship_laser) begin
-					set_color <= rgb_spaceship_laser;
-				end
-				else if (is_alien[0]) begin
-					set_color <= rgb_aliens[7:0];
-				end
-				else if (is_alien[1]) begin
-					set_color <= rgb_aliens[15:8];
-				end
-				else if (is_alien[2]) begin
-					set_color <= rgb_aliens[23:16];
-				end
-				// Color in alien laser
-			
-				else if (is_alien_laser[0]) begin
-					set_color <= rgb_alien_laser[7:0];
-				end
-				else if (is_alien_laser[1]) begin
-					set_color <= rgb_alien_laser[15:8];
-				end
-				else if (is_alien_laser[2]) begin
-					set_color <= rgb_alien_laser[23:16];
-				end
-				else begin
-					set_color <= COLOR_SPACE;
+				else if(yCoord != SCORE_Y) begin
+					set_color <= 8'b00000111;
 				end
 			end
 		end
