@@ -20,13 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 module vga_controller(
 	// Inputs
-   input wire clk,
+	input wire clk,
 	input wire rst,
 	// Outputs
-   output wire hsync, 
+	output wire hsync, 
 	output wire vsync,
-   output wire [10:0] xCoord, 
-	output wire [10:0] yCoord
+	output wire [9:0] xCoord, 
+	output wire [9:0] yCoord
 	);
 
 	// video structure constants
@@ -42,16 +42,16 @@ module vga_controller(
 	// active vertical video is therefore: 511 - 31 = 480
 	
 	// registers for storing the horizontal and vertical counters
-   reg [10:0] hc; 
-	reg [10:0] vc;
+	reg [9:0] hc; 
+	reg [9:0] vc;
 
 	always @(posedge clk or posedge rst) begin
 		if (rst) begin
 			hc <= 0;
 			vc <= 0;
 		end
-      else begin
-         if (hc < hpixels - 1) begin
+	  	else begin
+			if (hc < hpixels - 1) begin
 				hc <= hc + 1;
 			end
 			else begin
@@ -71,8 +71,8 @@ module vga_controller(
 	assign hsync = (hc < hpulse) ? 0:1;
 	assign vsync = (vc < vpulse) ? 0:1;
 
-    // Output the horizontal and vertical counters
-    assign xCoord = hc - hbp;
-    assign yCoord = vc - vbp;
+	// Output the horizontal and vertical counters
+	assign xCoord = hc - hbp;
+	assign yCoord = vc - vbp;
 
 endmodule

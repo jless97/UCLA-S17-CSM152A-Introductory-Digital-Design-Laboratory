@@ -21,39 +21,37 @@
 module spaceship(
 	// Inputs
 	input wire clk,
-	input wire rst,
-	input wire restart,
+//	input wire restart,
 	input wire button_left,
 	input wire button_right,
 	input wire button_shoot,
-	input wire [1:0] mode,
-	input wire [10:0] xCoord,
+	input wire mode,
+	input wire [9:0] xCoord,
 	input wire [9:0] yCoord,
-	input wire [9:0] flying_saucer_xCoord,
-	input wire [10:0] flying_saucer_yCoord,
-	input wire [32:0] alien_xCoord,
-	input wire [32:0] alien_yCoord,
-	input wire [32:0] alien_laser_xCoord,
-	input wire [32:0] alien_laser_yCoord,
+	input wire [29:0] alien_xCoord,
+	input wire [29:0] alien_yCoord,
+	input wire [29:0] alien_laser_xCoord,
+	input wire [29:0] alien_laser_yCoord,
 	input wire barrSpaceshipLaserHit,
 	// Outputs
 	output wire [7:0] rgb,
 	output wire is_spaceship,
 	output wire [7:0] rgb_spaceship_laser,
 	output wire is_spaceship_laser,
-	output wire [10:0] current_laser_xCoord,
-	output wire [10:0] current_laser_yCoord
+	output wire [9:0] current_laser_xCoord,
+	output wire [9:0] current_laser_yCoord,
+	output reg can_move
     );
 
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	// Display screen boundaries
-   parameter LEFT_EDGE = 11'd0;
-   parameter RIGHT_EDGE = 11'd640;
-   parameter TOP_EDGE = 11'd0;
-   parameter BOTTOM_EDGE = 11'd480;
-	parameter SCOREBOARD_TOP = 11'd0;
-	parameter SCOREBOARD_BOTTOM = 11'd60;
+	parameter LEFT_EDGE = 10'd0;
+	parameter RIGHT_EDGE = 10'd640;
+	parameter TOP_EDGE = 10'd0;
+	parameter BOTTOM_EDGE = 10'd480;
+	parameter SCOREBOARD_TOP = 10'd0;
+	parameter SCOREBOARD_BOTTOM = 10'd60;
 	
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
@@ -66,39 +64,36 @@ module spaceship(
 	parameter COLOR_BLACK = 8'b00000000;
 	
 	// Spaceship Parameters
-	parameter SPACESHIP_HEIGHT = 11'd10;
-	parameter SPACESHIP_LENGTH = 11'd40;
-	parameter SPACESHIP_TOP = 11'd420;
-	parameter SPACESHIP_BOTTOM = 11'd430;
-	parameter SPACESHIP_INITIAL = 11'd320;
-	parameter SPACESHIP_Y = 11'd425;
-	reg [10:0] spaceship_coord;
+	parameter SPACESHIP_HEIGHT = 10'd10;
+	parameter SPACESHIP_LENGTH = 10'd40;
+	parameter HALF_SPACESHIP_HEIGHT = 10'd10;
+	parameter HALF_SPACESHIP_LENGTH = 10'd20;
+	parameter SPACESHIP_TOP = 10'd420;
+	parameter SPACESHIP_BOTTOM = 10'd430;
+	parameter SPACESHIP_INITIAL = 10'd320;
+	parameter SPACESHIP_Y = 10'd425;
+	reg [9:0] spaceship_coord;
 		
 	// Laser Parameters
-	parameter LASER_HEIGHT = 11'd10;
-	parameter LASER_LENGTH = 11'd3;
-	parameter LASER_INITIAL_X = 11'd320;
-	parameter LASER_INITIAL_Y = 11'd417;
-	
-	// Flying Saucer Parameters
-	parameter FLYING_SAUCER_HEIGHT = 11'd16;
-	parameter FLYING_SAUCER_LENGTH = 11'd40;
-	
+	parameter LASER_HEIGHT = 10'd10;
+	parameter LASER_LENGTH = 10'd3;
+	parameter HALF_LASER_HEIGHT = 10'd5;
+	parameter HALF_LASER_LENGTH = 10'd1;
+	parameter LASER_INITIAL_X = 10'd320;
+	parameter LASER_INITIAL_Y = 10'd417;
 	// Alien Parameters
-	parameter ALIEN_HEIGHT = 11'd16;
-	parameter ALIEN_LENGTH = 11'd30;
+	parameter HALF_ALIEN_HEIGHT = 10'd8;
+	parameter HALF_ALIEN_LENGTH = 10'd15;
 	
 	// Position Updates
-   parameter MOVE_LEFT  = 11'd1;
-	parameter MOVE_RIGHT = 11'd1;
-	parameter MOVE_UP = 11'd1;
+	parameter MOVE_LEFT  = 10'd1;
+	parameter MOVE_RIGHT = 10'd1;
+	parameter MOVE_UP = 10'd1;
 		
 	// Laser implementation
-	reg [10:0] laser_xCoord;
-	reg [10:0] laser_yCoord;
-	reg [10:0] laser_counter;
+	reg [9:0] laser_xCoord;
+	reg [9:0] laser_yCoord;
 	reg is_active_laser;
-	reg can_move;
 	
 	// Initialize spaceship
 	initial begin
@@ -106,56 +101,54 @@ module spaceship(
 		spaceship_coord = SPACESHIP_INITIAL;
 		laser_xCoord = LASER_INITIAL_X;
 		laser_yCoord = LASER_INITIAL_Y;
-		laser_counter = 11'd0;
 		is_active_laser = 0;
 		can_move = 1;
 	end
 	
 	wire clk_frame = (xCoord == 0 && yCoord == 0);
 	always @ (posedge clk) begin
-		if (rst || mode == 0 || mode == 1 || restart) begin
+		if (mode == 0) begin
 			// Reset position of the spaceship
 			spaceship_coord <= SPACESHIP_INITIAL;
 			laser_xCoord <= LASER_INITIAL_X;
 			laser_yCoord <= LASER_INITIAL_Y;
-			laser_counter <= 11'd0;
 			is_active_laser <= 0;
 			can_move <= 1;
 			set_color <= COLOR_SPACESHIP;
 		end
-		if (clk_frame && mode == 2) begin
+		if(mode == 1 && barrSpaceshipLaserHit) begin
+			laser_xCoord <= spaceship_coord;
+			laser_yCoord <= LASER_INITIAL_Y;
+			set_color_laser <= COLOR_SPACESHIP;
+			is_active_laser <= 0;
+		end
+		if (clk_frame && mode == 1) begin
 			// Check to see if hit by laser (if so move alien off of screen, and set can_move to 0)
-			if ((alien_laser_yCoord[10:0] >= SPACESHIP_Y - SPACESHIP_HEIGHT / 2 &&
-				  alien_laser_xCoord[10:0] >= spaceship_coord - SPACESHIP_LENGTH / 2 && alien_laser_xCoord[10:0] <= spaceship_coord + SPACESHIP_LENGTH / 2) ||
-				 (alien_laser_yCoord[21:11] >= SPACESHIP_Y - SPACESHIP_HEIGHT / 2 &&
-				  alien_laser_xCoord[21:11] >= spaceship_coord - SPACESHIP_LENGTH / 2 && alien_laser_xCoord[21:11] <= spaceship_coord + SPACESHIP_LENGTH / 2) ||	
-				 (alien_laser_yCoord[32:22] >= SPACESHIP_Y - SPACESHIP_HEIGHT / 2 &&
-				  alien_laser_xCoord[32:22] >= spaceship_coord - SPACESHIP_LENGTH / 2 && alien_laser_xCoord[32:22] <= spaceship_coord + SPACESHIP_LENGTH / 2) /*||
-				 (alien_laser_yCoord[109:99] >= SPACESHIP_Y - SPACESHIP_HEIGHT / 2 &&
-				  alien_laser_xCoord[109:99] >= spaceship_coord - SPACESHIP_LENGTH / 2 && alien_laser_xCoord[109:99] <= spaceship_coord + SPACESHIP_LENGTH / 2) ||
-				 (alien_laser_yCoord[120:110] >= SPACESHIP_Y - SPACESHIP_HEIGHT / 2 &&
-				  alien_laser_xCoord[120:110] >= spaceship_coord - SPACESHIP_LENGTH / 2 && alien_laser_xCoord[120:110] <= spaceship_coord + SPACESHIP_LENGTH / 2) ||
-				 (alien_laser_yCoord[131:121] >= SPACESHIP_Y - SPACESHIP_HEIGHT / 2 &&
-				  alien_laser_xCoord[131:121] >= spaceship_coord - SPACESHIP_LENGTH / 2 && alien_laser_xCoord[131:121] <= spaceship_coord + SPACESHIP_LENGTH / 2) */
+			if ((alien_laser_yCoord[9:0] >= SPACESHIP_Y - HALF_SPACESHIP_HEIGHT &&
+				  alien_laser_xCoord[9:0] >= spaceship_coord - HALF_SPACESHIP_LENGTH && alien_laser_xCoord[9:0] <= spaceship_coord + HALF_SPACESHIP_LENGTH) ||
+				 (alien_laser_yCoord[19:10] >= SPACESHIP_Y - HALF_SPACESHIP_HEIGHT &&
+				  alien_laser_xCoord[19:10] >= spaceship_coord - HALF_SPACESHIP_LENGTH && alien_laser_xCoord[19:10] <= spaceship_coord + HALF_SPACESHIP_LENGTH) ||	
+				 (alien_laser_yCoord[29:20] >= SPACESHIP_Y - HALF_SPACESHIP_HEIGHT &&
+				  alien_laser_xCoord[29:20] >= spaceship_coord - HALF_SPACESHIP_LENGTH && alien_laser_xCoord[29:20] <= spaceship_coord + HALF_SPACESHIP_LENGTH) 
 				) begin
 				//spaceship_coord <= SPACESHIP_INITIAL;
-				spaceship_coord <= 11'd700;
+				spaceship_coord <= 10'd700;
 				set_color <= COLOR_BLACK;
 				can_move <= 0;
 			end
 			if (can_move) begin
 				// Spaceship Controls
 				// Left button pressed, update spaceship position to the left (if possible)
-				if (button_left && spaceship_coord > LEFT_EDGE + SPACESHIP_LENGTH / 2) begin
+				if (button_left && spaceship_coord > LEFT_EDGE + HALF_SPACESHIP_LENGTH) begin
 					spaceship_coord <= spaceship_coord - MOVE_LEFT;
 				end
 				// Right button pressed, update spaceship position to the right (if possible)
-				if (button_right && spaceship_coord < RIGHT_EDGE - SPACESHIP_LENGTH / 2) begin
+				if (button_right && spaceship_coord < RIGHT_EDGE - HALF_SPACESHIP_LENGTH) begin
 					spaceship_coord <= spaceship_coord + MOVE_RIGHT;
 				end
 				// Update display of spaceship
 				if (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
-					 xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
+					 xCoord >= spaceship_coord - HALF_SPACESHIP_LENGTH && xCoord <= spaceship_coord + HALF_SPACESHIP_LENGTH
 					) begin
 					set_color <= COLOR_SPACESHIP;
 				end
@@ -167,57 +160,22 @@ module spaceship(
 				end
 				if (is_active_laser) begin
 					// If hit any objects, then reset laser back to the spaceship
-						// Top of the display (the bottom of the scoreboard)
-					if ((laser_yCoord <= SCOREBOARD_BOTTOM + LASER_HEIGHT / 2 + MOVE_UP) ||
-						// Flying saucer
-						/*
-						 (laser_yCoord <= flying_saucer_yCoord + FLYING_SAUCER_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= flying_saucer_xCoord - FLYING_SAUCER_LENGTH / 2 &&
-						  laser_xCoord <= flying_saucer_xCoord + FLYING_SAUCER_LENGTH / 2) ||
-						*/
-						// Aliens
-
+					// Top of the display (the bottom of the scoreboard)
+					if ((laser_yCoord <= SCOREBOARD_BOTTOM + HALF_LASER_HEIGHT + MOVE_UP) ||
+						  //ALIENS!
 	 					  //Alien 0
-		   				 (laser_yCoord <= alien_yCoord[10:0] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[10:0] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[10:0] + ALIEN_LENGTH / 2) ||
+		   				 (laser_yCoord <= alien_yCoord[9:0] + HALF_ALIEN_HEIGHT + MOVE_UP &&
+						  laser_xCoord >= alien_xCoord[9:0] - HALF_ALIEN_LENGTH && laser_xCoord <= alien_xCoord[9:0] + HALF_ALIEN_LENGTH) ||
 						  // Alien 1
-						 (laser_yCoord <= alien_yCoord[21:11] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[21:11] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[21:11] + ALIEN_LENGTH / 2) ||
+						 (laser_yCoord <= alien_yCoord[19:10] + HALF_ALIEN_HEIGHT + MOVE_UP &&
+						  laser_xCoord >= alien_xCoord[19:10] - HALF_ALIEN_LENGTH && laser_xCoord <= alien_xCoord[19:10] + HALF_ALIEN_LENGTH) ||
 						  // Alien 2
-						 (laser_yCoord <= alien_yCoord[32:22] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[32:22] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[32:22] + ALIEN_LENGTH / 2) ||
-	/*					  // Alien 3
-						 (laser_yCoord <= alien_yCoord[43:33] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[43:33] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[43:33] + ALIEN_LENGTH / 2) ||
-						  // Alien 4
-						  (laser_yCoord <= alien_yCoord[54:44] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[54:44] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[54:44] + ALIEN_LENGTH / 2) ||
-						  // Alien 5
-						 (laser_yCoord <= alien_yCoord[65:55] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[65:55] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[65:55] + ALIEN_LENGTH / 2) || 
-						  // Alien 6
-						  (laser_yCoord <= alien_yCoord[76:66] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[76:66] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[76:66] + ALIEN_LENGTH / 2) ||
-						  // Alien 7
-						 (laser_yCoord <= alien_yCoord[87:77] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[87:77] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[87:77] + ALIEN_LENGTH / 2) ||
-						  // Alien 8
-						  (laser_yCoord <= alien_yCoord[98:88] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[98:88] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[98:88] + ALIEN_LENGTH / 2) ||
-						  // Alien 9
-						 (laser_yCoord <= alien_yCoord[109:99] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[109:99] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[109:99] + ALIEN_LENGTH / 2) ||
-						  // Alien 10
-						  (laser_yCoord <= alien_yCoord[120:110] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[120:110] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[120:110] + ALIEN_LENGTH / 2) ||
-						  // Alien 11
-						 (laser_yCoord <= alien_yCoord[131:121] + ALIEN_HEIGHT / 2 + MOVE_UP &&
-						  laser_xCoord >= alien_xCoord[131:121] - ALIEN_LENGTH / 2 && laser_xCoord <= alien_xCoord[131:121] + ALIEN_LENGTH / 2)  ||*/
-						 barrSpaceshipLaserHit
+						 (laser_yCoord <= alien_yCoord[29:20] + HALF_ALIEN_HEIGHT + MOVE_UP &&
+						  laser_xCoord >= alien_xCoord[29:20] - HALF_ALIEN_LENGTH && laser_xCoord <= alien_xCoord[29:20] + HALF_ALIEN_LENGTH) 
 						  ) begin
 						laser_xCoord <= spaceship_coord;
 						laser_yCoord <= LASER_INITIAL_Y;
-						set_color_laser <= COLOR_LASER_BLACK;
+						set_color_laser <= COLOR_SPACESHIP;
 						is_active_laser <= 0;
 					end
 					else begin
@@ -227,12 +185,13 @@ module spaceship(
 					end
 				end
 				else begin
+					laser_yCoord <= LASER_INITIAL_Y;
 					laser_xCoord <= spaceship_coord;
-					set_color_laser <= COLOR_LASER_BLACK;
+					set_color_laser <= COLOR_SPACESHIP;
 				end
 			end
 			else begin
-				set_color_laser <= COLOR_LASER_BLACK;
+				set_color_laser <= COLOR_BLACK;
 			end
 		end
 	end
@@ -244,11 +203,11 @@ module spaceship(
 	// Assign spaceship colors
 	assign rgb = set_color;
 	assign is_spaceship = (yCoord >= SPACESHIP_TOP && yCoord <= SPACESHIP_BOTTOM && 
-								  xCoord >= spaceship_coord - SPACESHIP_LENGTH / 2 && xCoord <= spaceship_coord + SPACESHIP_LENGTH / 2
+								  xCoord >= spaceship_coord - HALF_SPACESHIP_LENGTH && xCoord <= spaceship_coord + HALF_SPACESHIP_LENGTH
 								  );
 	// Assign laser colors
 	assign rgb_spaceship_laser = set_color_laser;
-	assign is_spaceship_laser = (yCoord >= laser_yCoord - LASER_HEIGHT / 2 && yCoord <= laser_yCoord + LASER_HEIGHT / 2 &&
-							 xCoord >= laser_xCoord - LASER_LENGTH / 2 && xCoord <= laser_xCoord + LASER_LENGTH / 2); // TODO
+	assign is_spaceship_laser = (yCoord >= laser_yCoord - HALF_LASER_HEIGHT && yCoord <= laser_yCoord + HALF_LASER_HEIGHT &&
+							 xCoord >= laser_xCoord - HALF_LASER_LENGTH && xCoord <= laser_xCoord + HALF_LASER_LENGTH); // TODO
 	
 endmodule 
