@@ -6,10 +6,10 @@ For the CSM152A final project, our group decided to recreate the classic arcade 
 ## Gameplay Video Links
 * Note: There are three different videos showing different elements of the game. It was intended to recreate the original Space Invaders game, but due to memory constraints, the final implementation for demo day was much more simplified. The purpose of these different videos is to highlight different elements that would have been combined to form a more complete game (memory-permitting, which it was not).
 
-[54_aliens.bit](http://
+[54_aliens.bit](https://www.youtube.com/watch?v=7oKSQItPpDI)
 This video shows the start screen, and the game screen, which consists of the player spaceship being able to move left and right, 54 alien objects moving together in sync, and the flying saucer at the top of the screen.
 
-[22_aliens_spaceship_lasers.bit](http://
+[22_aliens_spaceship_lasers.bit](https://www.youtube.com/watch?v=Ukz-0aKLt6M)
 This video shows the start screen, and the game screen, which consists of the player spaceship which can move left, move right, and fire lasers, 22 alien objects which move together in sync, and can be destroyed by the player spaceship laser,  the flying saucer at the top of the screen which can also be destroyed by lasers, and the four barriers which are displayed (but not yet active).
 
 [gameover_screen.bit](https://www.youtube.com/watch?v=lbOyKXYbLiI)
