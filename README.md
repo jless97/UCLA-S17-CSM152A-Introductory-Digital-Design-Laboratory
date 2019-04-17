@@ -1,4 +1,4 @@
-# CSM152A - Introductory Digital Design Laboratory, Spring 2017
+# CSM152A - Introductory Digital Design Laboratory, Spring 2017 
 
 ## Course Description
 Hands-on design, implementation, and debugging of digital logic circuits, use of computer-aided design tools for schematic capture and simulation, implementation of complex circuits using programmed array logic, design projects. 
