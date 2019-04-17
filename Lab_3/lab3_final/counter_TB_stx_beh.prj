@@ -1,4 +1,0 @@
-verilog isim_temp "sel_adj.v"
-verilog isim_temp "counter.v"
-verilog isim_temp "counter_TB.v"
-verilog isim_temp "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v"
